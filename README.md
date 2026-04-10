@@ -2,12 +2,28 @@
 
 **Protocol, not a product.**
 
-SYS defines a portable, user-controlled identity layer for AI systems. The core unit is the **soul.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile. It lives in the user's browser, grows with each session, and serves as authentic context for AI systems.
+SYS defines a portable, user-controlled identity layer for AI systems. The core unit is the **soul.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile.
 
-This repository contains the protocol specification and a reference implementation running at [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com). The reference implementation is invite-only. It is not a deployable product. Anyone building a compatible implementation does so independently.
+It is stored locally in the user's browser, evolves over time through interactions, and provides structured context for AI systems.
 
-> Think of it like email: the protocol is open, the reference implementation is one example of many possible servers.
+This repository contains the protocol specification and a reference implementation running at [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com). The reference implementation is invite-only and serves as an example implementation only. It is not intended as a deployable product. Any compatible implementation can be built independently.
 
+> Think of it like email: the protocol is open, and the reference implementation is only one possible server implementation.
+
+## License
+
+This project is licensed under the Apache License 2.0.
+
+You may obtain a copy of the License at:
+http://www.apache.org/licenses/LICENSE-2.0
+
+## Disclaimer
+
+This software is provided "as is", without warranty of any kind, express or implied.
+
+The authors are not liable for any damages, data loss, downtime, or security issues arising from the use or misuse of this software.
+
+Use at your own risk.
 ---
 
 ## Core Concept
