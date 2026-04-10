@@ -6,9 +6,9 @@ SYS defines a portable user context protocol for AI systems.
 
 It is a multi-layer, append-only identity state system that combines local memory structures with optional cryptographic anchoring.
 
-The core unit of SYS is the **soul.md** file — a Markdown document with YAML frontmatter that encodes a structured personal identity profile.
+The core unit of SYS is the soul.md file — a Markdown document with YAML frontmatter that encodes a structured personal identity profile.
 
-It is stored locally in the user's browser, evolves over time through interactions, and provides structured context for AI systems.
+The soul.md is stored locally in the user's browser and updated through user or system interactions. It provides structured context for AI systems over time.
 
 This repository contains the protocol specification and a reference implementation running at [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com). The reference implementation is invite-only and serves as an example implementation only. It is not intended as a deployable product. Any compatible implementation can be built independently.
 
