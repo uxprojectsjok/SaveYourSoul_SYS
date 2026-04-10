@@ -128,7 +128,7 @@ SOUL_MASTER_KEY (secret, on-server)
 ```
 
 - **Your instance** = your own `SOUL_MASTER_KEY` = your own isolated network
-- **Canonical SYS network** = original `SOUL_MASTER_KEY` at sys.uxprojects-jok.com
+- **Canonical SYS network** = original `SOUL_MASTER_KEY` at the reference implementation
 - Souls from one instance cannot authenticate against another instance
 
 Additionally, the `SoulRegistry.sol` smart contract, when deployed by the author

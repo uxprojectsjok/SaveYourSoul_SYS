@@ -2,32 +2,12 @@
 
 **Protocol, not a product.**
 
-SYS defines a portable user context protocol for AI systems.
+SYS defines a portable, user-controlled identity layer for AI systems. The core unit is the **soul.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile. It lives in the user's browser, grows with each session, and serves as authentic context for AI systems.
 
-It is a multi-layer, append-only identity state system that combines local memory structures with optional cryptographic anchoring.
+This repository contains the protocol specification and a reference implementation. The reference implementation is invite-only and serves as an example implementation only. It is not intended as a deployable product. Any compatible implementation can be built independently.
 
-The core unit of SYS is the soul.md file — a Markdown document with YAML frontmatter that encodes a structured personal identity profile.
+> Think of it like email: the protocol is open, the reference implementation is one example of many possible servers.
 
-The soul.md is stored locally in the user's browser and updated through user or system interactions. It provides structured context for AI systems over time.
-
-This repository contains the protocol specification and a reference implementation running at [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com). The reference implementation is invite-only and serves as an example implementation only. It is not intended as a deployable product. Any compatible implementation can be built independently.
-
-> Think of it like email: the protocol is open, and the reference implementation is only one possible server implementation.
-
-## License
-
-This project is licensed under the Apache License 2.0.
-
-You may obtain a copy of the License at:
-http://www.apache.org/licenses/LICENSE-2.0
-
-## Disclaimer
-
-This software is provided "as is", without warranty of any kind, express or implied.
-
-The authors are not liable for any damages, data loss, downtime, or security issues arising from the use or misuse of this software.
-
-Use at your own risk.
 ---
 
 ## Core Concept
@@ -57,7 +37,12 @@ The soul.md belongs to the user. The operator has no access to encrypted content
 ├── soul-whatsapp/           WhatsApp integration (Twilio Serverless)
 ├── soul-voice-clone/        ElevenLabs voice clone + conversational agent
 ├── browser-extension/       Chrome MV3 extension
-├── docs/                    Protocol documentation
+├── docs/
+│   ├── overview.md          Protocol overview & design principles
+│   ├── quickstart.md        Getting started guide
+│   ├── spec/                Protocol specifications (soul-md, auth, mcp-tools)
+│   ├── api/                 API reference & examples
+│   └── architecture/        OpenResty, vault, encryption internals
 └── test/                    soul.md test fixtures
 ```
 
@@ -83,7 +68,7 @@ storage_tx: ""
 
 _Who is this person in one sentence?_
 
-## Values ​​& Beliefs
+## Values & Beliefs
 
 _What motivates them? What do they believe in?_
 
@@ -93,23 +78,23 @@ _Music, atmospheres, visual stimuli that attract this person._
 
 ## Speech Patterns & Expression
 
-_How do they speak? How does she write?_
+_How do they speak? How do they write?_
 
 ## Recurring Themes & Obsessions
 
-_What keeps coming back to her?_
+_What keeps coming back?_
 
 ## Emotional Signature
 
-_What is it like to talk to her?_
+_What is it like to talk to this person?_
 
 ## Worldview
 
-_How does she see the world? What is her view of humanity?_
+_How do they see the world?_
 
-## Unanswered Questions from this Person
+## Unanswered Questions
 
-_What is she still looking for?_
+_What are they still looking for?_
 
 ## Session Log (compressed)
 
@@ -120,7 +105,7 @@ _What is she still looking for?_
 ...
 ```
 
-Full specification: [ARCHITECTURE.md](ARCHITECTURE.md)
+Full specification: [docs/spec/soul-md.md](docs/spec/soul-md.md)
 
 ---
 
@@ -145,7 +130,7 @@ Key tools: `soul_read`, `soul_write`, `vault_manifest`, `audio_list`, `network_l
 
 ## Self-Hosting
 
-The production stack uses OpenResty (nginx + LuaJIT) as the API layer — no Node.js in production. See [ARCHITECTURE.md](ARCHITECTURE.md) for the full component breakdown and [docs/PRODUCTION_SETUP.md](docs/PRODUCTION_SETUP.md) for implementation notes.
+The production stack uses OpenResty (nginx + LuaJIT) as the API layer — no Node.js in production. See [docs/architecture/openresty.md](docs/architecture/openresty.md) for the full component breakdown and [docs/PRODUCTION_SETUP.md](docs/PRODUCTION_SETUP.md) for implementation notes.
 
 There is no install script. The specification is complete; the engineering is up to the implementer.
 
@@ -156,6 +141,14 @@ There is no install script. The specification is complete; the engineering is up
 - **Concept project** — living proof-of-concept, not a commercial product
 - **Reference implementation** — invite-only, experimental, no warranty
 - **Protocol** — Apache 2.0, compatible implementations welcome
+
+---
+
+## Disclaimer
+
+This software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement.
+
+The authors and operators are not liable for any damages, data loss, downtime, security incidents, or other consequences arising from the use or misuse of this software. Use at your own risk.
 
 ---
 

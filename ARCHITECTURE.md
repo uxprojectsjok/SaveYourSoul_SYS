@@ -1,7 +1,9 @@
 # SaveYourSoul — Architecture & Protocol Specification
 
 > **Protocol, not a product.**
-> This document describes the SYS protocol specification and its reference implementation running at `sys.uxprojects-jok.com`. The reference implementation is invite-only and serves as a living proof-of-concept. It is not a deployable product. Anyone building a compatible implementation does so independently.
+> This document describes the SYS protocol specification and its reference implementation. The reference implementation is invite-only and serves as a living proof-of-concept. It is not a deployable product. Anyone building a compatible implementation does so independently.
+>
+> **Note:** This file is superseded by the structured documentation in [docs/](docs/). It is retained for context.
 
 ---
 
@@ -343,6 +345,5 @@ The soul.md format, API conventions, and MCP tool schema are intended as an open
 
 ---
 
-_Reference implementation: `sys.uxprojects-jok.com` · Operator: UX-Projects – Jan-Oliver Karo, Marburg, Germany_
-_Reference registry contract  · Polygon Mainnet · 0xB68Ca7cFFbe1113F62B3d0397d293693A8e0106B_
+_Reference implementation: invite-only · Operator: UX-Projects – Jan-Oliver Karo, Marburg, Germany_
 _This is experimental software. No warranty. Invite-only access._

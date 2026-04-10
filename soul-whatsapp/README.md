@@ -25,8 +25,8 @@ TWILIO_AUTH_TOKEN=xxx
 TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
 TWILIO_WEBHOOK=https://YOUR_SERVICE-dev.twil.io/whatsapp
 
-SOUL_API_URL=https://sys.uxprojects-jok.com/api/soul
-SOUL_WEBHOOK_URL=https://sys.uxprojects-jok.com/api/webhook/elevenlabs
+SOUL_API_URL=https://YOUR_DOMAIN/api/soul
+SOUL_WEBHOOK_URL=https://YOUR_DOMAIN/api/webhook/elevenlabs
 SOUL_SERVICE_TOKEN=<Token aus SYS App → Verbundene Dienste>
 
 ANTHROPIC_API_KEY=sk-ant-...

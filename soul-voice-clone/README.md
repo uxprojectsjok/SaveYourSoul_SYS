@@ -22,8 +22,8 @@ npm install
 ```env
 ELEVENLABS_API_KEY=sk_...
 SOUL_SERVICE_TOKEN=<Token aus SYS App → Verbundene Dienste>
-SOUL_WEBHOOK_URL=https://sys.uxprojects-jok.com/api/webhook/elevenlabs
-SOUL_API_URL=https://sys.uxprojects-jok.com/api/soul
+SOUL_WEBHOOK_URL=https://YOUR_DOMAIN/api/webhook/elevenlabs
+SOUL_API_URL=https://YOUR_DOMAIN/api/soul
 ```
 
 ## Deploy – Schritt für Schritt

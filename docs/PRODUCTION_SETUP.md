@@ -5,12 +5,6 @@
 > ersten vollständigen Prod-Deployment. Für neue Entwickler und zukünftige
 > Deployments.
 
-## Disclaimer
-
-This production configuration is provided for reference purposes only.
-
-Use in production systems is at your own risk. See repository README for full license and disclaimer.
-
 ---
 
 ## Architektur-Überblick

@@ -241,7 +241,8 @@
                 @click="activeModal = link.key"
                 class="sys-link text-xs tracking-[0.08em] text-white/72 hover:text-white/85 transition-colors"
               >{{ link.label }}</button>
-              <NuxtLink to="/api-docs" class="sys-link text-xs tracking-[0.08em] text-white/72 hover:text-white/85 transition-colors">API Docs</NuxtLink>
+              <NuxtLink to="/api-docs" class="inline-flex items-center sys-link text-xs tracking-[0.08em] text-white/72 hover:text-white/85 transition-colors">API Docs</NuxtLink>
+              <NuxtLink to="/dev-docs" class="inline-flex items-center sys-link text-xs tracking-[0.08em] text-white/72 hover:text-white/85 transition-colors">Dev Docs</NuxtLink>
             </nav>
             <p class="text-xs font-mono text-[var(--sys-fg-dim)] mt-2 text-center opacity-40">© 2026 UX-Projects Jan-Oliver Karo</p>
             <p class="text-xs text-[var(--sys-fg-dim)] mt-1 text-center opacity-30">WCAG 2.1 AA orientiert</p>
@@ -1715,6 +1716,7 @@
             >
               {{ link.label }}
             </button>
+            <NuxtLink to="/dev-docs" class="inline-flex items-center text-xs tracking-[0.08em] text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg-muted)] transition-colors">Dev Docs</NuxtLink>
           </nav>
 
           <p class="mt-4 text-xs text-[var(--sys-fg-dim)] opacity-50 leading-relaxed">
