@@ -1,0 +1,18 @@
+-- /etc/openresty/lua/soul_sign_session.lua
+-- Growth Chain Signing — POST /api/soul-sign-session
+--
+-- Issues a server-side HMAC signature to anchor a soul session record to the Growth Chain.
+--
+-- Protocol:
+--   Input  (JSON body): { "soul_id": "<uuid>", "content_hash": "<sha256>", "date": "YYYY-MM-DD" }
+--   Output (JSON):      { "signature": "<32 hex chars>" }
+--
+-- Message format (canonical):  soul_id:date:content_hash
+-- Algorithm:                   HMAC-SHA256(SOUL_MASTER_KEY, message).hex()[0:32]
+-- Auth:                        None required — HMAC secret ensures server-origin authenticity.
+--
+-- Returns 500 if SOUL_MASTER_KEY is not set in the server environment.
+-- Returns 400 if any required field is missing or malformed.
+--
+-- ⚠  Owner's implementation — not included in this distribution.
+--    Contact: contact@uxprojects-jok.com

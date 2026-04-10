@@ -1,0 +1,21 @@
+# Build output
+.output/
+.nuxt/
+dist/
+
+# Dependencies
+node_modules/
+
+# Environment files (keep only .env.example)
+.env
+.env.*
+*.local
+
+# Production vhost (domain-specific — use server/openresty/vhost.conf.template instead)
+server/openresty/sys.uxprojects-jok.com.nginx
+
+# OS & editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

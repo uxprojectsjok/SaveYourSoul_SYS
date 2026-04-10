@@ -1,0 +1,25 @@
+-- /etc/openresty/lua/vault_auth.lua
+-- Vault & Webhook Authentication Guard — access_by_lua_file
+--
+-- Extended auth layer for vault and webhook endpoints.
+-- Accepts two authentication methods:
+--
+--   1. Soul-Cert  (Authorization: Bearer {soul_id}.{cert})
+--      Full access. Validates HMAC-SHA256 cert against SOUL_MASTER_KEY.
+--      Sets: ngx.ctx.soul_id, ngx.ctx.vault_key (from active session if any)
+--
+--   2. Service-Token  (Authorization: Bearer {token}  or  X-Webhook-Token: {token})
+--      Scoped access. Token validated against authorized_services.json on disk.
+--      Vault must be unlocked (active session or persisted vault_key_hex).
+--      Sets: ngx.ctx.soul_id, ngx.ctx.vault_key, ngx.ctx.via_webhook,
+--            ngx.ctx.service_permissions
+--
+--   3. Query param  (?token={token})
+--      Same as method 2, for direct file downloads.
+--
+-- On vault_locked: returns 403 { "error": "vault_locked" }
+-- On missing/invalid token: returns 401.
+-- CORS OPTIONS requests are always allowed (no auth required).
+--
+-- ⚠  Owner's implementation — not included in this distribution.
+--    Contact: contact@uxprojects-jok.com

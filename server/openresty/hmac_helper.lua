@@ -1,0 +1,12 @@
+-- /etc/openresty/lua/hmac_helper.lua
+-- HMAC-SHA256 utility module (shared by soul_auth.lua and vault_auth.lua)
+--
+-- Interface:
+--   local hmac = require("hmac_helper")
+--   local hex  = hmac.sign(key, message)  --> 64-char hex string
+--
+-- Uses OpenResty's resty.sha256 + resty.string (standard OpenResty bundle).
+-- Implements HMAC-SHA256 per RFC 2104.
+--
+-- ⚠  Owner's implementation — not included in this distribution.
+--    Contact: contact@uxprojects-jok.com

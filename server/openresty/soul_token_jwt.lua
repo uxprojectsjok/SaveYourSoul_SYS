@@ -1,0 +1,21 @@
+-- /etc/openresty/lua/soul_token_jwt.lua
+-- JWT Token Issuance — POST /api/soul/v1/token
+--
+-- Issues a short-lived JWT after successful soul_auth.lua validation.
+-- Used for integrations that require standard Bearer JWT tokens
+-- (e.g. soul-mcp OAuth flow).
+--
+-- Requires:
+--   ngx.ctx.soul_id  (set by soul_auth.lua in access phase)
+--   API_SIGNING_KEY  (env var, separate from SOUL_MASTER_KEY)
+--
+-- Output (JSON):
+--   { "token": "<jwt>", "expires_in": 2592000, "soul_id": "<uuid>" }
+--
+-- JWT header:  { "alg": "HS256", "typ": "JWT" }
+-- JWT claims:  { "soul_id", "iat", "exp" }
+-- Signature:   HMAC-SHA256(API_SIGNING_KEY, header.payload) → base64url
+-- TTL:         30 days
+--
+-- ⚠  Owner's implementation — not included in this distribution.
+--    Contact: contact@uxprojects-jok.com

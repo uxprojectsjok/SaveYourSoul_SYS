@@ -1,0 +1,18 @@
+-- /etc/openresty/lua/soul_auth.lua
+-- Soul Authentication Guard — access_by_lua_file
+--
+-- Validates the Authorization header for protected API endpoints.
+-- Used on: /api/chat, /api/soul-update, /api/validate, /api/vault/sync,
+--           /api/vault/unlock, /api/vault/lock, /api/soul/v1/token, and more.
+--
+-- Protocol:
+--   Header: Authorization: Bearer {soul_id}.{cert}
+--   Validates: cert == HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[0:32]
+--
+-- On success: sets ngx.ctx.soul_id, strips Authorization header, falls through.
+-- On failure: returns ngx.exit(401).
+--
+-- If SOUL_MASTER_KEY is not set, auth is skipped (useful for local dev without key).
+--
+-- ⚠  Owner's implementation — not included in this distribution.
+--    Contact: contact@uxprojects-jok.com

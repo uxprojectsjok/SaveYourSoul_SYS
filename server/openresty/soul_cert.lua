@@ -1,0 +1,18 @@
+-- /etc/openresty/lua/soul_cert.lua
+-- Soul Certificate Authority — POST /api/soul-cert
+--
+-- Generates a soul_cert for a given soul_id.
+-- The cert is used as the authentication token for all subsequent API calls.
+--
+-- Protocol:
+--   Input  (JSON body): { "soul_id": "<uuid>" }
+--   Output (JSON):      { "cert": "<32 hex chars>" }
+--
+-- The cert is derived as:
+--   soul_cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[0:32]
+--
+-- SOUL_MASTER_KEY is a 32-byte hex secret set via server environment variable.
+-- Without the correct SOUL_MASTER_KEY no valid cert can be generated or verified.
+--
+-- ⚠  Owner's implementation — not included in this distribution.
+--    Contact: contact@uxprojects-jok.com
