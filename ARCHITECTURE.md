@@ -344,4 +344,5 @@ The soul.md format, API conventions, and MCP tool schema are intended as an open
 ---
 
 _Reference implementation: `sys.uxprojects-jok.com` · Operator: UX-Projects – Jan-Oliver Karo, Marburg, Germany_
+_Reference registry contract  · Polygon Mainnet · 0xB68Ca7cFFbe1113F62B3d0397d293693A8e0106B_
 _This is experimental software. No warranty. Invite-only access._
