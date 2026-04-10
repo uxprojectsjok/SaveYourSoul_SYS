@@ -2,7 +2,7 @@
 
 **Protocol, not a product.**
 
-SYS defines a portable user context protocol for AI systems. The core unit is the **soul.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile.
+SYS defines a portable user context protocol for AI systems. It is a multi-layer, append-only identity state protocol combining local memory structures with optional cryptographic anchoring.The core unit is the **soul.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile.
 
 It is stored locally in the user's browser, evolves over time through interactions, and provides structured context for AI systems.
 
