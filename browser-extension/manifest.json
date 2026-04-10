@@ -7,7 +7,6 @@
   "permissions": ["storage", "activeTab", "scripting", "tabs"],
   "host_permissions": [
     "https://YOUR_DOMAIN/*",
-    "https://claude.ai/*"
   ],
   "background": {
     "service_worker": "background.js"
