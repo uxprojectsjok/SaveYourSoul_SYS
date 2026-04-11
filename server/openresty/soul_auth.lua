@@ -15,4 +15,3 @@
 -- If SOUL_MASTER_KEY is not set, auth is skipped (useful for local dev without key).
 --
 -- ⚠  Owner's implementation — not included in this distribution.
---    Contact: jan-oliver.karo@uxprojects-jok.com

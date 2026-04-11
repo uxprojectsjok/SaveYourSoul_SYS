@@ -28,7 +28,7 @@ end
 ngx.header["Content-Type"]  = "application/json"
 ngx.header["Cache-Control"] = "no-store"
 
-local SOULS_DIR = "/var/lib/sys/souls/"
+local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
 local args      = ngx.req.get_uri_args()
 local target_id = args and args.soul_id
 local req_file  = args and args.file

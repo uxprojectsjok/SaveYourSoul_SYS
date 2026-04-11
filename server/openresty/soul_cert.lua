@@ -15,4 +15,3 @@
 -- Without the correct SOUL_MASTER_KEY no valid cert can be generated or verified.
 --
 -- ⚠  Owner's implementation — not included in this distribution.
---    Contact: jan-oliver.karo@uxprojects-jok.com

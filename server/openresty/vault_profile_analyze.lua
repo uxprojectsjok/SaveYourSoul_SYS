@@ -78,7 +78,8 @@ if not filename or filename == "" then
   return
 end
 
-local vault_path = "/var/lib/sys/souls/" .. soul_id .. "/vault/images/" .. filename
+local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
+local vault_path = SOULS_DIR .. soul_id .. "/vault/images/" .. filename
 local f = io.open(vault_path, "rb")
 if not f then
   ngx.status = 404
@@ -188,7 +189,7 @@ profile.source     = filename
 profile.updated_at = os.date("!%Y-%m-%dT%H:%M:%SZ")
 
 -- Profil speichern
-local profile_dir  = "/var/lib/sys/souls/" .. soul_id .. "/vault/profile/"
+local profile_dir  = SOULS_DIR .. soul_id .. "/vault/profile/"
 local profile_path = profile_dir .. "face.json"
 os.execute("mkdir -p " .. profile_dir)
 

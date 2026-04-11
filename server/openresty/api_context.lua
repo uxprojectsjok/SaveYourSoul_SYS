@@ -34,7 +34,8 @@ if not soul_id or not soul_id:match("^[a-zA-Z0-9%-]+$") or #soul_id > 64 then
   return
 end
 
-local base_dir = "/var/lib/sys/souls/" .. soul_id
+local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
+local base_dir = SOULS_DIR .. soul_id
 local ctx_file = base_dir .. "/api_context.json"
 
 local function ensure_dirs()
