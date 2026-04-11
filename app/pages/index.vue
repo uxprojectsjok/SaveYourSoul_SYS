@@ -39,8 +39,8 @@
         <main id="main-content" class="flex-1 overflow-y-auto py-8 px-5">
           <div class="max-w-4xl mx-auto">
 
-            <!-- ── Desktop: 2-Spalten (Dashboard | Kalender), Mobile: einspaltig ── -->
-            <div class="md:grid md:grid-cols-[1fr_20rem] md:gap-6 md:items-start">
+            <!-- ── Dashboard ── -->
+            <div>
 
             <!-- ── Dashboard (links, volle Höhe) ── -->
             <div>
@@ -96,14 +96,6 @@
 
             <!-- ── SOUL STATS ── -->
             <div class="space-y-4 mb-6">
-
-              <SoulMaturityMeter
-                v-if="maturity"
-                :score="maturity.score"
-                :level="maturity.level"
-                :is-mature="maturity.isMature"
-                :breakdown="maturity.breakdown"
-              />
 
               <div v-if="vaultConnected && soulVaultFile" class="flex items-center justify-between min-h-[36px]">
                 <span class="text-sm text-white/80">Soul</span>
@@ -220,11 +212,6 @@
             </div>
 
             </div><!-- end dashboard col -->
-
-            <!-- ── Kalender (rechts) ── -->
-            <div class="mt-6 md:mt-0 md:sticky md:top-4">
-              <SoulCalendar />
-            </div>
 
             </div><!-- end grid -->
 
@@ -451,9 +438,9 @@
           <!-- Beta badge -->
           <div
             class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border text-xs font-bold tracking-[0.18em] uppercase"
-            style="border-color: rgba(45,212,191,0.30); color: rgba(45,212,191,0.80); background: rgba(45,212,191,0.07);"
+            style="border-color: var(--sys-orange-border); color: var(--sys-orange); background: var(--sys-orange-dim);"
           >
-            <span class="w-1.5 h-1.5 rounded-full soul-pulse" style="background: #2dd4bf;"></span>
+            <span class="w-1.5 h-1.5 rounded-full soul-pulse" style="background: var(--sys-orange);"></span>
             BETA · INVITE-ONLY
           </div>
 
@@ -595,9 +582,9 @@
             <div class="flex flex-col items-center text-center px-4">
               <div
                 class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 flex-none relative z-10"
-                style="background: rgba(45,212,191,0.10); border: 1px solid rgba(45,212,191,0.22)"
+                style="background: var(--sys-orange-dim); border: 1px solid var(--sys-orange-border)"
               >
-                <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: #2dd4bf">
+                <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--sys-orange)">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/>
                 </svg>
               </div>
@@ -647,7 +634,7 @@
             <div
               v-for="feat in landingFeatures"
               :key="feat.title"
-              class="rounded-2xl p-5 sm:p-7 border transition-all hover:translate-y-[-3px] duration-300"
+              class="rounded-2xl p-5 sm:p-7 border transition-all hover:border-[rgba(255,255,255,0.14)] duration-300"
               :style="`background: ${feat.bg}; border-color: ${feat.border};`"
             >
               <div
@@ -1352,8 +1339,8 @@
                 </div>
                 <div class="flex items-center gap-1.5 text-[10px] text-white/30">
                   <div class="w-3.5 h-3.5 rounded flex items-center justify-center flex-none"
-                    style="background: rgba(45,212,191,0.15); border: 1px solid rgba(45,212,191,0.25)">
-                    <svg class="w-2 h-2 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    style="background: var(--sys-orange-dim); border: 1px solid var(--sys-orange-border)">
+                    <svg class="w-2 h-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--sys-orange)">
                       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                     </svg>
                   </div>
@@ -1364,7 +1351,7 @@
                     style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08)">
                     <p><span class="font-semibold text-white">Verbundene Soul · 13 Jahre · Schüler</span></p>
                     <p>Gamer und Sportler — jugendlich-entspannt, kurze Antworten.</p>
-                    <p class="text-teal-400/70 text-[10px] mt-1">Verbindung: gegenseitig aktiv · freigegebene Inhalte sichtbar</p>
+                    <p class="text-[var(--sys-fg-dim)] text-[10px] mt-1">Verbindung: gegenseitig aktiv · freigegebene Inhalte sichtbar</p>
                   </div>
                 </div>
               </div>
@@ -1374,8 +1361,8 @@
               <div>
                 <div class="flex items-center gap-2 mb-2">
                   <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-none"
-                    style="background: rgba(45,212,191,0.12); border: 1px solid rgba(45,212,191,0.25)">
-                    <span class="text-[10px] font-bold text-teal-400">03</span>
+                    style="background: var(--sys-orange-dim); border: 1px solid var(--sys-orange-border)">
+                    <span class="text-[10px] font-bold" style="color: var(--sys-orange)">03</span>
                   </div>
                   <span class="text-xs font-semibold text-white/60 tracking-widest uppercase">MCP-Tool: network_peer_get</span>
                 </div>
@@ -1388,7 +1375,7 @@
               </div>
               <div class="space-y-2">
                 <div v-for="fact in demoNetworkFacts" :key="fact" class="flex items-start gap-2 text-xs text-white/50">
-                  <span class="text-teal-400 mt-0.5 flex-none">✓</span>
+                  <span class="mt-0.5 flex-none" style="color: var(--sys-orange)">✓</span>
                   <span>{{ fact }}</span>
                 </div>
               </div>
@@ -1923,14 +1910,12 @@ import { useColorScheme } from "~/composables/useColorScheme.js";
 import { useSoul } from "~/composables/useSoul.js";
 import { useVault } from "~/composables/useVault.js";
 import { useChainAnchor } from "~/composables/useChainAnchor.js";
-import { computeMaturity } from "#shared/utils/soulMaturity.js";
 import { useVaultConnections } from "~/composables/useVaultConnections.js";
 import VaultExplorer from "~/components/VaultExplorer.vue";
 import Modal from "~/components/ui/Modal.vue";
 import ModalCreateSoul from "~/components/ModalCreateSoul.vue";
 import SoulUpload from "~/components/SoulUpload.vue";
 import SoulDownload from "~/components/SoulDownload.vue";
-import SoulMaturityMeter from "~/components/SoulMaturityMeter.vue";
 import SoulEncryptModal from "~/components/SoulEncryptModal.vue";
 import SoulDecryptModal from "~/components/SoulDecryptModal.vue";
 import ModalImpressum from "~/components/ModalImpressum.vue";
@@ -2030,11 +2015,6 @@ const privacyFaqOpen = ref(false);
 
 const { mutualCount } = useVaultConnections();
 
-const maturity = computed(() =>
-  soulContent.value
-    ? computeMaturity(soulContent.value, syncedFiles.value, null, mutualCount.value)
-    : null,
-);
 
 const legalLinks = [
   { key: "impressum", label: "Impressum" },
@@ -2074,7 +2054,7 @@ const landingStats = [
     icon: Lock,
     label: "AES-256",
     desc: "Client-seitig verschlüsselt (Standard)",
-    color: "#2dd4bf",
+    color: "#e85000",
   },
   {
     icon: Cpu,
@@ -2092,7 +2072,7 @@ const landingStats = [
     icon: Shield,
     label: "Privacy by Design",
     desc: "Du behältst die Kontrolle",
-    color: "#2dd4bf",
+    color: "#e85000",
   },
   {
     icon: Globe,
@@ -2107,14 +2087,14 @@ const landingFeatures = [
     icon: Key,
     title: "Soul Protocol",
     desc: "Eine kryptographisch signierte Identitätsdatei, die deine Persönlichkeit strukturiert erfasst und durch jede Session weiterentwickelt wird.",
-    color: "#2dd4bf",
-    colorLight: "#5b21b6",
-    bg: "rgba(45,212,191,0.04)",
+    color: "#e85000",
+    colorLight: "#c04400",
+    bg: "rgba(232,80,0,0.04)",
     bgLight: "#ffffff",
-    border: "rgba(45,212,191,0.18)",
-    borderLight: "rgba(91,33,182,0.35)",
-    iconBg: "rgba(45,212,191,0.10)",
-    iconBgLight: "rgba(91,33,182,0.14)",
+    border: "rgba(232,80,0,0.16)",
+    borderLight: "rgba(192,68,0,0.30)",
+    iconBg: "rgba(232,80,0,0.09)",
+    iconBgLight: "rgba(192,68,0,0.12)",
     points: [
       "HMAC-SHA256 Signatur",
       "Soul.md Open Format",
@@ -2127,13 +2107,13 @@ const landingFeatures = [
     icon: Database,
     title: "Memory Vault",
     desc: "Dein lokaler, verschlüsselter Ordner für alles, was dich ausmacht – Stimme, Gesicht, Bewegung, Bilder, Texte. Lokal auf deinem Gerät.",
-    color: "#2acec9",
+    color: "#8b5cf6",
     colorLight: "#5b21b6",
-    bg: "rgba(42,206,201,0.04)",
+    bg: "rgba(139,92,246,0.04)",
     bgLight: "#ffffff",
-    border: "rgba(42,206,201,0.18)",
+    border: "rgba(139,92,246,0.16)",
     borderLight: "rgba(91,33,182,0.35)",
-    iconBg: "rgba(42,206,201,0.10)",
+    iconBg: "rgba(139,92,246,0.09)",
     iconBgLight: "rgba(91,33,182,0.14)",
     points: [
       "Stimme, Gesicht & Bewegung",
@@ -2147,13 +2127,13 @@ const landingFeatures = [
     icon: Brain,
     title: "AI Interface",
     desc: "Sprich mit einer KI, die deine Soul kennt. Gedanken werden analysiert, die Soul automatisch angereichert – dein Profil wächst mit.",
-    color: "#2fcfc0",
+    color: "rgba(228,230,240,0.80)",
     colorLight: "#5b21b6",
-    bg: "rgba(47,207,192,0.04)",
+    bg: "rgba(255,255,255,0.025)",
     bgLight: "#ffffff",
-    border: "rgba(47,207,192,0.18)",
+    border: "rgba(255,255,255,0.10)",
     borderLight: "rgba(91,33,182,0.35)",
-    iconBg: "rgba(47,207,192,0.10)",
+    iconBg: "rgba(255,255,255,0.06)",
     iconBgLight: "rgba(91,33,182,0.14)",
     points: [
       "Soul als Kontext für KI",
@@ -2167,14 +2147,14 @@ const landingFeatures = [
     icon: Globe,
     title: "Soul API",
     desc: "Gib externen Diensten kontrollierten Zugriff auf deine Soul-Daten. Stimme, Gesicht, Kontext – du bestimmst, was freigegeben wird.",
-    color: "#28c9ba",
-    colorLight: "#5b21b6",
-    bg: "rgba(40,201,186,0.04)",
+    color: "#d97706",
+    colorLight: "#b45309",
+    bg: "rgba(217,119,6,0.04)",
     bgLight: "#ffffff",
-    border: "rgba(40,201,186,0.18)",
-    borderLight: "rgba(91,33,182,0.35)",
-    iconBg: "rgba(40,201,186,0.10)",
-    iconBgLight: "rgba(91,33,182,0.14)",
+    border: "rgba(217,119,6,0.16)",
+    borderLight: "rgba(180,83,9,0.30)",
+    iconBg: "rgba(217,119,6,0.09)",
+    iconBgLight: "rgba(180,83,9,0.12)",
     points: [
       "Webhook-Token Authentifizierung",
       "6 granulare Berechtigungen (inkl. Kalender)",
@@ -2268,7 +2248,7 @@ const landingRoadmap = [
     active: false,
     status: "DONE",
     timeline: "Alpha · 2026 ✓",
-    color: "#2dd4bf",
+    color: "#4ade80",
     title: "Core · Deployed",
     items: [
       "Soul Protocol (Soul.md, HMAC-Signatur)",

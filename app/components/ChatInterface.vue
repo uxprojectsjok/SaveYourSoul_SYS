@@ -444,9 +444,9 @@
           </div>
         </Transition>
 
-        <!-- ── Input Card (M3 Outlined Text Field: pill shape, floating glass) ── -->
+        <!-- ── Input Card ── -->
         <div
-          class="rounded-[28px] border border-[var(--sys-border)] bg-[var(--sys-bg-elevated)] backdrop-blur-xl transition-all duration-300 focus-within:border-[var(--sys-border-accent)] focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.08)]"
+          class="rounded-2xl border border-[var(--sys-border)] bg-[var(--sys-bg-elevated)] backdrop-blur-xl transition-all duration-300 focus-within:border-[rgba(255,255,255,0.18)]"
         >
           <!-- Zeile 1: Textarea + Send Button -->
           <div class="flex items-center gap-2 pl-7 pr-4 pt-3 pb-2">
@@ -466,10 +466,10 @@
               @click="sendMessage"
               :disabled="!canSend"
               aria-label="Nachricht senden"
-              class="flex-none w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
+              class="flex-none w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200"
               :class="
                 canSend
-                  ? 'bg-[var(--sys-fg)] text-[var(--sys-bg)] hover:shadow-[0_0_0_2px_rgba(139,92,246,0.50),0_4px_18px_rgba(139,92,246,0.28)] hover:scale-[1.05] active:scale-95'
+                  ? 'bg-[var(--sys-fg)] text-[var(--sys-bg)] hover:bg-white active:scale-95'
                   : 'bg-[var(--sys-accent-dim)] border border-[var(--sys-border)] opacity-20 cursor-not-allowed'
               "
             >
@@ -503,9 +503,9 @@
               <button
                 class="sys-chip flex-none gap-1.5 select-none touch-none"
                 :class="cameraOpen
-                  ? 'border-[rgba(139,92,246,0.55)] bg-[rgba(139,92,246,0.12)] text-white shadow-[0_0_10px_rgba(139,92,246,0.20)]'
+                  ? 'border-[rgba(255,255,255,0.30)] bg-[rgba(255,255,255,0.12)] text-white'
                   : visionLoading
-                    ? 'border-[rgba(139,92,246,0.30)] bg-[rgba(139,92,246,0.06)] text-white/60'
+                    ? 'border-[rgba(255,255,255,0.14)] bg-[rgba(255,255,255,0.05)] text-white/60'
                     : ''"
                 :disabled="visionLoading"
                 @click="cameraOpen = true"

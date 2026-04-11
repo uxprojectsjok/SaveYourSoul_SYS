@@ -310,12 +310,7 @@
 
   ::selection { background: rgba(255, 255, 255, 0.12); color: #fff; }
 
-  /* ── Universal violet glow: echte Buttons (nicht Text-Links) ────────── */
-  button:not(:disabled):not(.sys-link):hover,
-  [role="button"]:not(:disabled):not(.sys-link):hover {
-    box-shadow: 0 0 0 1px rgba(139,92,246,0.30), 0 4px 18px rgba(139,92,246,0.18);
-    transition: box-shadow 0.18s ease, transform 0.18s ease;
-  }
+  /* ── Universal active spring – kein globaler Hover-Glow ─────────────── */
   button:not(:disabled):not(.sys-link):active,
   [role="button"]:not(:disabled):not(.sys-link):active {
     transform: scale(0.95);
@@ -345,20 +340,19 @@
     background-clip: text;
   }
 
-  /* Primary CTA – violet, Framer-style pill */
+  /* Primary CTA – violet, edged rect */
   .sys-cta-primary {
     background: var(--sys-violet);
     color: #ffffff;
     font-weight: 700;
-    border-radius: 9999px;
+    border-radius: 12px;
   }
   .sys-cta-primary:hover {
     background: #9d73f8;
-    box-shadow: 0 0 0 1px rgba(139,92,246,0.35), 0 8px 32px rgba(139,92,246,0.32), 0 2px 8px rgba(139,92,246,0.18);
-    transform: translateY(-1px);
+    box-shadow: 0 0 0 1px rgba(139,92,246,0.30), 0 4px 20px rgba(139,92,246,0.22);
   }
   .sys-cta-primary:active {
-    transform: scale(0.95) translateY(0);
+    transform: scale(0.95);
     box-shadow: none;
   }
 
@@ -574,28 +568,11 @@
 .modal-pop-leave-to .modal-card { transform: scale(0.97); }
 
 /* ── Hero-Logo Shadow ───────────────────────────── */
-/* Dezenter, atmender Glow (Dark) / Tiefenschatten (Light) */
+/* Monochromer Tiefenschatten – kein AI-Farbglow */
 .logo-hero-shadow {
   filter:
-    drop-shadow(0 0 36px rgba(45, 212, 191, 0.22))
-    drop-shadow(0 0 72px rgba(139, 92, 246, 0.15))
-    drop-shadow(0 16px 36px rgba(0, 0, 0, 0.60));
-  animation: logo-glow-breathe 5.5s ease-in-out infinite;
-}
-
-@keyframes logo-glow-breathe {
-  0%,  100% {
-    filter:
-      drop-shadow(0 0 28px rgba(45, 212, 191, 0.17))
-      drop-shadow(0 0 58px rgba(139, 92, 246, 0.11))
-      drop-shadow(0 16px 36px rgba(0, 0, 0, 0.60));
-  }
-  50% {
-    filter:
-      drop-shadow(0 0 50px rgba(45, 212, 191, 0.30))
-      drop-shadow(0 0 92px rgba(139, 92, 246, 0.20))
-      drop-shadow(0 16px 36px rgba(0, 0, 0, 0.60));
-  }
+    drop-shadow(0 2px 12px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 12px 40px rgba(0, 0, 0, 0.45));
 }
 
 
@@ -648,15 +625,15 @@
 /*
    Spring physics: cubic-bezier(0.16, 1, 0.3, 1) → elastic release
    Press: scale 0.95 instantly, spring back on release
-   Hover: translateY(-1px) + white glow
-   Shape: pill (9999px) for primary, rounded-xl for secondary
+   Hover: restrained white lift – no float, no colour glow
+   Shape: rounded rect (10px) – editorial, not AI-pill
 */
 
 .sys-btn {
   display: inline-flex; align-items: center; justify-content: center;
   height: 44px; min-height: 44px;
   padding: 0 22px;
-  border-radius: 9999px;
+  border-radius: 10px;
   font-size: 0.875rem; font-weight: 600; letter-spacing: -0.01em; line-height: 20px;
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.2s ease,
@@ -688,15 +665,14 @@
   transition-duration: 0.08s;
 }
 
-/* Primary: violet pill — the hero action */
+/* Primary: violet rect — the hero action */
 .sys-btn-filled {
   background: var(--sys-violet); color: #ffffff;
-  border-radius: 9999px;
+  border-radius: 10px;
 }
 .sys-btn-filled:hover {
   background: #9d73f8;
-  box-shadow: 0 0 0 1px rgba(139,92,246,0.35), 0 8px 28px rgba(139,92,246,0.32), 0 2px 8px rgba(139,92,246,0.18);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.30), 0 4px 18px rgba(139,92,246,0.20);
 }
 
 /* Tonal: subtle glass */
@@ -705,10 +681,8 @@
   border: 1px solid rgba(255,255,255,0.12);
 }
 .sys-btn-tonal:hover {
-  background: rgba(139,92,246,0.08);
-  border-color: var(--sys-violet-border);
-  box-shadow: 0 0 0 1px rgba(139,92,246,0.18), 0 6px 22px rgba(139,92,246,0.18);
-  transform: translateY(-1px);
+  background: rgba(255,255,255,0.11);
+  border-color: rgba(255,255,255,0.20);
 }
 
 /* Outlined: thin border only */
@@ -717,9 +691,8 @@
   border: 1px solid rgba(255,255,255,0.18);
 }
 .sys-btn-outlined:hover {
-  border-color: var(--sys-violet-border);
-  box-shadow: 0 0 0 1px rgba(139,92,246,0.15), 0 6px 20px rgba(139,92,246,0.15);
-  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.04);
 }
 
 /* Danger: red semantic only */
@@ -736,35 +709,32 @@
 }
 .sys-btn-ghost:hover {
   color: var(--sys-fg);
-  border-color: var(--sys-violet-border);
-  background: rgba(139,92,246,0.06);
-  box-shadow: 0 0 0 1px rgba(139,92,246,0.12), 0 4px 16px rgba(139,92,246,0.12);
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.06);
 }
 
-/* Icon: circular, touch-target 44px */
+/* Icon: square with small radius, touch-target 44px */
 .sys-btn-icon {
-  width: 44px; height: 44px; min-height: 44px; padding: 0; border-radius: 50%;
+  width: 44px; height: 44px; min-height: 44px; padding: 0; border-radius: 9px;
   background: transparent; color: var(--sys-fg-dim);
   border: none;
 }
 .sys-btn-icon:hover {
-  background: rgba(139,92,246,0.10);
+  background: rgba(255,255,255,0.08);
   color: var(--sys-fg);
-  box-shadow: 0 0 0 1px rgba(139,92,246,0.22), 0 4px 14px rgba(139,92,246,0.14);
 }
 
 /* FAB */
 .sys-fab {
   height: 56px; min-height: 56px;
-  padding: 0 24px; border-radius: 9999px;
+  padding: 0 24px; border-radius: 12px;
   font-size: 0.875rem; font-weight: 700; letter-spacing: -0.01em;
   box-shadow: 0 4px 24px rgba(0,0,0,0.5);
 }
 .sys-fab:not(:disabled):hover {
-  border-color: rgba(139,92,246,0.55) !important;
-  box-shadow: 0 0 0 1px rgba(139,92,246,0.40), 0 6px 28px rgba(139,92,246,0.28) !important;
+  border-color: rgba(255,255,255,0.22) !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 6px 24px rgba(0,0,0,0.45) !important;
   color: #fff !important;
-  transform: translateY(-1px);
 }
 
 /* Chips */
@@ -780,11 +750,9 @@
   white-space: nowrap;
 }
 .sys-chip:hover {
-  background: rgba(139,92,246,0.08);
+  background: rgba(255,255,255,0.09);
   color: var(--sys-fg);
-  border-color: rgba(139,92,246,0.40);
-  box-shadow: 0 0 12px rgba(139,92,246,0.14);
-  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.18);
 }
 .sys-chip-active {
   background: rgba(255,255,255,0.10); color: var(--sys-fg);
