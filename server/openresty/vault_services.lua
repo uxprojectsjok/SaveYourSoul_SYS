@@ -4,14 +4,13 @@
 -- DELETE /api/vault/services/{token}   → Dienst widerrufen
 --
 -- Auth: soul-cert only (via soul_auth.lua access phase)
-local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
 -- Speicherort: /var/lib/sys/souls/{soul_id}/authorized_services.json
 
 local cjson    = require("cjson.safe")
 local soul_id  = ngx.ctx.soul_id
 local method   = ngx.req.get_method()
 local uri      = ngx.var.uri
-local svc_path = SOULS_DIR .. soul_id .. "/authorized_services.json"
+local svc_path = "/var/lib/sys/souls/" .. soul_id .. "/authorized_services.json"
 
 ngx.header["Content-Type"]  = "application/json"
 ngx.header["Cache-Control"] = "no-store"
@@ -26,7 +25,7 @@ local function load_services()
 end
 
 local function save_services(svcs)
-  local soul_dir = SOULS_DIR .. soul_id
+  local soul_dir = "/var/lib/sys/souls/" .. soul_id
   os.execute("mkdir -p " .. soul_dir)
   local f = io.open(svc_path, "w")
   if not f then return false end
@@ -143,7 +142,7 @@ if method == "POST" then
   end
 
   -- api_context.json: nur enabled=true setzen – keine anderen Felder anfassen
-  local ctx_path = SOULS_DIR .. soul_id .. "/api_context.json"
+  local ctx_path = "/var/lib/sys/souls/" .. soul_id .. "/api_context.json"
   local cf = io.open(ctx_path, "r")
   if cf then
     local raw = cf:read("*a"); cf:close()

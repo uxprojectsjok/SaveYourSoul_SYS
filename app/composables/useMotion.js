@@ -7,6 +7,7 @@ import { ref } from "vue";
 // Singleton-State
 const isRecording  = ref(false);
 const isPreview    = ref(false);
+const isPreviewing = ref(false); // Kamera-Stream aktiv, aber noch nicht aufnehmend
 const duration     = ref(0);
 const captureMode  = ref(null); // 'face' | 'body'
 const lastSample   = ref(null); // { blob, url, mimeType, width, height, fps, duration, date, ts, mode }
@@ -20,28 +21,77 @@ export function useMotion() {
   let previewUrl    = null;
   let trackSettings = {};
 
+  // ── Fehlertext ────────────────────────────────────────────────────────────
+
+  function cameraErrorMsg(e) {
+    return (
+      e.name === "NotAllowedError"      ? "Kamera-Zugriff verweigert – Berechtigung in den Browser-Einstellungen prüfen." :
+      e.name === "NotFoundError"        ? "Keine Kamera gefunden – Gerät angeschlossen und freigegeben?" :
+      e.name === "NotReadableError"     ? "Kamera wird von einer anderen App verwendet – alle anderen Programme schließen." :
+      e.name === "OverconstrainedError" ? "Kamera unterstützt die angefragten Einstellungen nicht." :
+      e.name === "NotSupportedError"    ? "Video-Aufnahme wird auf diesem Gerät nicht unterstützt." :
+      e.name === "SecurityError"        ? "Sicherheitsfehler – Seite muss über HTTPS aufgerufen werden." :
+      `Kamera-Fehler: ${e.name ?? "unbekannt"} – ${e.message ?? ""}`
+    );
+  }
+
+  // ── Kamera-Vorschau starten (ohne Aufnahme) ───────────────────────────────
+
+  /**
+   * Öffnet den Kamera-Stream und zeigt ihn im Video-Element an.
+   * Kein MediaRecorder – nur Live-Feed zur Einstellung.
+   * @param {HTMLVideoElement|null} liveEl
+   */
+  async function startCameraPreview(liveEl) {
+    if (stream) return; // bereits aktiv
+    motionError.value = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 480 }, height: { ideal: 640 }, aspectRatio: { ideal: 0.75 }, frameRate: { ideal: 30 } },
+        audio: false
+      });
+      const vTrack = stream.getVideoTracks()[0];
+      trackSettings = vTrack?.getSettings() ?? {};
+      if (liveEl) {
+        liveEl.srcObject = stream;
+        await liveEl.play().catch(() => {});
+      }
+      isPreviewing.value = true;
+    } catch (e) {
+      motionError.value = cameraErrorMsg(e);
+    }
+  }
+
+  // ── Kamera-Vorschau stoppen ────────────────────────────────────────────────
+
+  function stopCameraPreview(liveEl) {
+    if (liveEl) { liveEl.pause(); liveEl.srcObject = null; }
+    stream?.getTracks().forEach(t => t.stop());
+    stream = null;
+    isPreviewing.value = false;
+  }
+
   // ── Aufnahme starten ───────────────────────────────────────────────────────
 
   /**
-   * Startet die Video-Aufnahme.
+   * Startet die Video-Aufnahme. Nutzt bestehenden Stream wenn bereits in Vorschau.
    * @param {HTMLVideoElement|null} liveEl - <video>-Element für Live-Preview
    */
   async function startRecording(liveEl) {
     motionError.value = null;
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 480 }, height: { ideal: 640 }, frameRate: { ideal: 30 } },
-        audio: false
-      });
-
-      // Track-Einstellungen für Metadaten auslesen
-      const vTrack = stream.getVideoTracks()[0];
-      trackSettings = vTrack?.getSettings() ?? {};
-
-      // Live-Vorschau im Video-Element anzeigen
-      if (liveEl) {
-        liveEl.srcObject = stream;
-        await liveEl.play().catch(() => {});
+      // Stream starten falls noch nicht in Vorschau
+      if (!stream) {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 480 }, height: { ideal: 640 }, aspectRatio: { ideal: 0.75 }, frameRate: { ideal: 30 } },
+          audio: false
+        });
+        const vTrack = stream.getVideoTracks()[0];
+        trackSettings = vTrack?.getSettings() ?? {};
+        if (liveEl) {
+          liveEl.srcObject = stream;
+          await liveEl.play().catch(() => {});
+        }
       }
 
       // Codec-Auswahl: VP9 > VP8 > WebM > MP4 (Android/iOS)
@@ -57,15 +107,12 @@ export function useMotion() {
       mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
       mediaRecorder.start(100);
 
-      isRecording.value = true;
-      duration.value    = 0;
+      isRecording.value  = true;
+      isPreviewing.value = false;
+      duration.value     = 0;
       durationTimer = setInterval(() => { duration.value++; }, 1000);
     } catch (e) {
-      motionError.value =
-        e.name === "NotAllowedError"   ? "Kamera-Zugriff verweigert."                              :
-        e.name === "NotFoundError"     ? "Keine Kamera gefunden."                                  :
-        e.name === "NotSupportedError" ? "Video-Aufnahme wird auf diesem Gerät nicht unterstützt." :
-        "Kamera nicht verfügbar.";
+      motionError.value = cameraErrorMsg(e);
     }
   }
 
@@ -105,24 +152,30 @@ export function useMotion() {
       clearInterval(durationTimer);
       mediaRecorder.stop();
 
-      // Live-Preview beenden
+      // Live-Preview beenden (Stream wird noch für späteres discardSample gehalten)
       if (liveEl) {
         liveEl.pause();
         liveEl.srcObject = null;
       }
       stream?.getTracks().forEach(t => t.stop());
+      stream = null;
       isRecording.value = false;
     });
   }
 
   // ── Sample verwerfen ───────────────────────────────────────────────────────
 
-  function discardSample() {
+  function discardSample(liveEl) {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     previewUrl       = null;
     lastSample.value = null;
     isPreview.value  = false;
+    isPreviewing.value = false;
     duration.value   = 0;
+    // Stream aufräumen falls noch aktiv
+    if (liveEl) { liveEl.pause(); liveEl.srcObject = null; }
+    stream?.getTracks().forEach(t => t.stop());
+    stream = null;
   }
 
   // ── Hilfsfunktionen ────────────────────────────────────────────────────────
@@ -138,10 +191,13 @@ export function useMotion() {
   return {
     isRecording,
     isPreview,
+    isPreviewing,
     duration,
     captureMode,
     lastSample,
     motionError,
+    startCameraPreview,
+    stopCameraPreview,
     startRecording,
     stopRecording,
     discardSample,

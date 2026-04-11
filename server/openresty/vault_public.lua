@@ -18,7 +18,7 @@ local rnd        = require("resty.random")
 local rstr       = require("resty.string")
 local uri        = ngx.var.uri
 local method     = ngx.req.get_method()
-local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
+local SOULS_DIR  = "/var/lib/sys/souls/"
 local master_key = os.getenv("SOUL_MASTER_KEY") or ""
 
 ngx.header["Content-Type"]  = "application/json"

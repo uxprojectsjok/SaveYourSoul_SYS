@@ -46,7 +46,7 @@
 
           <!-- Mimik & Gesicht -->
           <button
-            @click="selectedMode = 'face'"
+            @click="selectedMode = 'face'; handleOpenCamera()"
             class="flex flex-col items-center justify-center gap-2.5 px-3 py-5 rounded-xl border border-white/20 bg-[rgba(255,255,255,0.07)] hover:bg-[rgba(255,255,255,0.14)] hover:border-white/30 active:scale-[0.97] transition-all text-center"
           >
             <svg class="w-8 h-8 text-white/75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
@@ -59,7 +59,7 @@
 
           <!-- Ganzkörper -->
           <button
-            @click="selectedMode = 'body'"
+            @click="selectedMode = 'body'; handleOpenCamera()"
             class="flex flex-col items-center justify-center gap-2.5 px-3 py-5 rounded-xl border border-white/20 bg-[rgba(255,255,255,0.07)] hover:bg-[rgba(255,255,255,0.14)] hover:border-white/30 active:scale-[0.97] transition-all text-center"
           >
             <svg class="w-8 h-8 text-white/75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
@@ -83,11 +83,11 @@
              embedded desktop → zentriertes 200px-Panel (sm:-Klassen)
              nicht embedded   → zentriertes 200px-Panel via inline-style -->
         <div
-          class="relative bg-black overflow-hidden"
-          :class="embedded
-            ? 'w-full rounded-xl overflow-hidden'
-            : 'rounded-xl flex-none mx-auto'"
-          :style="embedded ? { height: '240px' } : { width: '200px', aspectRatio: '3/4' }"
+          class="relative bg-black overflow-hidden rounded-xl"
+          :class="embedded ? 'w-full' : 'flex-none mx-auto'"
+          :style="embedded
+            ? { aspectRatio: '3/4', maxHeight: '55dvh' }
+            : { width: '200px', aspectRatio: '3/4' }"
         >
 
           <!-- ── PLACEHOLDER (Modus gewählt, idle) ──────────────────── -->
@@ -123,10 +123,10 @@
             </svg>
           </div>
 
-          <!-- ── LIVE-KAMERA ─────────────────────────────────────────── -->
+          <!-- ── LIVE-KAMERA (Vorschau + Aufnahme) ────────────────────── -->
           <video
             ref="liveEl"
-            v-show="isRecording"
+            v-show="isRecording || isPreviewing"
             autoplay
             muted
             playsinline
@@ -336,8 +336,9 @@ const props = defineProps({
 const emit = defineEmits(["saved", "close", "next-mode"]);
 
 const {
-  isRecording, isPreview, duration,
+  isRecording, isPreview, isPreviewing, duration,
   lastSample, motionError,
+  startCameraPreview, stopCameraPreview,
   startRecording, stopRecording, discardSample,
   formatDuration, setCaptureMode
 } = useMotion();
@@ -445,6 +446,11 @@ async function handleStart() {
   if (isRecording.value) startPromptSequence();
 }
 
+async function handleOpenCamera() {
+  setCaptureMode(selectedMode.value);
+  await startCameraPreview(liveEl.value);
+}
+
 async function handleStop() {
   clearTimer();
   await stopRecording(liveEl.value);
@@ -452,7 +458,7 @@ async function handleStop() {
 
 function handleDiscard() {
   if (previewEl.value) { previewEl.value.pause(); previewEl.value.src = ""; }
-  discardSample();
+  discardSample(liveEl.value);
   saved.value = false;
 }
 
@@ -518,22 +524,27 @@ async function handleSave() {
 
 function handleClose() {
   clearTimer();
-  if (isRecording.value) stopRecording(liveEl.value).then(() => discardSample());
+  if (isRecording.value) stopRecording(liveEl.value).then(() => discardSample(liveEl.value));
+  else if (isPreviewing.value) stopCameraPreview(liveEl.value);
   if (previewEl.value) { previewEl.value.pause(); previewEl.value.src = ""; }
   emit("close");
 }
 
-onMounted(() => {
-  // useMotion ist ein Singleton – wenn in LiveProfile ein anderer Tab vorher im
-  // Preview-Modus war, bleibt isPreview = true im geteilten State. Reset beim Mount.
+onMounted(async () => {
+  // useMotion ist ein Singleton – Reset beim Mount wenn noch alter State hängt
   if (props.embedded && (isPreview.value || isRecording.value)) {
     if (isRecording.value) stopRecording(liveEl.value).catch(() => {});
-    discardSample();
+    discardSample(liveEl.value);
+  }
+  // Kamera sofort öffnen wenn Modus bereits gesetzt (initialMode)
+  if (selectedMode.value && !isPreviewing.value && !isRecording.value) {
+    await handleOpenCamera();
   }
 });
 
 onUnmounted(() => {
   clearTimer();
   if (isRecording.value) stopRecording(liveEl.value).catch(() => {});
+  else if (isPreviewing.value) stopCameraPreview(liveEl.value);
 });
 </script>

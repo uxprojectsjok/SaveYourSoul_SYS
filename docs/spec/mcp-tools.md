@@ -1,6 +1,6 @@
 # MCP Tools Specification
 
-**Version:** 1.0-draft
+**Version:** 1.1
 **Protocol:** Model Context Protocol (MCP) — Streamable HTTP transport
 **Auth:** OAuth 2.0 + PKCE
 
@@ -179,11 +179,57 @@ List or retrieve image vault files.
 
 **Requires:** `images` permission
 
-Same interface as `audio_list` / `audio_get` for image types.
+**image_list input:** none
+
+**image_get input:**
+```json
+{ "filename": "profile.jpg" }
+```
+
+**image_get output:** Returns the image as a base64-encoded MCP `image` content block plus metadata:
+```json
+{ "filename": "profile.jpg", "size_kb": 420, "hint": "Bild direkt analysieren, dann profile_save face aufrufen." }
+```
+
+The image content block is directly visible to Claude — no fetch required. Claude can
+analyze it immediately and call `profile_save face` with the result.
 
 ---
 
-### 3.8 context_list / context_get
+### 3.8 video_list / video_get
+
+List or retrieve video vault files.
+
+**Requires:** `video` permission
+
+**video_list input:** none
+
+**video_get input:**
+```json
+{ "filename": "bewegung.webm", "max_frames": 6 }
+```
+
+`max_frames` — number of frames to extract, equally spaced over the video duration (1–12, default 6).
+
+**video_get output:** ffmpeg extracts `max_frames` JPEG frames from the video and returns each as a base64-encoded MCP `image` content block. Claude can analyze all frames directly for motion analysis.
+
+```json
+{
+  "filename": "motion_body.webm",
+  "duration_sec": 57,
+  "size_kb": 13803,
+  "frames_extracted": 6,
+  "hint": "Frames analysieren, dann profile_save motion aufrufen."
+}
+```
+
+Each frame is preceded by a label (`Frame N/total (Xs):`) and followed by an image block.
+
+**Requires ffmpeg** on the MCP host (`/usr/bin/ffmpeg`).
+
+---
+
+### 3.10 context_list / context_get
 
 List or retrieve text context files from `vault/context/`.
 
@@ -193,30 +239,48 @@ Same interface as `audio_list` / `audio_get` for text types (`.md`, `.txt`).
 
 ---
 
-### 3.9 profile_get / profile_save
+### 3.11 profile_get / profile_save
 
-Read or write structured profiles stored in `vault/profile/{type}.json`.
+Read or write structured analysis profiles stored in `vault/profile/{type}.json`.
+Profiles are always AES-256-CBC encrypted on disk.
 
-**Requires:** `soul` permission
+**Requires:** `soul` permission + unlocked vault (vault_key in session)
+
+**Profile types (fixed enum):** `face` · `voice` · `motion` · `expertise`
 
 **profile_get input:**
 ```json
-{ "type": "expertise" }
+{ "type": "face" }
 ```
 
 **profile_save input:**
 ```json
 {
-  "type": "expertise",
-  "data": { "domains": ["UX", "AI", "Protocol Design"], ... }
+  "type": "face",
+  "data": {
+    "description": "...",
+    "features": { "glasses": "...", "hair": "...", "beard": "..." },
+    "expression": "neutral-ruhig",
+    "estimated_age": "47–50",
+    "notes": "..."
+  }
 }
 ```
 
-Profile types are arbitrary strings matching `^[a-z]+$`.
+Recommended data structures:
+- **face:** `{ description, features, expression, estimated_age, style, notes }`
+- **voice:** `{ tone, pace, energy, style, vocabulary_markers, notes }`
+- **motion:** `{ energy_level, gesture_style, presence, posture, behavioral_notes }`
+- **expertise:** `{ domains[], strengths[], experience_level, notes }`
+
+**Typical workflow:**
+1. `image_get` → analyze face → `profile_save face`
+2. `video_get` → analyze motion frames → `profile_save motion`
+3. `soul_read` → derive expertise → `profile_save expertise`
 
 ---
 
-### 3.10 network_list
+### 3.13 network_list
 
 List all connected souls in the Soul Network.
 
@@ -233,7 +297,7 @@ List all connected souls in the Soul Network.
 
 ---
 
-### 3.11 network_peer_get
+### 3.14 network_peer_get
 
 Read the soul.md of a connected peer (if they have granted access).
 
@@ -246,7 +310,7 @@ Read the soul.md of a connected peer (if they have granted access).
 
 ---
 
-### 3.12 soul_cloud_push
+### 3.15 soul_cloud_push
 
 Push an encrypted bundle to external storage (Arweave, HTTPS endpoint).
 
@@ -265,7 +329,7 @@ The server MUST NOT push plaintext content.
 
 ---
 
-### 3.13 verify_human
+### 3.16 verify_human
 
 Human-in-the-loop confirmation step. The AI client MUST pause and
 wait for explicit user confirmation before proceeding.
@@ -287,7 +351,7 @@ This tool SHOULD be called before any destructive or irreversible operation.
 
 ---
 
-### 3.14 calendar_read
+### 3.17 calendar_read
 
 Read the `## Calendar` section of soul.md.
 
@@ -300,7 +364,7 @@ Read the `## Calendar` section of soul.md.
 
 ---
 
-### 3.15 elevenlabs_agent_update
+### 3.18 elevenlabs_agent_update
 
 Update the ElevenLabs conversational AI agent configuration for voice interactions.
 
@@ -316,7 +380,7 @@ Update the ElevenLabs conversational AI agent configuration for voice interactio
 
 ---
 
-### 3.16 twilio_call_config
+### 3.19 twilio_call_config
 
 Configure an outbound Twilio call with voice agent settings.
 

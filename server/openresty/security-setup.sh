@@ -2,9 +2,6 @@
 # security-setup.sh
 # State-of-the-Art Security Setup für SaveYourSoul VPS
 # Einmalig ausführen als root: bash security-setup.sh
-#
-# CONFIGURE: set SOULS_DIR to your data directory (default: /var/lib/sys/souls)
-SOULS_DIR="${SYS_SOULS_DIR:-/var/lib/sys/souls}"
 
 set -e
 
@@ -51,17 +48,17 @@ echo "  Audit-Log: /var/log/sys/security.log (90 Tage Rotation)"
 
 # ── 3. Soul-Vault mit noexec mounten ──────────────────────────────────────
 echo "[3/6] Filesystem-Härtung..."
-mkdir -p ${SOULS_DIR}
+mkdir -p /var/lib/sys/souls
 
 # Prüfen ob bereits als separate Partition gemountet
-if ! mountpoint -q ${SOULS_DIR}; then
-  echo "  HINWEIS: ${SOULS_DIR} ist keine eigene Partition."
+if ! mountpoint -q /var/lib/sys/souls; then
+  echo "  HINWEIS: /var/lib/sys/souls ist keine eigene Partition."
   echo "  Für Produktion: eigene Partition mit 'noexec,nosuid,nodev' mounten."
   echo "  /etc/fstab Eintrag:"
-  echo "  /dev/sdXN ${SOULS_DIR} ext4 defaults,noexec,nosuid,nodev 0 2"
+  echo "  /dev/sdXN /var/lib/sys/souls ext4 defaults,noexec,nosuid,nodev 0 2"
 else
-  mount -o remount,noexec,nosuid,nodev ${SOULS_DIR}
-  echo "  ${SOULS_DIR}: noexec,nosuid,nodev aktiv"
+  mount -o remount,noexec,nosuid,nodev /var/lib/sys/souls
+  echo "  /var/lib/sys/souls: noexec,nosuid,nodev aktiv"
 fi
 
 # ── 4. AppArmor installieren + Profil laden ───────────────────────────────
@@ -82,7 +79,7 @@ echo "[5/6] Disk-Monitoring..."
 cat > /usr/local/bin/sys-disk-check.sh << 'SCRIPT'
 #!/bin/bash
 THRESHOLD=80
-USAGE=$(df ${SOULS_DIR} 2>/dev/null | awk 'NR==2{print $5}' | tr -d '%')
+USAGE=$(df /var/lib/sys/souls 2>/dev/null | awk 'NR==2{print $5}' | tr -d '%')
 if [ -n "$USAGE" ] && [ "$USAGE" -ge "$THRESHOLD" ]; then
   echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] DISK_WARNING usage=${USAGE}%" \
     >> /var/log/sys/security.log

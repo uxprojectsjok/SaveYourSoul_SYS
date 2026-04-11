@@ -19,8 +19,7 @@
 local cjson     = require("cjson.safe")
 local resty_aes = require("resty.aes")
 local soul_id   = ngx.ctx.soul_id
-local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
-local base_dir  = SOULS_DIR .. soul_id
+local base_dir  = "/var/lib/sys/souls/" .. soul_id
 local uri       = ngx.var.uri
 
 -- CORS für externe Dienste (ElevenLabs, etc.)
@@ -304,7 +303,8 @@ if not file_name or file_name == "" then
   local base_url   = ngx.var.scheme .. "://" .. ngx.var.host
   local raw_files  = synced[type_name] or {}
   local files      = type(raw_files) == "table" and raw_files or {}
-  local active_name = type(actives) == "table" and (actives[type_name] or "") or ""
+  local active_raw  = type(actives) == "table" and (actives[type_name] or "") or ""
+  local active_name = type(active_raw) == "string" and active_raw or ""
   local list = {}
   for _, name in ipairs(files) do
     local ext = name:match("%.([^%.]+)$") or ""

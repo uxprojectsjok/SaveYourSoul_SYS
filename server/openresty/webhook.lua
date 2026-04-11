@@ -11,8 +11,7 @@
 local cjson     = require("cjson.safe")
 local resty_aes = require("resty.aes")
 local soul_id   = ngx.ctx.soul_id  -- gesetzt von vault_auth.lua
-local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
-local base_dir  = SOULS_DIR .. soul_id
+local base_dir  = "/var/lib/sys/souls/" .. soul_id
 local uri       = ngx.var.uri
 
 local MAGIC = "SYS\x01"

@@ -2,7 +2,6 @@
 -- DELETE /api/vault  → Löscht den kompletten Soul-Ordner vom VPS
 --
 -- Auth: soul-cert only (via soul_auth.lua access phase)
-local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
 -- Unwiderruflich: alle Dateien unter /var/lib/sys/souls/{soul_id}/ werden gelöscht
 
 local cjson    = require("cjson.safe")
@@ -17,7 +16,7 @@ if ngx.req.get_method() ~= "DELETE" then
   return
 end
 
-local soul_dir = SOULS_DIR .. soul_id
+local soul_dir = "/var/lib/sys/souls/" .. soul_id
 
 -- Whitelist: soul_id nur alphanumerisch + Bindestrich, max. 64 Zeichen
 -- Blacklist-Ansatz (früherer Code) erlaubte ;|&$ → Shell-Injection möglich

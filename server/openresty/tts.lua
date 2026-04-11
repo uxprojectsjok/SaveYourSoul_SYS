@@ -40,7 +40,7 @@ if not ok or type(body) ~= "table" then
 end
 
 local text     = body.text or ""
-local voice_id = body.voiceId or ""
+local voice_id = body.voiceId or "so8sjJVLKF8XBdJgZNe9"
 
 if text == "" then
   ngx.status = 400

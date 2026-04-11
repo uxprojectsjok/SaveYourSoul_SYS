@@ -1,19 +1,31 @@
 import { z } from 'zod';
-import { fileUrl } from '../lib/api.mjs';
+import { getRawBytes } from '../lib/api.mjs';
 
 export function register(server, token) {
   server.tool(
     'image_get',
-    'Gibt die abrufbare URL eines Bildes zurück. Das Token ist eingebettet. Für Gesichtsanalyse oder visuelle Kontext-Erkennung via Claude Vision geeignet.',
+    'Lädt ein Bild aus dem Vault und gibt es als base64-kodiertes Bild zurück, das Claude direkt sehen und analysieren kann. Für Gesichtsanalyse, visuelle Kontext-Erkennung und profile_save face.',
     { filename: z.string().describe('Dateiname, z.B. "profil.jpg" – aus image_list bekannt') },
     async ({ filename }) => {
-      const url = fileUrl('images', filename, token);
+      const path = `/api/vault/images/${encodeURIComponent(filename)}`;
+      let buffer;
+      try {
+        buffer = await getRawBytes(path, token);
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message, filename }) }],
+        };
+      }
+
+      const bytes  = Buffer.from(buffer);
+      const base64 = bytes.toString('base64');
+      const ext    = filename.split('.').pop().toLowerCase();
+      const mime   = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'gif' ? 'image/gif' : 'image/jpeg';
+
       return {
         content: [
-          {
-            type: 'text',
-            text: JSON.stringify({ filename, url, hint: 'URL direkt an Claude Vision übergeben für Bildanalyse.' }),
-          },
+          { type: 'image', data: base64, mimeType: mime },
+          { type: 'text', text: JSON.stringify({ filename, size_kb: Math.round(bytes.length / 1024), hint: 'Bild direkt analysieren, dann profile_save face aufrufen.' }) },
         ],
       };
     }

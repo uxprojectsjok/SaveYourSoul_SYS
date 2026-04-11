@@ -17,9 +17,14 @@ export function parseFrontmatter(md) {
 
 /** Gibt den Inhalt einer ## Sektion zurück */
 export function extractSection(md, heading) {
-  const re = new RegExp(`^## ${escapeRe(heading)}\\s*\\n([\\s\\S]*?)(?=^## |\\z)`, 'm');
-  const m = md.match(re);
-  return m ? m[1].trim() : null;
+  const sections = md.split(/^## /m);
+  for (const section of sections) {
+    const firstLine = section.split('\n')[0].trim();
+    if (firstLine === heading) {
+      return section.slice(firstLine.length).trim();
+    }
+  }
+  return null;
 }
 
 /** Gibt alle ## Sektionen als { heading: content } zurück */
@@ -40,8 +45,8 @@ export function parseCalendar(md) {
 
   const entries = [];
   for (const line of raw.split('\n')) {
-    // Format: - 2026-04-15: Titel  oder  - 2026-04-15 Titel
-    const m = line.match(/[-*]\s*(\d{4}-\d{2}-\d{2})[:\s]+(.+)/);
+    // Format: - **2026-04-15:** Titel  oder  - 2026-04-15: Titel  oder  - 2026-04-15 Titel
+    const m = line.match(/[-*]\s*\*{0,2}(\d{4}-\d{2}-\d{2})\*{0,2}[:\s]+(.+)/);
     if (m) entries.push({ date: m[1], title: m[2].trim() });
   }
   return { entries, raw };
