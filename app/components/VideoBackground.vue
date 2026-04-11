@@ -44,10 +44,4 @@
   background-image: url("/background-dark.webp");
   opacity: 0.09;
 }
-
-/* Light-Mode: standardmäßig unsichtbar */
-.bg-light {
-  background-image: url("/background-light.webp");
-  opacity: 0;
-}
 </style>
