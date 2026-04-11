@@ -488,6 +488,19 @@ curl -s -X POST "$BASE/api/fetch-bundle" \
     (SYS\x01)</DocCode>
           <p class="doc-p">Files starting with <code class="doc-code">53 59 53 01</code> are encrypted. Files without this magic header are treated as plaintext.</p>
 
+          <DocHeading level="2">Raw Endpoint &amp; Client-Side Decrypt Fallback</DocHeading>
+          <p class="doc-p"><code class="doc-code">GET /api/soul?raw=1</code> returns the raw encrypted bytes of <code class="doc-code">soul.md</code> without server-side decryption. This is used for backup / cloud push and as a fallback when the server's active vault session has a different key than the client.</p>
+          <p class="doc-p">When the normal <code class="doc-code">GET /api/soul</code> returns <code class="doc-code">decryption_failed</code> or an <code class="doc-code">encrypted</code> status, the browser falls back to:</p>
+          <DocCode lang="js">// useSoul.js – _decryptSoulBuffer()
+const raw = await fetch('/api/soul?raw=1');
+const buf = await raw.arrayBuffer();
+// Verify SYS\x01 magic header (bytes 0-3)
+const iv         = bytes.slice(4, 20);       // 16-byte IV
+const ciphertext = bytes.slice(20);          // PKCS7-padded ciphertext
+const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-CBC' }, false, ['decrypt']);
+const plain = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, ciphertext);</DocCode>
+          <p class="doc-p">If client-side decryption also fails (key mismatch), the error <em>"Server-Soul ist mit einem anderen Schlüssel verschlüsselt. Bitte zuerst Vault synchronisieren."</em> is surfaced. The fix is to re-sync the vault so the server re-encrypts with the current key.</p>
+
           <DocHeading level="2">Bundle Format (AES-256-GCM)</DocHeading>
           <p class="doc-p">Used for <code class="doc-code">.soul</code> bundle exports and cloud backups.</p>
           <DocCode lang="json">{

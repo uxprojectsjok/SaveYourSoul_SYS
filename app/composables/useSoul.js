@@ -12,6 +12,7 @@ const soulCert      = ref("");
 const isLoaded      = ref(false);
 const syncStatus    = ref(null); // null | 'checking' | 'in_sync' | 'differs'
 const serverContent = ref("");
+const syncError     = ref("");   // Fehlermeldung beim letzten fetchFromServer()
 
 export function useSoul() {
   const isClient = typeof window !== "undefined";
@@ -329,20 +330,93 @@ Mögliche section-Werte (exakt so schreiben):
 
   // ── Server-Sync ─────────────────────────────────────────────────────────
 
-  /** Holt soul.md vom VPS und vergleicht mit der lokalen Version. */
-  async function fetchFromServer() {
+  // AES-256-CBC client-seitige Entschlüsselung (Format: "SYS\x01" + IV(16) + Ciphertext)
+  async function _decryptSoulBuffer(vaultKeyHex, arrayBuffer) {
+    if (!vaultKeyHex || !/^[0-9a-f]{64}$/i.test(vaultKeyHex)) return null;
+    const bytes = new Uint8Array(arrayBuffer);
+    if (bytes.length < 20) return null;
+    // Magic-Check: SYS\x01
+    if (bytes[0] !== 0x53 || bytes[1] !== 0x59 || bytes[2] !== 0x53 || bytes[3] !== 0x01) return null;
+    try {
+      const iv         = bytes.slice(4, 20);
+      const ciphertext = bytes.slice(20);
+      const keyBytes   = new Uint8Array(vaultKeyHex.match(/../g).map(h => parseInt(h, 16)));
+      const key        = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-CBC" }, false, ["decrypt"]);
+      const plaintext  = await crypto.subtle.decrypt({ name: "AES-CBC", iv }, key, ciphertext);
+      return new TextDecoder().decode(plaintext);
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Holt soul.md vom VPS und vergleicht mit der lokalen Version.
+   * @param {boolean} silent      – true = Fehler stumm ignorieren (Auto-Check im Hintergrund)
+   * @param {string}  vaultKeyHex – optionaler 64-Hex-Schlüssel für client-seitige Entschlüsselung
+   */
+  async function fetchFromServer(silent = false, vaultKeyHex = "") {
     if (!isClient) return;
     const token = soulToken.value;
-    if (!token || token === "anonymous") return;
+    if (!token || token === "anonymous") {
+      if (!silent) syncError.value = "Kein Soul-Cert – bitte Soul laden.";
+      return;
+    }
     syncStatus.value = "checking";
+    if (!silent) syncError.value = "";
     serverContent.value = "";
     try {
       const res = await fetch("/api/soul", {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (!res.ok) { syncStatus.value = null; return; }
+      if (!res.ok) {
+        let errorCode = "";
+        let msg = `Server ${res.status}`;
+        try {
+          const j = await res.json();
+          errorCode = j?.error ?? "";
+          if (errorCode === "encrypted") msg = "Soul ist verschlüsselt – Vault entsperren und synchronisieren.";
+          else if (errorCode === "decryption_failed") msg = "Server-Soul ist mit einem anderen Schlüssel verschlüsselt. Bitte zuerst Vault synchronisieren.";
+          else if (errorCode === "No soul content synced yet") msg = "Noch kein Server-Stand – erst Hochladen.";
+          else if (errorCode === "API access not enabled") msg = "API-Zugriff nicht aktiviert.";
+          else if (errorCode === "Soul access not permitted") msg = "Soul-Leseberechtigung fehlt.";
+          else if (j?.message) msg = j.message;
+          else if (j?.error) msg = j.error;
+        } catch {}
+
+        // Fallback: bei Entschlüsselungsfehler client-seitig versuchen
+        if ((errorCode === "decryption_failed" || errorCode === "encrypted") && vaultKeyHex) {
+          const rawRes = await fetch("/api/soul?raw=1", {
+            headers: { Authorization: `Bearer ${token}` }
+          }).catch(() => null);
+          if (rawRes?.ok) {
+            const buf  = await rawRes.arrayBuffer();
+            const text = await _decryptSoulBuffer(vaultKeyHex, buf);
+            if (text) {
+              if (text.trimEnd() === soulContent.value.trimEnd()) {
+                syncStatus.value = "in_sync";
+              } else {
+                serverContent.value = text;
+                syncStatus.value = "differs";
+              }
+              return; // Erfolg – kein Fehler anzeigen
+            }
+          }
+          // Client-Decrypt auch gescheitert → Server-Soul wurde mit anderem Schlüssel verschlüsselt
+          msg = "Server-Soul ist mit einem anderen Schlüssel verschlüsselt. Bitte zuerst Vault synchronisieren.";
+        }
+
+        if (!silent) syncError.value = msg;
+        syncStatus.value = null;
+        return;
+      }
+      const ct = res.headers.get("content-type") ?? "";
       const text = await res.text();
-      if (!text || !text.includes("soul_cert:")) { syncStatus.value = null; return; }
+      // Sanity-Check: muss Markdown-ähnlicher Text sein
+      if (!ct.includes("markdown") && !ct.includes("text/plain") && !text.trim().startsWith("---")) {
+        if (!silent) syncError.value = "Unbekannte Server-Antwort.";
+        syncStatus.value = null;
+        return;
+      }
       // Normalisiert vergleichen (Whitespace am Ende ignorieren)
       if (text.trimEnd() === soulContent.value.trimEnd()) {
         syncStatus.value = "in_sync";
@@ -350,7 +424,8 @@ Mögliche section-Werte (exakt so schreiben):
         serverContent.value = text;
         syncStatus.value = "differs";
       }
-    } catch {
+    } catch (e) {
+      if (!silent) syncError.value = "Netzwerkfehler – Server nicht erreichbar.";
       syncStatus.value = null;
     }
   }
@@ -389,6 +464,7 @@ Mögliche section-Werte (exakt so schreiben):
   function dismissSync() {
     syncStatus.value = null;
     serverContent.value = "";
+    syncError.value = "";
   }
 
   // ── Dauerspeicher TX-ID ──────────────────────────────────────────────────
@@ -491,6 +567,7 @@ Mögliche section-Werte (exakt so schreiben):
     hasSoul,
     soulMeta,
     syncStatus,
+    syncError,
     serverContent,
     // Actions
     load,

@@ -560,6 +560,23 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
               <p class="text-xs text-[var(--sys-fg-dim)]">Es gibt keine automatische Zusammenführung (Merge). Eine Seite gewinnt immer vollständig. Wenn du Änderungen von beiden Seiten behalten willst, kopiere den Inhalt der gewünschten Sektionen manuell aus der soul.md-Datei, bevor du eine Seite übernimmst.</p>
             </div>
 
+            <DocHeading level="2">Verschlüsselungs-Konflikt</DocHeading>
+            <p class="doc-p">Beim Abgleich versucht die App zunächst die Server-Soul normal abzurufen. Ist sie mit einem <strong>anderen Schlüssel</strong> verschlüsselt als dem aktuell aktiven, erscheint die Fehlermeldung:</p>
+            <div class="doc-info-box my-4 border-[var(--sys-amber)]/40">
+              <p class="text-xs font-mono text-[var(--sys-amber)]">Server-Soul ist mit einem anderen Schlüssel verschlüsselt. Bitte zuerst Vault synchronisieren.</p>
+            </div>
+            <p class="doc-p">Das passiert typischerweise wenn der Vault zuletzt von einem anderen Gerät oder mit anderen Schlüsselwörtern geöffnet wurde — der Server hat dann eine Version, die mit dem damaligen Schlüssel verschlüsselt ist. Die App versucht in diesem Fall automatisch einen Client-seitigen Fallback-Decrypt mit dem aktuell offenen Vault-Schlüssel. Schlägt auch das fehl, ist Vault synchronisieren der richtige Weg:</p>
+            <div class="doc-table-wrapper my-4">
+              <table class="doc-table">
+                <thead><tr><th>Schritt</th><th>Aktion</th></tr></thead>
+                <tbody>
+                  <tr><td class="font-mono text-xs text-[var(--sys-accent)]">1. Vault entsperren</td><td class="text-[var(--sys-fg-dim)]">Kachel „Vault-Zugang" → Entsperren mit Passkey oder 12 Wörtern.</td></tr>
+                  <tr><td class="font-mono text-xs text-[var(--sys-accent)]">2. Vault synchronisieren</td><td class="text-[var(--sys-fg-dim)]">Kachel „Vault-Explorer" → Sync-Button → alle Dateien mit aktuellem Schlüssel neu verschlüsseln und hochladen.</td></tr>
+                  <tr><td class="font-mono text-xs text-[var(--sys-accent)]">3. Erneut abgleichen</td><td class="text-[var(--sys-fg-dim)]">Soul-Abgleich Button in der Kachel → der Vergleich klappt jetzt.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
             <DocHeading level="2">Dateien</DocHeading>
             <p class="doc-p">Beim Upload von Vault-Dateien (Audio, Bilder, Kontext) auf den VPS gilt: existiert eine Datei mit demselben Namen bereits auf dem Server, wird sie überschrieben. Neue Dateinamen werden ergänzt. Es gibt keine Versionsverwaltung für Vault-Dateien — der letzte Upload gewinnt.</p>
           </section>
@@ -1453,6 +1470,7 @@ const faqItems = ref([
   { q: 'Warum sehen verbundene Souls meine Dateien nicht?', a: 'Soul.md wird immer automatisch geteilt — dafür ist kein zusätzlicher Schritt nötig. Vault-Dateien (Audio, Bilder, Kontext) sind jedoch nur sichtbar, wenn sie explizit in den Public Vault hochgeladen wurden. Das geht im Bereich „Dateien" → Kategorie wählen → Datei auswählen → „In Public Vault hochladen" aktivieren. Außerdem muss der Vault-Zugang offen sein (Kachel „Vault-Zugang"). Ohne diesen Schritt bleiben Dateien im privaten Vault und sind für niemanden außer dir erreichbar.', open: false },
   { q: 'Muss ich für Soul Network etwas in der App konfigurieren?', a: 'Für das Teilen von soul.md: Nein. Sobald eine gegenseitige Verbindung besteht, wird der soul_grant automatisch angelegt und vault_public.enabled gesetzt — kein manuelles Konfigurieren nötig. Für das Teilen von Vault-Dateien (Audio, Bilder, Kontext): Ja — diese müssen im Bereich „Dateien" separat in den Public Vault hochgeladen werden. Das ist ein bewusster Schritt, damit keine Dateien unbeabsichtigt geteilt werden.', open: false },
   { q: 'Was teilt soul.md vs. vault_public?', a: 'soul.md ist deine Identitätsdatei — sie wird bei gegenseitiger Verbindung automatisch über den /network-Endpunkt geteilt. Kein Upload in den Public Vault nötig. vault_public ist ein separates Verzeichnis für Vault-Dateien (Audio, Bilder, Kontext-Dokumente), die du explizit für verbundene Souls freigeben möchtest. Beide Mechanismen greifen ineinander: soul.md liefert den Textkontext, vault_public liefert die Mediendateien. Ein KI-Agent kann damit nicht nur über dich lesen, sondern auch deine Stimme hören oder deine Bilder sehen — aber nur wenn du das explizit eingerichtet hast.', open: false },
+  { q: 'Was bedeutet „Server-Soul ist mit einem anderen Schlüssel verschlüsselt"?', a: 'Die soul.md auf dem Server wurde mit einem anderen Vault-Schlüssel verschlüsselt als dem aktuell aktiven — zum Beispiel weil der Vault zuletzt von einem anderen Gerät oder mit anderen Schlüsselwörtern geöffnet wurde. Lösung: Vault öffnen (Kachel „Vault-Zugang" → Entsperren) → dann Vault synchronisieren (Kachel „Vault-Explorer" → Sync). Danach klappt der Soul-Abgleich.', open: false },
   { q: 'Was passiert beim Soul-Sync wenn beide Seiten denselben Stand haben?', a: 'Nichts — das Sync-Panel erscheint nicht. Es wird nur angezeigt wenn der Inhalt der server-seitigen soul.md vom lokal gespeicherten Stand abweicht. Der Vergleich läuft beim Session-Start automatisch im Hintergrund.', open: false },
   { q: 'Kann der Soul-Sync Änderungen automatisch zusammenführen (Merge)?', a: 'Nein. Es gibt keine automatische Zusammenführung. Immer gewinnt eine Seite vollständig — entweder Server oder Lokal. Wenn du Inhalte aus beiden Versionen behalten möchtest, musst du die soul.md-Datei vorher manuell sichern und die gewünschten Sektionen per Text-Editor zusammenführen.', open: false },
   { q: 'Warum zeigt die KI keine Bilder aus meinem Vault?', a: 'Drei häufige Ursachen: (1) Die Bilder sind nicht im Vault — lokaler Vault muss verbunden sein, oder Bilder müssen per API-Kontext auf den VPS hochgeladen sein. (2) Der Vault-Zugang ist geschlossen — die Kachel Vault-Zugang muss offen sein, damit der VPS-Zugriff funktioniert. (3) Die KI wurde nicht explizit gefragt — frag sie direkt: Zeig mir ein Bild von dir.', open: false },

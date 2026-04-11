@@ -99,9 +99,9 @@
             <svg v-else-if="syncStatus === 'in_sync'" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
             </svg>
-            <!-- Download-Pfeil im Normalzustand -->
+            <!-- Compare-Icon im Normalzustand -->
             <svg v-else class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
             </svg>
           </button>
 
@@ -159,79 +159,82 @@
       <Transition name="slide-up">
         <div
           v-if="headerMenuOpen"
-          class="md:hidden flex-none flex items-center gap-0.5 px-2 py-1.5 border-b border-[var(--sys-border)] bg-transparent backdrop-blur-md"
-          style="-webkit-overflow-scrolling: touch"
+          class="md:hidden flex-none w-full overflow-x-auto border-b border-[var(--sys-border)] bg-transparent backdrop-blur-md"
+          style="-webkit-overflow-scrolling: touch; scrollbar-width: none"
         >
-          <!-- Profil -->
-          <button
-            @click="liveProfileVisible = !liveProfileVisible; headerMenuOpen = false"
-            class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all"
-            :class="liveProfileVisible ? 'text-white bg-[rgba(255,255,255,0.10)]' : 'text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]'"
-          >
-            <svg class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-            </svg>
-            <span class="sr-only">Profil</span>
-          </button>
+          <!-- Innerer Container: w-max damit Buttons nicht umbrechen -->
+          <div class="flex items-center gap-0.5 px-2 py-1.5 w-max">
 
-          <!-- Vault -->
-          <button
-            v-if="vaultSupported"
-            @click="handleVaultConnect(); headerMenuOpen = false"
-            class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all"
-            :class="vaultConnected ? 'text-white bg-[rgba(255,255,255,0.10)]' : 'text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]'"
-          >
-            <svg class="w-4 h-4 flex-none" :class="vaultScanning ? 'animate-spin' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path v-if="vaultScanning" stroke-linecap="round" d="M12 3a9 9 0 1 0 9 9"/>
-              <path v-else-if="vaultConnected" stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/>
-              <path v-else stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776"/>
-            </svg>
-            <span class="sr-only">Vault</span>
-          </button>
+            <!-- Profil -->
+            <button
+              @click="liveProfileVisible = !liveProfileVisible; headerMenuOpen = false"
+              class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all"
+              :class="liveProfileVisible ? 'text-white bg-[rgba(255,255,255,0.10)]' : 'text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]'"
+            >
+              <svg class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+              </svg>
+              <span class="text-xs">Profil</span>
+            </button>
 
-          <!-- Server-Stand prüfen (Mobile) -->
-          <button
-            v-if="hasSoul"
-            @click="handleCheckServer(); headerMenuOpen = false"
-            :disabled="serverChecking"
-            class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]"
-            aria-label="Server-Stand prüfen"
-          >
-            <svg class="w-4 h-4 flex-none" :class="serverChecking ? 'animate-spin' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-            </svg>
-            <span class="text-xs">Server-Stand prüfen</span>
-          </button>
+            <!-- Vault -->
+            <button
+              v-if="vaultSupported"
+              @click="handleVaultConnect(); headerMenuOpen = false"
+              class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all"
+              :class="vaultConnected ? 'text-white bg-[rgba(255,255,255,0.10)]' : 'text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]'"
+            >
+              <svg class="w-4 h-4 flex-none" :class="vaultScanning ? 'animate-spin' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path v-if="vaultScanning" stroke-linecap="round" d="M12 3a9 9 0 1 0 9 9"/>
+                <path v-else-if="vaultConnected" stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/>
+                <path v-else stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776"/>
+              </svg>
+              <span class="text-xs">Vault</span>
+            </button>
 
-          <!-- Polygon -->
-          <button
-            @click="anchorModalOpen = true; headerMenuOpen = false"
-            class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]"
-          >
-            <svg class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25 21 7.5v9L12 21.75 3 16.5v-9L12 2.25z"/>
-            </svg>
-            <span class="sr-only">Polygon</span>
-          </button>
+            <!-- Server-Stand prüfen (Mobile) -->
+            <button
+              v-if="hasSoul"
+              @click="handleCheckServer(); headerMenuOpen = false"
+              :disabled="serverChecking"
+              class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]"
+              aria-label="Server-Stand prüfen"
+            >
+              <svg class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path v-if="serverChecking" stroke-linecap="round" d="M12 3a9 9 0 1 0 9 9"/>
+                <path v-else stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
+              </svg>
+              <span class="text-xs">Abgleich</span>
+            </button>
 
-          <!-- Rolle -->
-          <button
-            @click="aiRole = aiRole === 'soul' ? 'session' : 'soul'; headerMenuOpen = false"
-            class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all"
-            :class="aiRole === 'soul' ? 'text-white bg-[rgba(255,255,255,0.10)]' : 'text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]'"
-            :title="aiRole === 'soul' ? 'Soul-Modus · klicken für Session' : 'Session-Modus · klicken für Soul'"
-            aria-label="Modus wechseln"
-          >
-            <!-- Soul-Modus: Sparkle/Stern (wie Desktop) -->
-            <svg v-if="aiRole === 'soul'" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/>
-            </svg>
-            <!-- Session-Modus: Chat-Bubble -->
-            <svg v-else class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/>
-            </svg>
-            <span class="sr-only">{{ aiRole === 'soul' ? 'Seele' : 'Session' }}</span>
-          </button>
+            <!-- Polygon -->
+            <button
+              @click="anchorModalOpen = true; headerMenuOpen = false"
+              class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]"
+            >
+              <svg class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25 21 7.5v9L12 21.75 3 16.5v-9L12 2.25z"/>
+              </svg>
+              <span class="text-xs">Polygon</span>
+            </button>
+
+            <!-- Rolle -->
+            <button
+              @click="aiRole = aiRole === 'soul' ? 'session' : 'soul'; headerMenuOpen = false"
+              class="flex-none flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all"
+              :class="aiRole === 'soul' ? 'text-white bg-[rgba(255,255,255,0.10)]' : 'text-[var(--sys-fg-dim)] hover:text-white hover:bg-[rgba(255,255,255,0.07)]'"
+              aria-label="Modus wechseln"
+            >
+              <svg v-if="aiRole === 'soul'" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/>
+              </svg>
+              <svg v-else class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/>
+              </svg>
+              <span class="text-xs">{{ aiRole === 'soul' ? 'Soul' : 'Session' }}</span>
+            </button>
+
+          </div>
         </div>
       </Transition>
 
@@ -288,68 +291,112 @@
         </div>
       </Transition>
 
-      <!-- ── CHAT ──────────────────────────────────────────────────────── -->
-      <main id="main-content" class="flex-1 overflow-hidden flex flex-col">
+      <!-- ── HAUPT-BEREICH ─────────────────────────────────────────────── -->
+      <main id="main-content" class="flex-1 overflow-hidden flex">
 
-        <!-- Onboarding-Banner (einmalig, bis dismissed) -->
-        <Transition name="banner-slide">
-          <div
-            v-if="showOnboarding"
-            class="flex-none w-full max-w-2xl md:max-w-4xl lg:max-w-5xl mx-auto px-3 pt-3"
-          >
-            <div class="rounded-2xl border border-[var(--sys-border)] bg-[var(--sys-bg-elevated)] p-4 flex flex-col sm:flex-row gap-4 items-start">
-              <!-- Steps -->
-              <div class="flex-1 min-w-0">
-                <p class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: var(--sys-violet)">Schnellstart · 3 Schritte</p>
-                <div class="flex flex-col sm:flex-row gap-3 sm:gap-6">
-                  <!-- Step 1 done -->
-                  <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center flex-none" style="background: rgba(45,212,191,0.15); border: 1px solid rgba(45,212,191,0.3)">
-                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#2dd4bf">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
-                      </svg>
+        <!-- ── Desktop: Soul-Sidebar links (md+) ── -->
+        <aside class="hidden md:flex flex-col w-[272px] xl:w-[304px] flex-none border-r border-[var(--sys-border)] overflow-hidden">
+          <SoulViewer />
+        </aside>
+
+        <!-- ── Chat-Bereich (Desktop immer sichtbar, Mobile: conditional) ── -->
+        <div
+          class="flex-1 overflow-hidden flex-col"
+          :class="mobileView === 'soul' ? 'hidden md:flex' : 'flex'"
+        >
+          <!-- Onboarding-Banner (einmalig, bis dismissed) -->
+          <Transition name="banner-slide">
+            <div
+              v-if="showOnboarding"
+              class="flex-none w-full max-w-2xl md:max-w-4xl lg:max-w-5xl mx-auto px-3 pt-3"
+            >
+              <div class="rounded-2xl border border-[var(--sys-border)] bg-[var(--sys-bg-elevated)] p-4 flex flex-col sm:flex-row gap-4 items-start">
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: var(--sys-violet)">Schnellstart · 3 Schritte</p>
+                  <div class="flex flex-col sm:flex-row gap-3 sm:gap-6">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full flex items-center justify-center flex-none" style="background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.30)">
+                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#4ade80">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
+                        </svg>
+                      </div>
+                      <span class="text-xs text-[var(--sys-fg-muted)]">Soul eingeloggt</span>
                     </div>
-                    <span class="text-xs text-[var(--sys-fg-muted)]">Soul eingeloggt</span>
-                  </div>
-                  <!-- Step 2 -->
-                  <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center flex-none text-xs font-bold" style="background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3); color: var(--sys-violet)">2</div>
-                    <div>
-                      <span class="text-xs text-[var(--sys-fg)]">MCP verbinden:</span>
-                      <code class="ml-1 text-xs font-mono" style="color: rgba(255,255,255,0.4)">&lt;dein-server&gt;/mcp</code>
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full flex items-center justify-center flex-none text-xs font-bold" style="background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3); color: var(--sys-violet)">2</div>
+                      <div>
+                        <span class="text-xs text-[var(--sys-fg)]">MCP verbinden:</span>
+                        <code class="ml-1 text-xs font-mono" style="color: rgba(255,255,255,0.4)">&lt;dein-server&gt;/mcp</code>
+                      </div>
                     </div>
-                  </div>
-                  <!-- Step 3 -->
-                  <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center flex-none text-xs font-bold" style="background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3); color: var(--sys-violet)">3</div>
-                    <span class="text-xs text-[var(--sys-fg)]">Im KI-Client <code class="font-mono text-xs" style="color: rgba(255,255,255,0.4)">/soul_guide</code> aufrufen</span>
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full flex items-center justify-center flex-none text-xs font-bold" style="background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3); color: var(--sys-violet)">3</div>
+                      <span class="text-xs text-[var(--sys-fg)]">Im KI-Client <code class="font-mono text-xs" style="color: rgba(255,255,255,0.4)">/soul_guide</code> aufrufen</span>
+                    </div>
                   </div>
                 </div>
+                <button
+                  @click="dismissOnboarding"
+                  class="flex-none self-start sm:self-center w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg)] hover:bg-[var(--sys-bg-surface)] transition-all"
+                  aria-label="Schließen"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+                  </svg>
+                </button>
               </div>
-              <!-- Dismiss -->
-              <button
-                @click="dismissOnboarding"
-                class="flex-none self-start sm:self-center w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg)] hover:bg-[var(--sys-bg-surface)] transition-all"
-                aria-label="Schließen"
-              >
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
-                </svg>
-              </button>
             </div>
-          </div>
-        </Transition>
+          </Transition>
 
-        <div class="flex-1 overflow-hidden w-full max-w-2xl md:max-w-4xl lg:max-w-5xl mx-auto">
-          <ChatInterface
-            ref="chatRef"
-            :soul-content="soulContent"
-            :soul-cert="soulToken"
-            :role="aiRole"
-            @cert-error="handleCertError"
-          />
+          <div class="flex-1 overflow-hidden w-full max-w-2xl md:max-w-4xl lg:max-w-5xl mx-auto">
+            <ChatInterface
+              ref="chatRef"
+              :soul-content="soulContent"
+              :soul-cert="soulToken"
+              :role="aiRole"
+              @cert-error="handleCertError"
+            />
+          </div>
         </div>
+
+        <!-- ── Mobile: Soul-Ansicht (nur wenn mobileView === 'soul') ── -->
+        <div
+          v-if="mobileView === 'soul'"
+          class="md:hidden flex-1 overflow-hidden flex flex-col"
+        >
+          <SoulViewer />
+        </div>
+
       </main>
+
+      <!-- ── Mobile Tab-Bar ──────────────────────────────────────────── -->
+      <nav
+        class="md:hidden flex-none flex border-t border-[var(--sys-border)] bg-transparent backdrop-blur-md"
+        style="padding-bottom: env(safe-area-inset-bottom, 0)"
+      >
+        <button
+          @click="mobileView = 'chat'"
+          class="flex-1 flex flex-col items-center gap-0.5 py-2.5 transition-colors"
+          :class="mobileView === 'chat' ? 'text-[var(--sys-fg)]' : 'text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg-muted)]'"
+          aria-label="Chat"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/>
+          </svg>
+          <span class="text-[10px] font-medium tracking-wide">Chat</span>
+        </button>
+        <button
+          @click="mobileView = 'soul'"
+          class="flex-1 flex flex-col items-center gap-0.5 py-2.5 transition-colors"
+          :class="mobileView === 'soul' ? 'text-[var(--sys-fg)]' : 'text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg-muted)]'"
+          aria-label="Seele"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/>
+          </svg>
+          <span class="text-[10px] font-medium tracking-wide">Seele</span>
+        </button>
+      </nav>
 
     </div>
 
@@ -370,8 +417,6 @@
       @close="anchorModalOpen = false"
     />
 
-    <!-- Soul Sync Modal -->
-    <SoulSyncModal />
     <ConfirmModal />
 
     <!-- Fallback -->
@@ -398,7 +443,7 @@ import LiveProfile from "~/components/LiveProfile.vue";
 import VideoBackground from "~/components/VideoBackground.vue";
 import Modal from "~/components/ui/Modal.vue";
 import SoulAnchorModal from "~/components/SoulAnchorModal.vue";
-import SoulSyncModal   from "~/components/SoulSyncModal.vue";
+import SoulViewer      from "~/components/SoulViewer.vue";
 import ConfirmModal    from "~/components/ConfirmModal.vue";
 
 const router = useRouter();
@@ -420,6 +465,7 @@ const {
 } = useVault();
 
 const { isDark } = useColorScheme();
+const { vaultKey } = useVaultSession();
 
 const certValidating      = ref(true);  // true während der Soul-Cert-Vorprüfung beim Laden
 const vaultScanning       = ref(false);
@@ -427,6 +473,7 @@ const vaultStatus         = ref(null);
 const liveProfileVisible  = ref(false);
 const serverChecking      = ref(false);
 const headerMenuOpen      = ref(false);
+const mobileView          = ref("chat"); // "chat" | "soul"
 const anchorModalOpen     = ref(false);
 const isEnriching        = ref(false);
 const enrichStatus     = ref(null);
@@ -460,8 +507,8 @@ onMounted(async () => {
     return;
   }
 
-  // ── Server-Sync (non-blocking) ─────────────────────────────────────────
-  fetchFromServer().catch(() => {});
+  // ── Server-Sync (non-blocking, silent – kein Fehler-Banner beim Seitenstart) ──
+  fetchFromServer(true).catch(() => {});
 
   // ── Kamera & Mikrofon vorab anfragen (damit Aufnahme sofort starten kann) ──
   // Nicht-blockierend – Ablehnung ist OK, Kamera-Funktion zeigt dann Fehler
@@ -571,7 +618,8 @@ async function handleVaultConnect() {
 async function handleCheckServer() {
   if (serverChecking.value) return;
   serverChecking.value = true;
-  await fetchFromServer().catch(() => {});
+  const key = (vaultKey.value && vaultKey.value !== "__encrypted__") ? vaultKey.value : "";
+  await fetchFromServer(false, key).catch(() => {});
   serverChecking.value = false;
 }
 
