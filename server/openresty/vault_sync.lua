@@ -67,8 +67,7 @@ if not soul_id or not soul_id:match("^[a-zA-Z0-9%-]+$") or #soul_id > 64 then
   return
 end
 
-local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
-local base_dir = SOULS_DIR .. soul_id
+local base_dir = "/var/lib/sys/souls/" .. soul_id
 
 -- ── Sicherheitskonstanten ──────────────────────────────────────────────────
 
@@ -139,16 +138,19 @@ ngx.req.read_body()
 local body = ngx.req.get_body_data()
 -- Bei großen Bodies buffert nginx auf Disk → get_body_data() == nil
 if not body then
-  local fpath = ngx.req.get_body_filepath()
-  if fpath then
-    local fh = io.open(fpath, "rb")
-    if fh then body = fh:read("*a"); fh:close() end
+  local get_filepath = ngx.req.get_body_filepath
+  if type(get_filepath) == "function" then
+    local fpath = get_filepath()
+    if fpath then
+      local fh = io.open(fpath, "rb")
+      if fh then body = fh:read("*a"); fh:close() end
+    end
   end
 end
 if not body or body == "" then
-  ngx.status = 400
+  ngx.status = 413
   ngx.header["Content-Type"] = "application/json"
-  ngx.say('{"error":"Empty body"}')
+  ngx.say('{"error":"Body too large for buffer or empty – reduce file size"}')
   return
 end
 
@@ -368,7 +370,9 @@ ctx.synced_files[synced_key] = arr
 
 -- active_files: nur setzen wenn noch kein Wert (User-Wahl bleibt erhalten)
 if not ctx.active_files then ctx.active_files = {} end
-if not ctx.active_files[synced_key] or ctx.active_files[synced_key] == "" then
+local cur_active = ctx.active_files[synced_key]
+local cur_empty  = not cur_active or cur_active == "" or type(cur_active) ~= "string"
+if cur_empty then
   ctx.active_files[synced_key] = registered_name
 end
 

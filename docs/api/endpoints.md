@@ -36,6 +36,9 @@ Where `soul_cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[0:32]`
 | GET | `/api/vault/video[/{file}]` | vault_auth | List or get video files |
 | GET | `/api/vault/images[/{file}]` | vault_auth | List or get image files |
 | GET | `/api/vault/context[/{file}]` | vault_auth | List or get context files |
+| GET | `/api/vault/profile/{type}` | vault_auth | Read analysis profile (face/voice/motion/expertise) |
+| PUT | `/api/vault/profile/{type}` | vault_auth | Write analysis profile (encrypted) |
+| DELETE | `/api/vault/profile/{type}` | soul_cert | Delete analysis profile |
 | DELETE | `/api/vault/{type}/{file}` | soul_cert | Delete a vault file |
 | POST | `/api/chat` | soul_cert | Chat proxy (SSE streaming) |
 | POST | `/api/soul-update` | soul_cert | Soul enrichment (JSON) |
@@ -251,6 +254,51 @@ Also accepts Arweave transaction IDs (43-char alphanumeric strings).
 Google Drive share URLs are automatically rewritten to direct-download URLs.
 
 Returns the parsed JSON bundle. Decryption happens client-side.
+
+---
+
+### GET/PUT/DELETE /api/vault/profile/{type}
+
+Read, write, or delete a structured analysis profile.
+
+**Profile types:** `face` · `voice` · `motion` · `expertise`
+
+Profiles are stored in `vault/profile/{type}.json` and are **always AES-256-CBC encrypted** on disk.
+A PUT requires an active vault session (vault_key must be set).
+
+```http
+GET /api/vault/profile/face
+Authorization: Bearer {soul_id}.{cert}
+```
+
+```json
+{
+  "type": "face",
+  "description": "...",
+  "features": { "glasses": "...", "hair": "...", "beard": "..." },
+  "expression": "neutral-ruhig",
+  "estimated_age": "47–50",
+  "soul_id": "...",
+  "updated_at": "2026-04-11T11:57:08Z"
+}
+```
+
+```http
+PUT /api/vault/profile/motion
+Authorization: Bearer {soul_id}.{cert}
+Content-Type: application/json
+
+{
+  "energy_level": "niedrig-mittel",
+  "gesture_style": "...",
+  "presence": "...",
+  "behavioral_notes": "..."
+}
+```
+
+```json
+{ "ok": true, "type": "motion", "updated_at": "...", "encrypted": true }
+```
 
 ---
 

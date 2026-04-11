@@ -909,10 +909,10 @@ const soul = await res.text()  // soul.md Inhalt als String</DocCode>
                 <span>soul_skills</span><span class="text-white/35">Skill-Dateien aus Soul + Profilen generieren</span>
                 <span>vault_manifest</span><span class="text-white/35">Übersicht aller Vault-Inhalte</span>
                 <span>audio_get / audio_list</span><span class="text-white/35">Sprachaufnahmen abrufen</span>
-                <span>image_get / image_list</span><span class="text-white/35">Bilder abrufen</span>
-                <span>video_get / video_list</span><span class="text-white/35">Videos abrufen</span>
+                <span>image_get / image_list</span><span class="text-white/35">Bild als base64 direkt an KI liefern — Gesichtsanalyse ohne Upload</span>
+                <span>video_get / video_list</span><span class="text-white/35">Video-Frames extrahieren und als Bilder ausgeben — Bewegungsanalyse direkt im Chat</span>
                 <span>context_get / context_list</span><span class="text-white/35">Kontext-Dokumente abrufen</span>
-                <span>profile_get / profile_save</span><span class="text-white/35">KI-Profile lesen und schreiben</span>
+                <span>profile_get / profile_save</span><span class="text-white/35">Analyse-Profile (Gesicht, Stimme, Bewegung, Expertise) lesen und schreiben</span>
                 <span>calendar_read</span><span class="text-white/35">Kalender abrufen</span>
                 <span>network_list / network_peer_get</span><span class="text-white/35">Soul-Network-Verbindungen</span>
                 <span>soul_maturity</span><span class="text-white/35">Reife-Score berechnen und in soul.md schreiben</span>
@@ -942,7 +942,17 @@ Auth: OAuth 2.0 (Consent-Seite erscheint automatisch)</DocCode>
             <DocHeading level="2">Orchestrierung: KI als Dirigent</DocHeading>
             <p class="doc-p">Das Ziel ist nicht ein KI-Klon — es ist eine KI die dich repräsentiert und in deinem Auftrag handelt. soul.md ist die Partitur, die KI ist der Dirigent. Der MCP-Server verbindet alles — ohne dass du Credentials an eine Plattform übergibst.</p>
 
-            <DocCode lang="javascript">// Beispiel: ElevenLabs-Agent mit aktueller Soul aktualisieren
+            <DocCode lang="javascript">// Beispiel: Gesichts- und Bewegungsanalyse via MCP
+const img = await image_get({ filename: "profile.jpg" })
+// → Bild erscheint direkt im Chat → KI analysiert → profile_save aufrufen
+
+const vid = await video_get({ filename: "motion_body.webm", max_frames: 6 })
+// → 6 gleichmäßige Frames erscheinen direkt → KI analysiert Bewegung
+
+await profile_save({ type: "face",   data: { description: "...", features: {...} } })
+await profile_save({ type: "motion", data: { energy_level: "...", gesture_style: "..." } })
+
+// Beispiel: ElevenLabs-Agent mit aktueller Soul aktualisieren
 elevenlabs_agent_update({
   agent_id:           "deine-agent-id",
   elevenlabs_api_key: "sk_...",   // nur für diesen Call im RAM

@@ -23,3 +23,8 @@ server/openresty/sys.uxprojects-jok.com.nginx
 Thumbs.db
 *.swp
 *.swo
+server/openresty/old_vps_sys.uxprojects-jok.com
+server/openresty/vhost_backup
+CLAUDE.md
+scripts/vps/claude-remote-manage.sh
+scripts/vps/setup-claude-remote.sh

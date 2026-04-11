@@ -228,13 +228,19 @@ export function useApiContext() {
     // Metadaten/Config-Dateien niemals syncen
     if (ext === "json") return null;
 
-    // Extension zuerst (eindeutig, unabhängig vom Ordner)
-    if (/\.(mp3|wav|ogg|webm|m4a|opus|flac|aac)$/.test(lower)) return "audio";
-    if (/\.(mp4|mov|avi|mkv)$/.test(lower))                     return "video";
-    if (/\.(jpe?g|png|webp|gif|avif)$/.test(lower))             return "image";
-    if (/\.(md|txt)$/.test(lower))                              return "context";
+    // WebM ist dual-use (Audio + Video) → Ordner entscheidet
+    if (/\.webm$/.test(lower)) {
+      if (folder === "motion_samples" || folder === "video_samples" || folder === "videos") return "video";
+      return "audio"; // voice_samples oder unbekannt → Audio
+    }
 
-    // Ordner-Fallback für Dateien ohne eindeutige Extension
+    // Extension (eindeutig)
+    if (/\.(mp3|wav|ogg|m4a|opus|flac|aac)$/.test(lower))  return "audio";
+    if (/\.(mp4|mov|avi|mkv)$/.test(lower))                 return "video";
+    if (/\.(jpe?g|png|webp|gif|avif)$/.test(lower))         return "image";
+    if (/\.(md|txt)$/.test(lower))                          return "context";
+
+    // Ordner-Fallback
     if (folder === "motion_samples" || folder === "video_samples" || folder === "videos") return "video";
     if (folder === "voice_samples")  return "audio";
 

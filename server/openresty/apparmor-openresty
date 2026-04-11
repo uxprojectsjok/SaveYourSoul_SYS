@@ -1,8 +1,6 @@
 # AppArmor-Profil für OpenResty (SaveYourSoul VPS)
 # Deploy: cp apparmor-openresty /etc/apparmor.d/usr.sbin.openresty
 #         apparmor_parser -r /etc/apparmor.d/usr.sbin.openresty
-#
-# CONFIGURE: replace /var/lib/sys/souls with your data directory path below
 
 #include <tunables/global>
 

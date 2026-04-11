@@ -73,8 +73,7 @@ if method == "POST" and uri == "/api/vault/lock" then
   if sessions then sessions:delete(soul_id) end
 
   -- vault_key_hex aus api_context.json löschen → Webhook-Token-Auth kann nicht mehr entschlüsseln
-local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
-  local ctx_path = SOULS_DIR .. soul_id .. "/api_context.json"
+  local ctx_path = "/var/lib/sys/souls/" .. soul_id .. "/api_context.json"
   local cf = io.open(ctx_path, "r")
   if cf then
     local raw = cf:read("*a"); cf:close()
@@ -131,7 +130,77 @@ if method == "POST" and uri == "/api/vault/unlock" then
     return
   end
 
-  -- ⚠  vault_key_hex and webhook_token persistence after unlock: owner's implementation.
+  -- ── webhook_token automatisch setzen ─────────────────────────────────────
+  -- HMAC-SHA256(vault_key_bin, soul_id) → in api_context.json speichern
+  -- Damit ist /api/webhook/mnemonic nach jedem Unlock sofort nutzbar,
+  -- auch nach Vault-Löschung (api_context wird neu angelegt + token gesetzt).
+  if vault_key ~= "" then
+    local vault_key_bin = vault_key:gsub("..", function(h)
+      return string.char(tonumber(h, 16))
+    end)
+
+    local token_hex
+
+    -- Versuch 1: resty.openssl.hmac (falls installiert)
+    local ok_lib, openssl_hmac = pcall(require, "resty.openssl.hmac")
+    if ok_lib then
+      local hmac_obj = openssl_hmac.new(vault_key_bin, "sha256")
+      if hmac_obj then
+        local sig = hmac_obj:final(soul_id)
+        if sig then
+          token_hex = sig:gsub(".", function(c)
+            return string.format("%02x", string.byte(c))
+          end)
+        end
+      end
+    end
+
+    -- Versuch 2: Python3 via Tempfiles (immer verfügbar)
+    if not token_hex or #token_hex ~= 64 then
+      local ts   = tostring(ngx.now()):gsub("%.", "_")
+      local t_k  = "/tmp/sys_k_" .. ts
+      local t_s  = "/tmp/sys_s_" .. ts
+      local t_o  = "/tmp/sys_o_" .. ts
+      local fk = io.open(t_k, "w"); if fk then fk:write(vault_key); fk:close() end
+      local fs = io.open(t_s, "w"); if fs then fs:write(soul_id);   fs:close() end
+      os.execute(string.format(
+        "python3 -c \"import hmac,binascii;"
+        .. "vk=binascii.unhexlify(open('%s').read().strip());"
+        .. "s=open('%s').read().strip();"
+        .. "print(hmac.new(vk,s.encode(),'sha256').hexdigest())"
+        .. "\" > %s 2>/dev/null", t_k, t_s, t_o))
+      os.remove(t_k); os.remove(t_s)
+      local rf = io.open(t_o, "r")
+      if rf then token_hex = (rf:read("*a") or ""):gsub("%s+$", ""); rf:close() end
+      os.remove(t_o)
+    end
+
+    -- In api_context.json persistieren
+    -- vault_key_hex immer schreiben (ermöglicht MCP/Service-Token-Zugriff ohne aktive Session)
+    -- Datei anlegen falls sie noch nicht existiert (Vault-Unlock vor erstem Sync)
+    local ctx_path = "/var/lib/sys/souls/" .. soul_id .. "/api_context.json"
+    os.execute("mkdir -p /var/lib/sys/souls/" .. soul_id)
+    local ctx = {
+      enabled      = false,
+      cipher_mode  = "ciphered",
+      permissions  = { soul = false, calendar = false, audio = false, video = false, images = false, context_files = false },
+      synced_files = {},
+      active_files = {}
+    }
+    local cf = io.open(ctx_path, "r")
+    if cf then
+      local raw = cf:read("*a"); cf:close()
+      local ok_j, existing = pcall(cjson.decode, raw)
+      if ok_j and type(existing) == "table" then ctx = existing end
+    end
+    ctx.vault_key_hex = vault_key   -- für vault_auth: Token-Auth ohne Session
+    ctx.cipher_mode   = "ciphered"
+    if token_hex and #token_hex == 64 then
+      ctx.webhook_token = token_hex
+    end
+    local wf = io.open(ctx_path, "w")
+    if wf then wf:write(cjson.encode(ctx)); wf:close() end
+  end
 
   ngx.say(cjson.encode({
     ok         = true,

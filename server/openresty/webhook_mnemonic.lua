@@ -84,8 +84,7 @@ end
 
 -- ── API-Kontext laden ─────────────────────────────────────────────────────────
 
-local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
-local base_dir = SOULS_DIR .. soul_id
+local base_dir = "/var/lib/sys/souls/" .. soul_id
 local cf = io.open(base_dir .. "/api_context.json", "r")
 if not cf then
   ngx.status = 404

@@ -36,8 +36,7 @@ if not ptype or not allowed[ptype] then
   return
 end
 
-local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
-local base_dir     = SOULS_DIR .. soul_id
+local base_dir     = "/var/lib/sys/souls/" .. soul_id
 local profile_dir  = base_dir .. "/vault/profile/"
 local profile_path = profile_dir .. ptype .. ".json"
 local ctx_file     = base_dir .. "/api_context.json"
