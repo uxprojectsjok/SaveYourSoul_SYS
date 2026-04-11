@@ -10,7 +10,8 @@ local cjson   = require("cjson.safe")
 local http    = require("resty.http")
 local aes     = require("resty.aes")
 local soul_id = ngx.ctx.soul_id
-local base_dir = "/var/lib/sys/souls/" .. soul_id
+local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
+local base_dir = SOULS_DIR .. soul_id
 local ctx_file = base_dir .. "/api_context.json"
 
 -- Nur GET

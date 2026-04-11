@@ -18,4 +18,3 @@
 -- TTL:         30 days
 --
 -- ⚠  Owner's implementation — not included in this distribution.
---    Contact: contact@uxprojects-jok.com

@@ -9,4 +9,3 @@
 -- Implements HMAC-SHA256 per RFC 2104.
 --
 -- ⚠  Owner's implementation — not included in this distribution.
---    Contact: contact@uxprojects-jok.com

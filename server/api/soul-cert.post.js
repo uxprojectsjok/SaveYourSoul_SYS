@@ -6,7 +6,6 @@
 //
 // ⚠  Owner's implementation — not included in this distribution.
 //    Production: handled by server/openresty/soul_cert.lua
-//    Contact: contact@uxprojects-jok.com
 
 export default defineEventHandler(async (_event) => {
   throw createError({ statusCode: 501, message: "Not implemented. See soul_cert.lua." });

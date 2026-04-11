@@ -73,7 +73,8 @@ if method == "POST" and uri == "/api/vault/lock" then
   if sessions then sessions:delete(soul_id) end
 
   -- vault_key_hex aus api_context.json löschen → Webhook-Token-Auth kann nicht mehr entschlüsseln
-  local ctx_path = "/var/lib/sys/souls/" .. soul_id .. "/api_context.json"
+local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
+  local ctx_path = SOULS_DIR .. soul_id .. "/api_context.json"
   local cf = io.open(ctx_path, "r")
   if cf then
     local raw = cf:read("*a"); cf:close()

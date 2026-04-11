@@ -15,4 +15,3 @@
 -- Returns 400 if any required field is missing or malformed.
 --
 -- ⚠  Owner's implementation — not included in this distribution.
---    Contact: contact@uxprojects-jok.com

@@ -22,4 +22,3 @@
 -- CORS OPTIONS requests are always allowed (no auth required).
 --
 -- ⚠  Owner's implementation — not included in this distribution.
---    Contact: contact@uxprojects-jok.com

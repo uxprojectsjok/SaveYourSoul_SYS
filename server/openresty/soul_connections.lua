@@ -13,7 +13,7 @@ local cjson     = require("cjson.safe")
 local soul_id   = ngx.ctx.soul_id
 local method    = ngx.req.get_method()
 local uri       = ngx.var.uri
-local SOULS_DIR = "/var/lib/sys/souls/"
+local SOULS_DIR = os.getenv("SYS_SOULS_DIR") or "/var/lib/sys/souls/"
 local conn_path = SOULS_DIR .. soul_id .. "/soul_connections.json"
 
 ngx.header["Content-Type"]  = "application/json"
