@@ -4,6 +4,7 @@
 
 import { ref, computed } from "vue";
 import { useVault } from "~/composables/useVault.js";
+import { validateSoul } from "#shared/utils/soulParser.js";
 
 // ── Singleton-State ────────────────────────────────────────────────────────
 
@@ -290,8 +291,13 @@ export function useApiContext() {
 
       for (const { name, buffer } of vaultFiles) {
         const baseName = name.split("/").pop(); // Unterordner entfernen für VPS-Namen
-        // sys.md wird bereits via soul_content/soul_content_encrypted hochgeladen
-        if (baseName.toLowerCase() === "sys.md") continue;
+        // Identity-Datei (*.md mit validem SYS-Frontmatter) bereits via soul_content hochgeladen — überspringen
+        if (baseName.toLowerCase().endsWith(".md")) {
+          try {
+            const text = new TextDecoder().decode(buffer);
+            if (validateSoul(text).valid) continue;
+          } catch { /* kein Text → kein Soul → normal weitermachen */ }
+        }
 
         // KI-Profile: alle Dateien in profile/ → PUT /api/vault/profile/{type}
         if (name.startsWith("profile/")) {
