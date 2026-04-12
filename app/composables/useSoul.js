@@ -230,6 +230,10 @@ ${idea ? idea : "*Noch nicht beschrieben.*"}
     soulContent.value = updated;
     soulCert.value    = cert;
     save();
+
+    // Aktualisierte sys.md sofort auf Server pushen — sonst steht dort noch der alte Cert
+    await pushToServer();
+
     return { cert, cert_version };
   }
 

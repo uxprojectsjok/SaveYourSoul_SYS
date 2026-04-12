@@ -21,43 +21,14 @@ if not soul_id or soul_id == "" then
   return
 end
 
--- sys.md lesen
-local path = "/var/lib/sys/souls/" .. soul_id .. "/sys.md"
-local f = io.open(path, "r")
-if not f then
-  ngx.status = 404
-  ngx.header["Content-Type"] = "application/json"
-  ngx.say('{"error":"sys.md nicht gefunden"}')
-  return
-end
-local content = f:read("*a"); f:close()
-
 -- cert_version lesen und inkrementieren
 local hmac         = require("hmac_helper")
 local old_version  = hmac.read_cert_version(soul_id)
 local new_version  = old_version + 1
 local new_cert     = hmac.cert_for_soul(master_key, soul_id, new_version)
 
--- cert_version in Frontmatter schreiben (oder hinzufügen)
-if content:match("cert_version:%s*%d+") then
-  content = content:gsub("(cert_version:%s*)%d+", "%1" .. tostring(new_version))
-else
-  -- Nach soul_cert Zeile einfügen
-  content = content:gsub("(soul_cert:%s*[^\n]+\n)", "%1cert_version: " .. tostring(new_version) .. "\n")
-end
-
--- soul_cert in Frontmatter ersetzen
-content = content:gsub("(soul_cert:%s*)[^\n]+", "%1" .. new_cert)
-
--- sys.md schreiben
-local wf = io.open(path, "w")
-if not wf then
-  ngx.status = 500
-  ngx.header["Content-Type"] = "application/json"
-  ngx.say('{"error":"sys.md konnte nicht geschrieben werden"}')
-  return
-end
-wf:write(content); wf:close()
+-- sys.md wird NICHT direkt modifiziert: sie kann AES-verschlüsselt sein.
+-- Der Frontend-Client pusht die aktualisierte sys.md nach der Rotation via PUT /api/context.
 
 -- cert_version auch in api_context.json speichern (plaintext, für Auth lesbar)
 local cjson     = require("cjson.safe")
