@@ -181,7 +181,7 @@ end
 
 local function soul_exists(target_id)
   local check_paths = {
-    SOULS_DIR .. target_id .. "/soul.md",
+    SOULS_DIR .. target_id .. "/sys.md",
     SOULS_DIR .. target_id .. "/api_context.json",
     SOULS_DIR .. target_id .. "/authorized_services.json",
   }
@@ -199,7 +199,7 @@ if method == "GET" and uri == "/api/vault/connections/network" then
   local result = {}
 
   for _, conn in ipairs(data.connections) do
-    local soul_path = SOULS_DIR .. conn.soul_id .. "/soul.md"
+    local soul_path = SOULS_DIR .. conn.soul_id .. "/sys.md"
     local f = io.open(soul_path, "r")
     if f then
       local content = f:read("*a"); f:close()

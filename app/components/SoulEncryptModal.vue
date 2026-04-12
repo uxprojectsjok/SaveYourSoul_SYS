@@ -198,7 +198,7 @@
                 <div class="text-center">
                   <p class="text-sm font-semibold text-[var(--sys-fg)]">Vault gesichert</p>
                   <p class="text-xs text-[var(--sys-fg-dim)] mt-1">
-                    soul.md · Bilder · Stimme · Motion · AES-256-GCM · 12 Wörter
+                    sys.md · Bilder · Stimme · Motion · AES-256-GCM · 12 Wörter
                   </p>
                 </div>
               </div>

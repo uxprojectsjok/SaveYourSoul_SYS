@@ -119,8 +119,8 @@ const isSaving    = ref(false);
 const saveSuccess = ref(false);
 
 const permLabels = {
-  soul:          { label: "Soul-Inhalt",   hint: "soul.md" },
-  calendar:      { label: "Kalender",      hint: "## Kalender aus soul.md" },
+  soul:          { label: "Soul-Inhalt",   hint: "sys.md" },
+  calendar:      { label: "Kalender",      hint: "## Kalender aus sys.md" },
   audio:         { label: "Audio-Dateien", hint: "→ MP3 (ffmpeg)" },
   video:         { label: "Video-Dateien", hint: "→ MP4 (ffmpeg)" },
   images:        { label: "Bilder",        hint: ".jpg/.png/…" },

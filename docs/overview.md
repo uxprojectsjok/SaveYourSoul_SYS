@@ -8,19 +8,19 @@ with MCP-compatible tool interfaces and optional cryptographic anchoring.**
 ## What SYS is
 
 SYS defines a portable, user-controlled identity layer for AI systems.
-The core unit is the **soul.md** — a plain Markdown file with YAML frontmatter
+The core unit is the **sys.md** — a plain Markdown file with YAML frontmatter
 that encodes a personal identity profile, grows with each interaction,
 and serves as persistent context for AI systems.
 
 ```
-soul.md  →  sessionStorage (browser)       never leaves without user action
+sys.md  →  sessionStorage (browser)       never leaves without user action
          →  VPS (AES-256-CBC, optional)     user-initiated
          →  AI context (Anthropic Claude)   transient, user-initiated
          →  MCP tools (soul_read/write)     authorized per service-token
          →  Blockchain anchor (Polygon)     optional, hash only
 ```
 
-The soul.md belongs to the user. The server operator has no access to
+The sys.md belongs to the user. The server operator has no access to
 encrypted content. Encryption is the default; plaintext is an explicit opt-in.
 
 ---
@@ -29,11 +29,11 @@ encrypted content. Encryption is the default; plaintext is an explicit opt-in.
 
 | Principle | Implementation |
 |---|---|
-| **Local-first** | soul.md lives in sessionStorage; vault files in local filesystem |
+| **Local-first** | sys.md lives in sessionStorage; vault files in local filesystem |
 | **Privacy-by-design** | AES-256-CBC encryption before any server upload |
 | **Stateless auth** | HMAC-SHA256 cert derived from key + soul_id — no session DB |
 | **User-controlled sharing** | Granular service-token permissions per data type |
-| **Protocol, not platform** | soul.md format is open; any compatible server is valid |
+| **Protocol, not platform** | sys.md format is open; any compatible server is valid |
 
 ---
 
@@ -42,7 +42,7 @@ encrypted content. Encryption is the default; plaintext is an explicit opt-in.
 ```
 ┌─────────────────────────────────────────────┐
 │  Identity Layer                              │
-│  soul.md — YAML frontmatter + Markdown body  │
+│  sys.md — YAML frontmatter + Markdown body  │
 │  soul_id (UUID v4) — primary key             │
 │  soul_cert — HMAC-SHA256 auth token          │
 ├─────────────────────────────────────────────┤
@@ -69,10 +69,10 @@ encrypted content. Encryption is the default; plaintext is an explicit opt-in.
 
 | Term | Definition |
 |---|---|
-| **soul.md** | The identity file. Plain Markdown, YAML frontmatter, grows over time. |
+| **sys.md** | The identity file. Plain Markdown, YAML frontmatter, grows over time. |
 | **soul_id** | UUID v4. Primary key for all server operations. |
 | **soul_cert** | 32 hex chars. HMAC-SHA256(SOUL_MASTER_KEY, soul_id)[0:32]. Stateless auth token. |
-| **vault_key** | 32-byte AES key. Encrypts soul.md and vault files. Never stored by server in plaintext. |
+| **vault_key** | 32-byte AES key. Encrypts sys.md and vault files. Never stored by server in plaintext. |
 | **vault** | Local filesystem folder. Contains audio, images, video, context files. |
 | **service-token** | 64 hex chars. Scoped access token for external services. |
 | **soul_grant** | Permission record created when two souls connect in the network. |
@@ -100,7 +100,7 @@ at real-world scale.
 
 Anyone MAY build a compatible SYS server. Compatible implementations:
 - MUST accept `Authorization: Bearer {soul_id}.{cert}` on protected endpoints
-- MUST store soul.md at `{base}/{soul_id}/soul.md`
+- MUST store sys.md at `{base}/{soul_id}/sys.md`
 - MUST implement the soul_cert derivation algorithm (see `spec/auth.md`)
 - MAY implement MCP, webhook, vault, or blockchain features independently
 

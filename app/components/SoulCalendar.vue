@@ -260,7 +260,7 @@ const monthLabel = computed(() => {
 
 const todayStr = computed(() => new Date().toISOString().split('T')[0])
 
-// ── Kalender-Einträge aus soul.md (beide Format-Varianten) ─────────────────
+// ── Kalender-Einträge aus sys.md (beide Format-Varianten) ─────────────────
 const calendarEntries = computed(() => {
   const dates = new Map()
   if (!soulContent.value) return dates

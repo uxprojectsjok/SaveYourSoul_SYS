@@ -108,7 +108,7 @@ Permissions are stored in `api_context.json`:
 ```json
 {
   "permissions": {
-    "soul":          true,   // read soul.md
+    "soul":          true,   // read sys.md
     "calendar":      false,  // include ## Calendar section
     "audio":         true,   // read vault/audio/
     "video":         false,  // read vault/video/

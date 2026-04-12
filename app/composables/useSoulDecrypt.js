@@ -186,21 +186,21 @@ export function useSoulDecrypt() {
   }
 
   /**
-   * Gibt den UTF-8-dekodieren Inhalt der soul.md zurück.
+   * Gibt den UTF-8-dekodieren Inhalt der sys.md zurück.
    * @returns {string|null}
    */
   function getSoulMd() {
-    const f = decryptedFiles.value.find(f => f.name === "soul.md");
+    const f = decryptedFiles.value.find(f => f.name === "sys.md");
     if (!f) return null;
     return new TextDecoder().decode(f.buffer);
   }
 
   /**
-   * Alle entschlüsselten Dateien außer soul.md (Bilder, .webm, Texte …)
+   * Alle entschlüsselten Dateien außer sys.md (Bilder, .webm, Texte …)
    * @returns {Array<{ name: string, buffer: Uint8Array }>}
    */
   function getNonSoulFiles() {
-    return decryptedFiles.value.filter(f => f.name !== "soul.md");
+    return decryptedFiles.value.filter(f => f.name !== "sys.md");
   }
 
   /** Gibt MIME-Type anhand der Dateiendung zurück */

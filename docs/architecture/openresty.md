@@ -89,7 +89,7 @@ On success sets: `ngx.ctx.soul_id`, `ngx.ctx.vault_key`,
 | `api_context.lua` | content | GET/PUT /api/context |
 | `vault_unlock.lua` | content | vault session management |
 | `vault_sync.lua` | content | file upload + ClamAV + ffmpeg |
-| `api_serve.lua` | content | soul.md + vault file serving |
+| `api_serve.lua` | content | sys.md + vault file serving |
 | `webhook.lua` | content | generic webhook |
 | `webhook_mnemonic.lua` | content | BIP39-authenticated webhook |
 | `external_vault.lua` | content | fetch soul from external URL |

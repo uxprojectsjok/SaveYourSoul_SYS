@@ -47,7 +47,7 @@
           @click="openSyncModal"
           :disabled="isSyncing || isScanning"
           class="w-full h-9 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 text-white/60 hover:text-white hover:bg-white/8 disabled:opacity-30 transition text-xs font-medium"
-          title="soul.md und alle lokalen Vault-Dateien auf den Server hochladen"
+          title="sys.md und alle lokalen Vault-Dateien auf den Server hochladen"
         >
           <svg v-if="isSyncing" class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" d="M12 3a9 9 0 1 0 9 9"/>
@@ -58,7 +58,7 @@
           <span>{{ isSyncing ? 'Lädt…' : 'Vault syncen' }}</span>
         </button>
 
-        <!-- soul.md als eigene Gruppe -->
+        <!-- sys.md als eigene Gruppe -->
         <div v-if="soulContent">
           <div class="flex items-center gap-2 px-1 pt-1 pb-1">
             <p class="text-[10px] font-medium text-white/30 uppercase tracking-widest flex-1">Soul · 1</p>
@@ -66,12 +66,12 @@
           <div class="divide-y divide-white/[0.05] rounded-xl border border-white/[0.07]">
             <div class="flex items-center gap-2 px-3 min-h-[44px]">
               <span class="w-1.5 h-1.5 rounded-full shrink-0 bg-[#22c55e]/60"/>
-              <span class="text-sm text-white/70 flex-1 font-mono">soul.md</span>
+              <span class="text-sm text-white/70 flex-1 font-mono">sys.md</span>
               <button
                 @click="downloadSoulLocal"
                 class="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/8 transition shrink-0"
-                title="soul.md herunterladen (lokaler Stand)"
-                aria-label="soul.md herunterladen"
+                title="sys.md herunterladen (lokaler Stand)"
+                aria-label="sys.md herunterladen"
               >
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M12 3v13.5m0 0-4.5-4.5M12 16.5l4.5-4.5"/>
@@ -194,7 +194,7 @@
           </div>
         </div>
 
-        <!-- soul.md (VPS) -->
+        <!-- sys.md (VPS) -->
         <div>
           <div class="flex items-center gap-2 px-1 pt-1 pb-1">
             <p class="text-[10px] font-medium text-white/30 uppercase tracking-widest flex-1">Soul · 1</p>
@@ -202,13 +202,13 @@
           <div class="divide-y divide-white/[0.05] rounded-xl border border-white/[0.07]">
             <div class="flex items-center gap-2 px-3 min-h-[44px]">
               <span class="w-1.5 h-1.5 rounded-full shrink-0 bg-[#22c55e]/60"/>
-              <span class="text-sm text-white/70 flex-1 font-mono">soul.md</span>
+              <span class="text-sm text-white/70 flex-1 font-mono">sys.md</span>
               <button
                 @click="downloadSoulServer"
                 :disabled="soulServerDownloading"
                 class="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/8 transition shrink-0 disabled:opacity-30"
-                title="soul.md vom Server herunterladen (VPS-Stand)"
-                aria-label="soul.md vom Server herunterladen"
+                title="sys.md vom Server herunterladen (VPS-Stand)"
+                aria-label="sys.md vom Server herunterladen"
               >
                 <svg v-if="soulServerDownloading" class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path stroke-linecap="round" d="M12 3a9 9 0 1 0 9 9"/>
@@ -499,7 +499,7 @@
             <ul class="space-y-1.5">
               <li v-if="soulContent" class="flex items-center gap-2 text-xs text-white/70">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#22c55e] shrink-0"/>
-                <span class="font-mono">soul.md</span>
+                <span class="font-mono">sys.md</span>
                 <span class="text-white/35 ml-auto">Dein Soul-Profil</span>
               </li>
               <li v-for="(files, type) in localArchive" :key="type" class="flex items-center gap-2 text-xs text-white/70">
@@ -996,7 +996,7 @@ async function onSyncAll() {
   }
   await syncAll(props.soulCert, props.soulContent, vaultKey.value || "");
   if (syncError.value) showError(syncError.value);
-  else showSuccess("soul.md + Vault-Dateien auf Server hochgeladen ✓");
+  else showSuccess("sys.md + Vault-Dateien auf Server hochgeladen ✓");
 }
 
 // ── Aktiv setzen ───────────────────────────────────────────────────────────
@@ -1100,14 +1100,14 @@ async function downloadToLocal(type, name) {
   finally { delete serverBusy[name]; }
 }
 
-// ── soul.md Download ──────────────────────────────────────────────────────
+// ── sys.md Download ──────────────────────────────────────────────────────
 
 function downloadSoulLocal() {
   if (!props.soulContent) return;
   const blob = new Blob([props.soulContent], { type: "text/markdown;charset=utf-8" });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement("a");
-  a.href = url; a.download = "soul.md";
+  a.href = url; a.download = "sys.md";
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
 }
@@ -1124,7 +1124,7 @@ async function downloadSoulServer() {
     const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
-    a.href = url; a.download = "soul.md";
+    a.href = url; a.download = "sys.md";
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
   } catch { showError("Server-Download fehlgeschlagen"); }

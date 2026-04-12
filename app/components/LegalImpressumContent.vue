@@ -65,7 +65,7 @@
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Urheberrecht</h2>
       <p class="text-base text-[var(--sys-fg-muted)]">Die von mir erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen meiner schriftlichen Zustimmung.</p>
-      <p class="text-base text-[var(--sys-fg-muted)] mt-3">Das soul.md-Format sowie ausgewählte Komponenten werden unter der Apache License 2.0 als Open Source bereitgestellt. Die entsprechenden Lizenztexte sind in der App unter „Lizenz &amp; Nutzungsbedingungen" einsehbar.</p>
+      <p class="text-base text-[var(--sys-fg-muted)] mt-3">Das sys.md-Format sowie ausgewählte Komponenten werden unter der Apache License 2.0 als Open Source bereitgestellt. Die entsprechenden Lizenztexte sind in der App unter „Lizenz &amp; Nutzungsbedingungen" einsehbar.</p>
     </section>
 
     <section>

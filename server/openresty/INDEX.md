@@ -21,7 +21,7 @@ Alle Dateien dieses Verzeichnisses sind die **Quell-Kopie** der Live-Lua-Scripts
 
 | Datei | Endpunkt | Beschreibung |
 |---|---|---|
-| `api_serve.lua` | `GET /api/soul`, `GET /api/vault/manifest`, `GET /api/vault/audio` u.a. | Liefert soul.md (ggf. entschlüsselt) und Vault-Manifest |
+| `api_serve.lua` | `GET /api/soul`, `GET /api/vault/manifest`, `GET /api/vault/audio` u.a. | Liefert sys.md (ggf. entschlüsselt) und Vault-Manifest |
 | `api_context.lua` | `GET/PUT /api/context` | Liest und schreibt api_context.json (Berechtigungen, Vault-Index, Soul-Inhalt) |
 | `soul_sign_session.lua` | `POST /api/soul-sign-session` | Erstellt HMAC-Signatur für Blockchain-Session-Anchoring |
 

@@ -105,7 +105,7 @@ local auth_token = (ngx.req.get_headers()["authorization"] or ""):match("^[Bb]ea
 
 -- Soul-Inhalt (falls freigegeben)
 if perm.soul then
-  local sf = io.open(base_dir .. "/soul.md", "rb")
+  local sf = io.open(base_dir .. "/sys.md", "rb")
   if sf then
     local content = sf:read("*a"); sf:close()
     if content:sub(1, 4) == MAGIC then

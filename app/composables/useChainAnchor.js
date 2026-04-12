@@ -744,7 +744,7 @@ export function useChainAnchor() {
         throw txErr;
       }
 
-      // ── soul.md sofort nach TX-Submission schreiben (nicht erst nach Bestätigung)
+      // ── sys.md sofort nach TX-Submission schreiben (nicht erst nach Bestätigung)
       // Auf Mobile kann tx.wait() nach App-Switch hängen — der TX-Hash ist aber
       // bereits bekannt und die Transaktion wird gemined unabhängig davon ob wir warten.
       const today = new Date().toISOString().split("T")[0];
@@ -788,10 +788,10 @@ export function useChainAnchor() {
           const confirmed = await pollTxReceipt(tx.hash);
           if (!confirmed) {
             // Transaktion wurde gesendet, aber Bestätigung kam nicht rechtzeitig.
-            // TX-Hash ist bereits in soul.md — kein Datenverlust.
+            // TX-Hash ist bereits in sys.md — kein Datenverlust.
             anchorError.value =
               "Transaktion gesendet, Bestätigung ausstehend.\n" +
-              "TX-Hash ist bereits in deiner soul.md gespeichert.\n" +
+              "TX-Hash ist bereits in deiner sys.md gespeichert.\n" +
               "→ Explorer-Link prüfen um Bestätigung zu verfolgen.";
           }
           // In beiden Fällen tx.hash zurückgeben — Modal zeigt Explorer-Link
@@ -870,7 +870,7 @@ export function useChainAnchor() {
           anchorSessions: Number(latest.sessionCount),
           totalAnchors: history.length,
           network: ACTIVE_NETWORK.name,
-          reason: "On-chain gefunden – lokaler Ankereintrag fehlt in soul.md.",
+          reason: "On-chain gefunden – lokaler Ankereintrag fehlt in sys.md.",
         };
       } catch (e) {
         return {
@@ -1060,7 +1060,7 @@ export function useChainAnchor() {
 
   function cancelAnchor() {
     // Setzt UI-State zurück; laufender Promise wird abandoniert
-    // (TX-Hash ist bei gesendeter TX bereits in soul.md)
+    // (TX-Hash ist bei gesendeter TX bereits in sys.md)
     isAnchoring.value = false;
     anchorError.value = "";
   }

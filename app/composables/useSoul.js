@@ -187,7 +187,7 @@ ${idea ? idea : "*Noch nicht beschrieben.*"}
 
     if (!cert) return;
 
-    // Cert in soul.md-Inhalt ersetzen (Frontmatter-Zeile)
+    // Cert in sys.md-Inhalt ersetzen (Frontmatter-Zeile)
     soulContent.value = soulContent.value.replace(
       /^(soul_cert:\s*).+$/m,
       `$1${cert}`
@@ -350,7 +350,7 @@ Mögliche section-Werte (exakt so schreiben):
   }
 
   /**
-   * Holt soul.md vom VPS und vergleicht mit der lokalen Version.
+   * Holt sys.md vom VPS und vergleicht mit der lokalen Version.
    * @param {boolean} silent      – true = Fehler stumm ignorieren (Auto-Check im Hintergrund)
    * @param {string}  vaultKeyHex – optionaler 64-Hex-Schlüssel für client-seitige Entschlüsselung
    */
@@ -438,7 +438,7 @@ Mögliche section-Werte (exakt so schreiben):
     serverContent.value = "";
   }
 
-  /** Pusht die lokale soul.md auf den VPS. */
+  /** Pusht die lokale sys.md auf den VPS. */
   async function pushToServer() {
     if (!isClient || !soulContent.value) return false;
     const token = soulToken.value;
@@ -493,9 +493,9 @@ Mögliche section-Werte (exakt so schreiben):
 
   async function exportAsBlob() {
     if (!isClient || !soulContent.value) return;
-    // Dateiname ist immer soul.md – Vault-Sync und späteres Überschreiben
+    // Dateiname ist immer sys.md – Vault-Sync und späteres Überschreiben
     // funktionieren nur wenn der Name stabil bleibt.
-    const filename = "soul.md";
+    const filename = "sys.md";
 
     // File System Access API: User wählt Speicherort (Chrome/Edge)
     if ("showSaveFilePicker" in window) {

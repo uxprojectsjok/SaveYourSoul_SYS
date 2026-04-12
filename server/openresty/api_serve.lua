@@ -1,6 +1,6 @@
 -- /etc/openresty/lua/api_serve.lua
 -- Bedient GET-Anfragen für:
---   /api/soul              → soul.md (Text, ggf. entschlüsselt)
+--   /api/soul              → sys.md (Text, ggf. entschlüsselt)
 --   /api/vault/manifest    → Liste freigegebener Ressourcen
 --   /api/vault/audio       → Liste Audio-Dateien (MP3)
 --   /api/vault/audio/{f}   → Audio-Datei
@@ -101,7 +101,7 @@ if uri == "/api/soul" then
     ngx.say('{"error":"Soul access not permitted"}')
     return
   end
-  local sf = io.open(base_dir .. "/soul.md", "rb")
+  local sf = io.open(base_dir .. "/sys.md", "rb")
   if not sf then
     ngx.status = 404
     ngx.header["Content-Type"] = "application/json"
@@ -138,10 +138,10 @@ if uri == "/api/soul" then
     local decrypted = try_decrypt(soul_content, vault_key)
     if not decrypted then
       ngx.log(ngx.WARN, "[api_serve] Entschlüsselung fehlgeschlagen für soul_id=", soul_id,
-              " – vault_key stimmt nicht mit soul.md überein. Bitte Vault mit korrektem Schlüssel öffnen und erneut synchronisieren.")
+              " – vault_key stimmt nicht mit sys.md überein. Bitte Vault mit korrektem Schlüssel öffnen und erneut synchronisieren.")
       ngx.status = 403
       ngx.header["Content-Type"] = "application/json"
-      ngx.say('{"error":"decryption_failed","message":"Entschlüsselung fehlgeschlagen. Vault mit korrektem Schlüssel öffnen und soul.md erneut synchronisieren."}')
+      ngx.say('{"error":"decryption_failed","message":"Entschlüsselung fehlgeschlagen. Vault mit korrektem Schlüssel öffnen und sys.md erneut synchronisieren."}')
       return
     end
     soul_content = decrypted

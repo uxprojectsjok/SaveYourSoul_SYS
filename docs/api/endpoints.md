@@ -25,13 +25,13 @@ Where `soul_cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[0:32]`
 | POST | `/api/soul-sign-session` | none | Sign a growth chain entry |
 | GET | `/api/validate` | soul_cert | Validate cert (returns 200 or 401) |
 | GET | `/api/context` | soul_cert | Read API context + permissions |
-| PUT | `/api/context` | soul_cert | Update API context + upload soul.md |
+| PUT | `/api/context` | soul_cert | Update API context + upload sys.md |
 | POST | `/api/vault/unlock` | soul_cert | Unlock vault with AES key |
 | POST | `/api/vault/lock` | soul_cert | Lock vault immediately |
 | GET | `/api/vault/session` | soul_cert | Query vault session status |
 | POST | `/api/vault/sync` | soul_cert | Upload a file to vault |
 | GET | `/api/vault/manifest` | vault_auth | Vault index |
-| GET | `/api/soul` | vault_auth | Read soul.md |
+| GET | `/api/soul` | vault_auth | Read sys.md |
 | GET | `/api/vault/audio[/{file}]` | vault_auth | List or get audio files |
 | GET | `/api/vault/video[/{file}]` | vault_auth | List or get video files |
 | GET | `/api/vault/images[/{file}]` | vault_auth | List or get image files |
@@ -134,10 +134,10 @@ Content-Type: application/json
 | Field | Type | Description |
 |---|---|---|
 | `enabled` | boolean | Enable/disable external API access |
-| `cipher_mode` | `"ciphered"\|"open"` | Encryption mode for stored soul.md |
+| `cipher_mode` | `"ciphered"\|"open"` | Encryption mode for stored sys.md |
 | `permissions` | object | Granular permission flags |
-| `soul_content_encrypted` | base64 string | AES-256-CBC encrypted soul.md |
-| `soul_content` | string | Plaintext soul.md (open mode only) |
+| `soul_content_encrypted` | base64 string | AES-256-CBC encrypted sys.md |
+| `soul_content` | string | Plaintext sys.md (open mode only) |
 | `webhook_token` | string | Service-token (max 256 chars) |
 | `external_soul_url` | string | HTTPS URL for external soul storage |
 | `active_files` | object | Active file selection per type |
@@ -203,7 +203,7 @@ Video files are converted to MP4 H.264 + AAC.
 
 ### GET /api/soul
 
-Read the soul.md. Decrypts on-the-fly if vault is unlocked.
+Read the sys.md. Decrypts on-the-fly if vault is unlocked.
 
 ```http
 GET /api/soul

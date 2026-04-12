@@ -4,7 +4,7 @@ import { parseCalendar, parseFrontmatter } from '../lib/soul_parser.mjs';
 export function register(server, token) {
   server.tool(
     'calendar_read',
-    'Liest den Kalender der Person aus soul.md und gibt strukturierte Termine zurück. Erfordert dass der Soul-Inhalt und die Kalender-Berechtigung aktiviert sind.',
+    'Liest den Kalender der Person aus sys.md und gibt strukturierte Termine zurück. Erfordert dass der Soul-Inhalt und die Kalender-Berechtigung aktiviert sind.',
     {},
     async () => {
       try {

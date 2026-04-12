@@ -1,4 +1,4 @@
-# soul.md Format Specification
+# sys.md Format Specification
 
 **Version:** 1.0-draft
 **Status:** Working draft
@@ -7,7 +7,7 @@
 
 ## 1. Overview
 
-A soul.md is a plain UTF-8 Markdown file. It consists of a YAML frontmatter
+A sys.md is a plain UTF-8 Markdown file. It consists of a YAML frontmatter
 block followed by a Markdown body structured by `## Section` headings.
 
 The frontmatter is machine-readable and carries protocol metadata.

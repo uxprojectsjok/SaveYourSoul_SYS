@@ -238,10 +238,10 @@
               Der Vault-Zugang ist auf dem Server abgelaufen. Bitte im Vault-Panel sperren und neu öffnen.
             </p>
             <p v-if="testResult === 'error' && testError.startsWith('Schlüssel falsch')" class="text-xs text-white/55 leading-relaxed">
-              Der Vault wurde mit einem anderen Schlüssel geöffnet als soul.md verschlüsselt wurde. Vault sperren, mit dem originalen Schlüssel (12 Wörter) öffnen und erneut synchronisieren.
+              Der Vault wurde mit einem anderen Schlüssel geöffnet als sys.md verschlüsselt wurde. Vault sperren, mit dem originalen Schlüssel (12 Wörter) öffnen und erneut synchronisieren.
             </p>
-            <p v-if="testResult === 'error' && testError.startsWith('soul.md fehlt')" class="text-xs text-white/55 leading-relaxed">
-              Die soul.md wurde noch nicht auf den Server synchronisiert. Im Vault Explorer → Sync ausführen.
+            <p v-if="testResult === 'error' && testError.startsWith('sys.md fehlt')" class="text-xs text-white/55 leading-relaxed">
+              Die sys.md wurde noch nicht auf den Server synchronisiert. Im Vault Explorer → Sync ausführen.
             </p>
           </div>
         </div>
@@ -348,7 +348,7 @@ async function testConnection(token) {
         else if (body.error === 'decryption_failed') testError.value = 'Schlüssel falsch – Vault neu öffnen + Sync'
         else testError.value = 'Zugriff verweigert (403)'
       } else if (res.status === 404) {
-        if (body.error === 'No soul content synced yet') testError.value = 'soul.md fehlt – bitte Sync ausführen'
+        if (body.error === 'No soul content synced yet') testError.value = 'sys.md fehlt – bitte Sync ausführen'
         else testError.value = 'API nicht konfiguriert (404)'
       } else if (res.status === 401) {
         testError.value = 'Token ungültig (401)'

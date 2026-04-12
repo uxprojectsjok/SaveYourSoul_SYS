@@ -193,10 +193,10 @@
                 </a>
               </div>
 
-              <!-- Download-Pflicht: soul.md enthält jetzt soul_chain_anchor -->
+              <!-- Download-Pflicht: sys.md enthält jetzt soul_chain_anchor -->
               <div class="px-3.5 py-3 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.12)]">
                 <p class="text-xs text-white/82 leading-relaxed mb-2">
-                  Ankereintrag in soul.md speichern – sonst geht er beim nächsten Upload verloren.
+                  Ankereintrag in sys.md speichern – sonst geht er beim nächsten Upload verloren.
                 </p>
                 <button
                   @click="exportAsBlob"
@@ -205,7 +205,7 @@
                   <svg class="w-3.5 h-3.5 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/>
                   </svg>
-                  soul.md jetzt speichern
+                  sys.md jetzt speichern
                 </button>
               </div>
             </div>

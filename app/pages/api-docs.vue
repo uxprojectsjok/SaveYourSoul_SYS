@@ -156,7 +156,7 @@
             <DocHeading level="1" badge="Erste Schritte">Was ist SaveYourSoul?</DocHeading>
             <p class="doc-lead">SaveYourSoul (SYS) ist ein Konzeptprojekt für eine portable, nutzerkontrollierte Identitätsschicht im KI-Zeitalter. Deine Identität gehört dir — nicht einer Plattform.</p>
 
-            <p class="doc-p">Im Kern von SYS steht eine einfache Idee: Eine <strong>Soul</strong> ist eine Markdown-Datei (<code class="doc-code">soul.md</code>), die deine Persönlichkeit, Erinnerungen und Kontext beschreibt. Diese Datei gehört dir, liegt bei dir, und wird von dir kontrolliert.</p>
+            <p class="doc-p">Im Kern von SYS steht eine einfache Idee: Eine <strong>Soul</strong> ist eine Markdown-Datei (<code class="doc-code">sys.md</code>), die deine Persönlichkeit, Erinnerungen und Kontext beschreibt. Diese Datei gehört dir, liegt bei dir, und wird von dir kontrolliert.</p>
 
             <p class="doc-p">KI-Systeme lesen diese Datei und können dadurch als du sprechen, denken und handeln — authentisch, weil es wirklich <em>dein</em> Kontext ist.</p>
 
@@ -298,7 +298,7 @@ Ich bin Jan, UX-Designer und Gründer von SaveYourSoul...
                 </div>
                 <div class="flex gap-3 text-xs">
                   <span class="font-mono text-[var(--sys-accent)] w-32 flex-none pt-0.5">2. AES-256-GCM</span>
-                  <span class="text-[var(--sys-fg-dim)]">soul.md + alle Vault-Dateien (lokal + VPS) werden client-seitig mit AES-256-GCM neu verschlüsselt und als <code>.soul</code>-Bundle heruntergeladen. Lokale Dateien haben bei Namensgleichheit Vorrang.</span>
+                  <span class="text-[var(--sys-fg-dim)]">sys.md + alle Vault-Dateien (lokal + VPS) werden client-seitig mit AES-256-GCM neu verschlüsselt und als <code>.soul</code>-Bundle heruntergeladen. Lokale Dateien haben bei Namensgleichheit Vorrang.</span>
                 </div>
               </div>
             </div>
@@ -450,7 +450,7 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
             <p class="doc-p">Beide Seiten können jederzeit trennen — unabhängig voneinander. Die Verbindung ist vollständig aufgehoben, sobald eine Seite trennt.</p>
 
             <DocHeading :id="'soul-network-vault'" level="2">Vault-Dateien im Netzwerk teilen</DocHeading>
-            <p class="doc-p"><strong>soul.md wird immer geteilt</strong> — sobald eine gegenseitige Verbindung besteht, können verbundene Souls deinen Soul-Kontext über den <code class="doc-code">/network</code>-Endpunkt lesen. Kein Public Vault nötig.</p>
+            <p class="doc-p"><strong>sys.md wird immer geteilt</strong> — sobald eine gegenseitige Verbindung besteht, können verbundene Souls deinen Soul-Kontext über den <code class="doc-code">/network</code>-Endpunkt lesen. Kein Public Vault nötig.</p>
             <p class="doc-p">Für Vault-Dateien (Audio, Bilder, Kontext-Dokumente) sind drei zusätzliche Schritte erforderlich:</p>
 
             <div class="doc-steps mb-6">
@@ -486,7 +486,7 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
               <p class="text-xs font-semibold text-[var(--sys-accent)] mb-2">Zusammenfassung: Was wird wie geteilt?</p>
               <div class="space-y-2">
                 <div class="flex gap-3 text-xs">
-                  <span class="font-mono text-[var(--sys-accent)] w-28 flex-none pt-0.5">soul.md</span>
+                  <span class="font-mono text-[var(--sys-accent)] w-28 flex-none pt-0.5">sys.md</span>
                   <span class="text-[var(--sys-fg-dim)]">Immer geteilt bei gegenseitiger Verbindung. Kein Upload in Public Vault nötig.</span>
                 </div>
                 <div class="flex gap-3 text-xs">
@@ -506,20 +506,20 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
                ═══════════════════════════════════════ -->
           <section :id="'soul-sync'" class="doc-section mb-16 scroll-mt-20">
             <DocHeading level="1" badge="Multi-Device">Soul-Sync</DocHeading>
-            <p class="doc-lead">Der VPS ist die einzige Wahrheitsquelle (Single Point of Truth). Beim Session-Start wird die Server-Version automatisch mit der lokalen soul.md verglichen — Abweichungen werden angezeigt, bevor etwas gespeichert wird.</p>
+            <p class="doc-lead">Der VPS ist die einzige Wahrheitsquelle (Single Point of Truth). Beim Session-Start wird die Server-Version automatisch mit der lokalen sys.md verglichen — Abweichungen werden angezeigt, bevor etwas gespeichert wird.</p>
 
             <DocHeading level="2">Wie es funktioniert</DocHeading>
-            <p class="doc-p">Nach dem Einloggen ruft die App im Hintergrund <code class="doc-code">GET /api/soul</code> ab und vergleicht den Inhalt mit der lokal im Browser gespeicherten soul.md. Stimmen beide überein, passiert nichts. Gibt es Unterschiede, erscheint ein <strong>Sync-Panel</strong> am unteren Bildschirmrand.</p>
+            <p class="doc-p">Nach dem Einloggen ruft die App im Hintergrund <code class="doc-code">GET /api/soul</code> ab und vergleicht den Inhalt mit der lokal im Browser gespeicherten sys.md. Stimmen beide überein, passiert nichts. Gibt es Unterschiede, erscheint ein <strong>Sync-Panel</strong> am unteren Bildschirmrand.</p>
 
             <div class="doc-info-box my-4">
               <div class="space-y-2">
                 <div class="flex gap-3 text-xs">
                   <span class="font-mono text-[var(--sys-accent)] w-36 flex-none pt-0.5">L — Dieses Gerät</span>
-                  <span class="text-[var(--sys-fg-dim)]">Die soul.md die zuletzt auf diesem Gerät aktiv war (im Browser-Speicher).</span>
+                  <span class="text-[var(--sys-fg-dim)]">Die sys.md die zuletzt auf diesem Gerät aktiv war (im Browser-Speicher).</span>
                 </div>
                 <div class="flex gap-3 text-xs">
                   <span class="font-mono text-[var(--sys-accent)] w-36 flex-none pt-0.5">S — Server</span>
-                  <span class="text-[var(--sys-fg-dim)]">Die soul.md die aktuell auf dem VPS liegt — Ergebnis des letzten Uploads von beliebigem Gerät.</span>
+                  <span class="text-[var(--sys-fg-dim)]">Die sys.md die aktuell auf dem VPS liegt — Ergebnis des letzten Uploads von beliebigem Gerät.</span>
                 </div>
               </div>
             </div>
@@ -541,7 +541,7 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
                 <tbody>
                   <tr>
                     <td class="font-mono text-xs text-[var(--sys-accent)]">Server übernehmen</td>
-                    <td class="text-[var(--sys-fg-dim)]">Die Server-Version ersetzt die lokale soul.md vollständig. Der lokale Stand geht verloren.</td>
+                    <td class="text-[var(--sys-fg-dim)]">Die Server-Version ersetzt die lokale sys.md vollständig. Der lokale Stand geht verloren.</td>
                   </tr>
                   <tr>
                     <td class="font-mono text-xs text-[var(--sys-accent)]">Auf Server hochladen</td>
@@ -557,7 +557,7 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
 
             <div class="doc-warning-box my-4">
               <p class="text-xs font-semibold text-[var(--sys-amber)] mb-1">Wichtig: Keine automatische Zusammenführung</p>
-              <p class="text-xs text-[var(--sys-fg-dim)]">Es gibt keine automatische Zusammenführung (Merge). Eine Seite gewinnt immer vollständig. Wenn du Änderungen von beiden Seiten behalten willst, kopiere den Inhalt der gewünschten Sektionen manuell aus der soul.md-Datei, bevor du eine Seite übernimmst.</p>
+              <p class="text-xs text-[var(--sys-fg-dim)]">Es gibt keine automatische Zusammenführung (Merge). Eine Seite gewinnt immer vollständig. Wenn du Änderungen von beiden Seiten behalten willst, kopiere den Inhalt der gewünschten Sektionen manuell aus der sys.md-Datei, bevor du eine Seite übernimmst.</p>
             </div>
 
             <DocHeading level="2">Verschlüsselungs-Konflikt</DocHeading>
@@ -650,8 +650,8 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
             <p class="doc-lead">Soul verankern schreibt einen kryptographischen Fingerabdruck deiner Identität unveränderlich auf die Polygon-Blockchain — unabhängig von SYS, unabhängig von Servern.</p>
 
             <DocHeading level="2">Was wird verankert?</DocHeading>
-            <p class="doc-p">Es wird kein Inhalt on-chain gespeichert — nur ein <strong>SHA-256-Hash</strong> deiner aktuellen soul.md sowie die Anzahl deiner Sessions. Das kostet minimalen Gas und hinterlässt keinen lesbaren Inhalt in der Chain.</p>
-            <p class="doc-p">Der Hash-Wert wird gleichzeitig in deiner soul.md im Frontmatter gespeichert (<code class="doc-code">soul_chain_anchor</code>). Mit dem Verifizieren-Button kann jederzeit geprüft werden ob der aktuelle Inhalt mit dem on-chain-Hash übereinstimmt.</p>
+            <p class="doc-p">Es wird kein Inhalt on-chain gespeichert — nur ein <strong>SHA-256-Hash</strong> deiner aktuellen sys.md sowie die Anzahl deiner Sessions. Das kostet minimalen Gas und hinterlässt keinen lesbaren Inhalt in der Chain.</p>
+            <p class="doc-p">Der Hash-Wert wird gleichzeitig in deiner sys.md im Frontmatter gespeichert (<code class="doc-code">soul_chain_anchor</code>). Mit dem Verifizieren-Button kann jederzeit geprüft werden ob der aktuelle Inhalt mit dem on-chain-Hash übereinstimmt.</p>
 
             <DocHeading level="2">Authentizitätsstufen</DocHeading>
             <div class="doc-table-wrapper my-4">
@@ -695,7 +695,7 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
 
             <div class="doc-warning-box my-4">
               <p class="text-xs font-semibold text-[var(--sys-amber)] mb-1">Wichtig auf Mobile</p>
-              <p class="text-xs text-[var(--sys-fg-dim)] leading-relaxed">Modal nicht schließen während „Transaktion wird verarbeitet…" angezeigt wird. Die App wartet auf Bestätigung — zuerst 60 Sekunden via WalletConnect, dann bis zu 4 Minuten via öffentlichem Polygon-RPC. Der TX-Hash wird sofort in soul.md geschrieben, sobald die Transaktion gesendet wurde.</p>
+              <p class="text-xs text-[var(--sys-fg-dim)] leading-relaxed">Modal nicht schließen während „Transaktion wird verarbeitet…" angezeigt wird. Die App wartet auf Bestätigung — zuerst 60 Sekunden via WalletConnect, dann bis zu 4 Minuten via öffentlichem Polygon-RPC. Der TX-Hash wird sofort in sys.md geschrieben, sobald die Transaktion gesendet wurde.</p>
             </div>
 
             <DocHeading level="2">Rate-Limit &amp; Fees</DocHeading>
@@ -852,7 +852,7 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
                ═══════════════════════════════════════ -->
           <section :id="'integrations'" class="doc-section mb-16 scroll-mt-20">
             <DocHeading level="1" badge="Integration">Integration</DocHeading>
-            <p class="doc-lead">soul.md ist ein offenes Protokoll. Jedes System, das HTTP-Requests senden kann — oder MCP versteht — kann Soul-Daten abrufen und als Kontext verwenden. Kein Plattformzwang, kein Vendor-Lock-in.</p>
+            <p class="doc-lead">sys.md ist ein offenes Protokoll. Jedes System, das HTTP-Requests senden kann — oder MCP versteht — kann Soul-Daten abrufen und als Kontext verwenden. Kein Plattformzwang, kein Vendor-Lock-in.</p>
 
             <DocHeading level="2">Wie es funktioniert</DocHeading>
             <p class="doc-p">Du erstellst einen Service-Token mit den gewünschten Berechtigungen. Das externe System sendet diesen Token im <code class="doc-code">Authorization</code>-Header und erhält die freigegebenen Soul-Daten. Welche Daten zurückgegeben werden, steuerst du ausschließlich über die Berechtigungen im API-Kontext.</p>
@@ -888,7 +888,7 @@ print(soul)</DocCode>
 const res = await fetch("https://YOUR_DOMAIN/api/soul", {
   headers: { Authorization: "Bearer &lt;dein-service-token&gt;" }
 })
-const soul = await res.text()  // soul.md Inhalt als String</DocCode>
+const soul = await res.text()  // sys.md Inhalt als String</DocCode>
           </section>
 
           <!-- ═══════════════════════════════════════
@@ -896,7 +896,7 @@ const soul = await res.text()  // soul.md Inhalt als String</DocCode>
                ═══════════════════════════════════════ -->
           <section :id="'mcp-protocol'" class="doc-section mb-16 scroll-mt-20">
             <DocHeading level="1" badge="MCP">MCP-Protokoll</DocHeading>
-            <p class="doc-lead">soul.md als offenes Protokoll für KI-Agenten. Jede MCP-fähige KI — Claude, GPT, lokale Modelle — kann deine Soul direkt laden, Vault-Dateien abrufen, Profile lesen und externe Dienste in deinem Namen orchestrieren.</p>
+            <p class="doc-lead">sys.md als offenes Protokoll für KI-Agenten. Jede MCP-fähige KI — Claude, GPT, lokale Modelle — kann deine Soul direkt laden, Vault-Dateien abrufen, Profile lesen und externe Dienste in deinem Namen orchestrieren.</p>
 
             <DocHeading level="2">Prinzip: Credentials im Tool-Call, nicht im Server</DocHeading>
             <p class="doc-p">Der MCP-Server speichert keine Drittdienst-Credentials. API-Keys externer Dienste werden beim Tool-Aufruf als Parameter übergeben — sie existieren nur im RAM, für die Dauer eines einzelnen Calls. Kein Key liegt auf dem Server, kein Key wird geloggt.</p>
@@ -904,8 +904,8 @@ const soul = await res.text()  // soul.md Inhalt als String</DocCode>
             <div class="doc-info-box my-4">
               <p class="text-xs font-semibold text-[var(--sys-accent)] mb-2">Verfügbare MCP-Tools</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-[var(--sys-fg-dim)] font-mono">
-                <span>soul_read</span><span class="text-white/35">soul.md als Kontext laden</span>
-                <span>soul_write</span><span class="text-white/35">soul.md aktualisieren</span>
+                <span>soul_read</span><span class="text-white/35">sys.md als Kontext laden</span>
+                <span>soul_write</span><span class="text-white/35">sys.md aktualisieren</span>
                 <span>soul_skills</span><span class="text-white/35">Skill-Dateien aus Soul + Profilen generieren</span>
                 <span>vault_manifest</span><span class="text-white/35">Übersicht aller Vault-Inhalte</span>
                 <span>audio_get / audio_list</span><span class="text-white/35">Sprachaufnahmen abrufen</span>
@@ -915,7 +915,7 @@ const soul = await res.text()  // soul.md Inhalt als String</DocCode>
                 <span>profile_get / profile_save</span><span class="text-white/35">Analyse-Profile (Gesicht, Stimme, Bewegung, Expertise) lesen und schreiben</span>
                 <span>calendar_read</span><span class="text-white/35">Kalender abrufen</span>
                 <span>network_list / network_peer_get</span><span class="text-white/35">Soul-Network-Verbindungen</span>
-                <span>soul_maturity</span><span class="text-white/35">Reife-Score berechnen und in soul.md schreiben</span>
+                <span>soul_maturity</span><span class="text-white/35">Reife-Score berechnen und in sys.md schreiben</span>
                 <span>soul_cloud_push</span><span class="text-white/35">Verschlüsseltes Bundle an externen Speicher pushen</span>
                 <span>verify_human</span><span class="text-white/35">Identitätsverifikation</span>
                 <span>elevenlabs_agent_update</span><span class="text-white/35">ElevenLabs-Agent mit Soul-Daten aktualisieren</span>
@@ -940,7 +940,7 @@ Auth: OAuth 2.0 (Consent-Seite erscheint automatisch)</DocCode>
             <p class="doc-p">Nach der Authentifizierung mit deiner Soul-ID stehen alle Tools sofort zur Verfügung. Berechtigungen werden über die OAuth-Scopes gesteuert — identisch mit den Service-Token-Berechtigungen im API-Kontext.</p>
 
             <DocHeading level="2">Orchestrierung: KI als Dirigent</DocHeading>
-            <p class="doc-p">Das Ziel ist nicht ein KI-Klon — es ist eine KI die dich repräsentiert und in deinem Auftrag handelt. soul.md ist die Partitur, die KI ist der Dirigent. Der MCP-Server verbindet alles — ohne dass du Credentials an eine Plattform übergibst.</p>
+            <p class="doc-p">Das Ziel ist nicht ein KI-Klon — es ist eine KI die dich repräsentiert und in deinem Auftrag handelt. sys.md ist die Partitur, die KI ist der Dirigent. Der MCP-Server verbindet alles — ohne dass du Credentials an eine Plattform übergibst.</p>
 
             <DocCode lang="javascript">// Beispiel: Gesichts- und Bewegungsanalyse via MCP
 const img = await image_get({ filename: "profile.jpg" })
@@ -958,7 +958,7 @@ elevenlabs_agent_update({
   elevenlabs_api_key: "sk_...",   // nur für diesen Call im RAM
   language:           "de"
 })
-// → liest soul.md + alle Profile → baut System-Prompt → patcht Agent</DocCode>
+// → liest sys.md + alle Profile → baut System-Prompt → patcht Agent</DocCode>
           </section>
 
           <!-- ═══════════════════════════════════════
@@ -1047,7 +1047,7 @@ valid    = (cert == expected)  -- constant-time compare</DocCode>
 
             <DocHeading level="3">4. Dateistruktur auf dem VPS</DocHeading>
             <DocCode lang="text">/var/lib/sys/souls/{soul_id}/
-├── soul.md              ← SYSCRYPT01-Präfix wenn AES-256-CBC-verschlüsselt
+├── sys.md              ← SYSCRYPT01-Präfix wenn AES-256-CBC-verschlüsselt
 ├── api_context.json     ← Berechtigungen, vault_key_hex, Datei-Index
 ├── soul_connections.json
 └── vault/
@@ -1289,29 +1289,29 @@ const quickLinks = [
   { id: 'vault-images-chat', title: 'Bilder im Chat',    desc: 'KI zeigt Vault-Bilder auf Anfrage im Chat' },
   { id: 'api-reference',title: 'API-Referenz',          desc: 'Alle Endpunkte auf einen Blick' },
   { id: 'integrations', title: 'Integration',            desc: 'Soul-Daten in eigene Systeme einbinden' },
-  { id: 'mcp-protocol', title: 'MCP-Protokoll',          desc: 'soul.md als offenes Protokoll für KI-Agenten' },
+  { id: 'mcp-protocol', title: 'MCP-Protokoll',          desc: 'sys.md als offenes Protokoll für KI-Agenten' },
   { id: 'security',     title: 'Sicherheit',            desc: 'Verschlüsselung und Datenschutz verstehen' },
 ]
 
 // ── Content Data ──────────────────────────────────────────────────────────────
 const coreConcepts = [
-  { term: 'Soul',     desc: 'Deine digitale Identität als Markdown-Datei (soul.md). Beschreibt Persönlichkeit, Erinnerungen und Kontext.' },
-  { term: 'Vault',    desc: 'Lokaler Dateiordner im Browser. Enthält soul.md, Audio, Bilder und Kontext-Dokumente. Verlässt dein Gerät nur wenn du es erlaubst.' },
-  { term: 'Session',  desc: 'Gespräch mit der KI in deinem Kontext. Wird chronologisch an soul.md angehängt und wächst deine Identität.' },
+  { term: 'Soul',     desc: 'Deine digitale Identität als Markdown-Datei (sys.md). Beschreibt Persönlichkeit, Erinnerungen und Kontext.' },
+  { term: 'Vault',    desc: 'Lokaler Dateiordner im Browser. Enthält sys.md, Audio, Bilder und Kontext-Dokumente. Verlässt dein Gerät nur wenn du es erlaubst.' },
+  { term: 'Session',  desc: 'Gespräch mit der KI in deinem Kontext. Wird chronologisch an sys.md angehängt und wächst deine Identität.' },
   { term: 'Network',  desc: 'Peer-to-Peer Verbindungen zwischen Souls. Erlaubt KI-Agenten den sozialen Kontext zu lesen.' },
-  { term: 'MCP',      desc: 'Model Context Protocol — offener Standard für KI-Kontext-Integration. SaveYourSoul exponiert soul.md, Vault-Dateien und Profile als MCP-Tools. Jede MCP-fähige KI kann damit arbeiten.' },
+  { term: 'MCP',      desc: 'Model Context Protocol — offener Standard für KI-Kontext-Integration. SaveYourSoul exponiert sys.md, Vault-Dateien und Profile als MCP-Tools. Jede MCP-fähige KI kann damit arbeiten.' },
 ]
 
 const createSteps = [
   { title: 'Soul erstellen',           desc: 'Klicke auf der Startseite auf „Soul erstellen". Gib deinen Namen und eine erste Beschreibung deiner Identität ein.' },
-  { title: 'Soul einloggen',           desc: 'Lade deine bestehende soul.md-Datei hoch — oder entsperre ein verschlüsseltes .soul-Bundle mit deinen 12 Schlüsselwörtern.' },
+  { title: 'Soul einloggen',           desc: 'Lade deine bestehende sys.md-Datei hoch — oder entsperre ein verschlüsseltes .soul-Bundle mit deinen 12 Schlüsselwörtern.' },
   { title: 'Session starten',          desc: 'Wechsle in die Session-Ansicht. Die KI hat sofort Zugang zu deinem Soul-Kontext und baut ihn mit jeder Session aus.' },
   { title: 'Vault verbinden (optional)', desc: 'Verbinde einen lokalen Ordner für persistente Datei-Speicherung. Für Cloud-Backups: .soul-Bundle herunterladen, sicher ablegen, beim nächsten Login über URL importieren.' },
 ]
 
 const vaultModes = [
   { mode: 'Ciphered',    desc: 'Standard. Dateien werden vor dem Upload mit AES-256-CBC (Vault-Session-Schlüssel) verschlüsselt. VPS entschlüsselt bei Bedarf automatisch für autorisierte Dienste. Sync blockiert ohne Vault-Schlüssel.', for: 'Standard für alle Souls — privat und sicher' },
-  { mode: 'Open',        desc: 'Explizites Opt-in. Dateien werden im Klartext auf dem VPS gespeichert. Nur sinnvoll für Public-Network-Souls, deren soul.md öffentlich lesbar sein soll.', for: 'Ausschließlich öffentliche / geteilte Souls' },
+  { mode: 'Open',        desc: 'Explizites Opt-in. Dateien werden im Klartext auf dem VPS gespeichert. Nur sinnvoll für Public-Network-Souls, deren sys.md öffentlich lesbar sein soll.', for: 'Ausschließlich öffentliche / geteilte Souls' },
 ]
 
 const bundleKeyModes = [
@@ -1319,7 +1319,7 @@ const bundleKeyModes = [
 ]
 
 const apiPermissions = [
-  { name: 'soul',          content: 'soul.md — dein gesamter Soul-Kontext',  endpoint: 'GET /api/soul' },
+  { name: 'soul',          content: 'sys.md — dein gesamter Soul-Kontext',  endpoint: 'GET /api/soul' },
   { name: 'audio',         content: 'Audio-Dateien (WebM, MP3, OGG …)',       endpoint: 'GET /api/vault/audio/:name' },
   { name: 'video',         content: 'Video-Dateien (MP4, WebM, MOV …)',       endpoint: 'GET /api/vault/video/:name' },
   { name: 'images',        content: 'Bilder (JPG, PNG, WebP, AVIF)',           endpoint: 'GET /api/vault/images/:name' },
@@ -1344,7 +1344,7 @@ const encLayers = [
 const privacyPoints = [
   { title: 'Verschlüsselung als Standard',          desc: 'Alle Uploads sind standardmäßig AES-256-CBC verschlüsselt. Kein Klartext verlässt deinen Browser — Sync blockiert ohne Vault-Schlüssel.' },
   { title: 'Cloud immer verschlüsselt',             desc: 'Cloud-Backups (.soul-Bundle) sind AES-256-GCM mit 12 Wörtern verschlüsselt — portabel, gerätunabhängig, langlebig. Der Schlüssel berührt den Server nie — mathematisch Zero-Knowledge.' },
-  { title: 'Du kontrollierst deine Daten',          desc: 'Deine soul.md liegt in deinem lokalen Vault. Auf dem Server landen nur Daten, die du explizit hochlädst.' },
+  { title: 'Du kontrollierst deine Daten',          desc: 'Deine sys.md liegt in deinem lokalen Vault. Auf dem Server landen nur Daten, die du explizit hochlädst.' },
   { title: 'Granulare Berechtigungen',              desc: 'Jeder Dienst bekommt nur Zugriff auf das, was du ihm explizit erlaubst — pro Datei-Kategorie.' },
   { title: 'Zeitlich begrenzter Zugang',            desc: 'Vault-Sessions laufen automatisch ab. Kein Dienst hat permanenten Zugang — du öffnest ihn bewusst.' },
   { title: 'Keine zentralen Identitätsdaten',       desc: 'Es gibt keine zentrale Datenbank mit Nutzerprofilen. Deine Identität ist deine Datei.' },
@@ -1354,7 +1354,7 @@ const privacyPoints = [
 const endpoints = [
   {
     method: 'GET', path: '/api/soul', permission: 'Berechtigung: soul',
-    desc: 'Gibt den vollständigen Soul-Kontext (soul.md) als Plaintext zurück. Da Verschlüsselung Standard ist, wird die Datei für autorisierte Service-Token serverseitig AES-256-CBC-entschlüsselt. Für Cloud-Backup-Zwecke: ?raw=1 gibt die verschlüsselten Bytes direkt zurück (nur für ciphered Souls).',
+    desc: 'Gibt den vollständigen Soul-Kontext (sys.md) als Plaintext zurück. Da Verschlüsselung Standard ist, wird die Datei für autorisierte Service-Token serverseitig AES-256-CBC-entschlüsselt. Für Cloud-Backup-Zwecke: ?raw=1 gibt die verschlüsselten Bytes direkt zurück (nur für ciphered Souls).',
     response: '---\nsoul_id: abc123\nsoul_name: Jan\n---\n\nIch bin Jan...'
   },
   {
@@ -1415,12 +1415,12 @@ const mobileIssues = [
   {
     problem: 'TX gesendet, aber kein Feedback',
     cause: 'Bestätigung kommt nicht durch die unterbrochene Verbindung',
-    behavior: 'soul.md wird sofort nach TX-Submission aktualisiert (nicht erst nach Bestätigung). Kein Datenverlust.'
+    behavior: 'sys.md wird sofort nach TX-Submission aktualisiert (nicht erst nach Bestätigung). Kein Datenverlust.'
   },
   {
     problem: 'Polling läuft aus ohne Bestätigung',
     cause: 'Sehr langsame Polygon-RPC-Antwortzeiten',
-    behavior: 'Fehlermeldung „Transaktion gesendet, Bestätigung ausstehend" + Explorer-Link. TX-Hash bereits in soul.md.'
+    behavior: 'Fehlermeldung „Transaktion gesendet, Bestätigung ausstehend" + Explorer-Link. TX-Hash bereits in sys.md.'
   },
   {
     problem: 'Provider nach Chain-Wechsel stale',
@@ -1448,16 +1448,16 @@ const refImplLayers = [
   {
     name: 'Storage',
     title: 'Dateisystem (/var/lib/sys/souls/)',
-    desc: 'Keine relationale Datenbank. Pro Soul ein Verzeichnis mit soul.md, api_context.json, soul_connections.json und vault/-Unterordnern. Verschlüsselung im Dateisystem selbst (SYSCRYPT01-Präfix).'
+    desc: 'Keine relationale Datenbank. Pro Soul ein Verzeichnis mit sys.md, api_context.json, soul_connections.json und vault/-Unterordnern. Verschlüsselung im Dateisystem selbst (SYSCRYPT01-Präfix).'
   },
 ]
 
 const refImplRequirements = [
   { id: 'R-01', text: 'soul_cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[:32] — deterministisch, keine Datenbank' },
   { id: 'R-02', text: 'Verschlüsselte Dateien: Magic "SYS\\x01" (4 Bytes) + 16-Byte-IV + AES-256-CBC-Ciphertext' },
-  { id: 'R-03', text: 'soul.md: Markdown mit YAML-Frontmatter (soul_id, name, version, maturity, Timestamps) + ## Sektionen' },
+  { id: 'R-03', text: 'sys.md: Markdown mit YAML-Frontmatter (soul_id, name, version, maturity, Timestamps) + ## Sektionen' },
   { id: 'R-04', text: 'api_context.json: permissions-Objekt, vault_key_hex (hex), synced_files + active_files Index' },
-  { id: 'R-05', text: 'GET /api/soul → soul.md-Text; PUT /api/context → soul_content updaten (Server re-verschlüsselt)' },
+  { id: 'R-05', text: 'GET /api/soul → sys.md-Text; PUT /api/context → soul_content updaten (Server re-verschlüsselt)' },
   { id: 'R-06', text: 'POST /api/webhook → soul + Vault-Dateien als JSON-Response mit url_with_token-Links' },
   { id: 'R-07', text: 'MCP-Tools soul_read + soul_write müssen das MCP Streamable HTTP-Protokoll implementieren' },
   { id: 'R-08', text: 'Rate-Limiting auf /mcp und /oauth/token — kein offener Brute-Force-Kanal' },
@@ -1471,18 +1471,18 @@ const faqItems = ref([
   { q: 'Kann ich eine Verbindung im Soul Network einseitig trennen?', a: 'Ja. Jede Seite kann jederzeit trennen. Die andere Person erhält beim nächsten Öffnen des Soul Networks eine Benachrichtigung. Die KI hat ab sofort keinen Zugang mehr zum geteilten Netzwerk-Kontext dieser Verbindung.', open: false },
   { q: 'Wie sicher ist die Verschlüsselung mit 12 Wörtern?', a: 'Die 12 Wörter (BIP39) werden mit PBKDF2-SHA256 (100.000 Iterationen) zu einem 256-Bit AES-Schlüssel abgeleitet. Das entspricht Industriestandard. Die Sicherheit hängt davon ab, wie sicher du die 12 Wörter aufbewahrst — sie werden nirgends gespeichert.', open: false },
   { q: 'Warum blockiert der Sync und zeigt „Vault-Schlüssel fehlt"?', a: 'Seit der Umstellung auf Verschlüsselung als Standard lässt der Sync keinen Klartext-Upload mehr zu. Du musst den Vault zuerst öffnen (Kachel „Vault-Zugang" → Entsperren mit Passkey oder 12 Wörtern). Erst dann ist der Vault-Schlüssel im Browser vorhanden und der Sync verschlüsselt automatisch vor dem Upload.', open: false },
-  { q: 'Was passiert mit meinen Daten wenn ich alles lösche?', a: 'Der Button „Alle VPS-Daten löschen" entfernt soul.md, alle Vault-Dateien und Service-Tokens vom Server. Deine lokale Soul im Vault bleibt unberührt. Du kannst jederzeit neu hochladen.', open: false },
+  { q: 'Was passiert mit meinen Daten wenn ich alles lösche?', a: 'Der Button „Alle VPS-Daten löschen" entfernt sys.md, alle Vault-Dateien und Service-Tokens vom Server. Deine lokale Soul im Vault bleibt unberührt. Du kannst jederzeit neu hochladen.', open: false },
   { q: 'Was ist der Unterschied zwischen lokalem Vault und Cloud-Backup?', a: 'Lokal: ein Ordner auf deinem Gerät, erreichbar via File System Access API — für das aktive Bearbeiten. Cloud: ein verschlüsseltes .soul-Bundle auf einem beliebigen Speicher (Google Drive, Arweave, IPFS …) — nur für die Aufbewahrung. Der Weg: Vault aufbauen → verschlüsselt herunterladen → beliebig ablegen → beim nächsten Login URL eingeben → entschlüsseln. Kein automatischer Sync, kein Cloud-URL-Management im Tool.', open: false },
   { q: 'Was bedeutet die Warnung „X VPS-Datei(en) konnten nicht entschlüsselt werden"?', a: 'Beim Verschlüsseln & Download werden VPS-Dateien automatisch abgerufen. Falls der Vault-Schlüssel in der aktuellen VPS-Session nicht mehr aktiv ist (Session abgelaufen), kann der Server CBC-verschlüsselte Dateien nicht entschlüsseln und gibt sie übersprungen zurück. Lokal gespeicherte Dateien werden trotzdem eingebunden. Lösung: vorher den Vault im API-Kontext erneut öffnen (Vault-Session erneuern), dann erneut verschlüsseln.', open: false },
   { q: 'Wie lade ich ein .soul-Bundle aus Google Drive oder IPFS?', a: 'Beim Login auf „URL / Cloud" wechseln und die öffentliche Share-URL (HTTPS) oder eine Arweave TX-ID (43 Zeichen) eingeben. Das Bundle wird geladen und anschließend mit den 12 Schlüsselwörtern entschlüsselt. Die URL wird für den nächsten Login gespeichert. Google Drive: „Freigeben → Jeder mit dem Link" → direkten Download-Link (uc?export=download&id=…) verwenden.', open: false },
-  { q: 'Die Transaktion beim Verankern kam nie zum Ende — was ist passiert?', a: 'Auf Mobile unterbricht der App-Switch (Browser → Wallet-App → Browser zurück) oft die WalletConnect-Verbindung. SYS schreibt den TX-Hash aber sofort in soul.md, sobald die Transaktion gesendet wurde — noch bevor die Bestätigung ankommt. Danach wartet SYS bis zu 60s via WalletConnect, dann nochmal bis zu 4 Min. über den öffentlichen Polygon-RPC. Wenn das Modal die Meldung „Transaktion gesendet, Bestätigung ausstehend" zeigt, ist die TX trotzdem unterwegs — den Explorer-Link öffnen um den Status zu prüfen.', open: false },
+  { q: 'Die Transaktion beim Verankern kam nie zum Ende — was ist passiert?', a: 'Auf Mobile unterbricht der App-Switch (Browser → Wallet-App → Browser zurück) oft die WalletConnect-Verbindung. SYS schreibt den TX-Hash aber sofort in sys.md, sobald die Transaktion gesendet wurde — noch bevor die Bestätigung ankommt. Danach wartet SYS bis zu 60s via WalletConnect, dann nochmal bis zu 4 Min. über den öffentlichen Polygon-RPC. Wenn das Modal die Meldung „Transaktion gesendet, Bestätigung ausstehend" zeigt, ist die TX trotzdem unterwegs — den Explorer-Link öffnen um den Status zu prüfen.', open: false },
   { q: 'Welche Wallet kann ich zum Verankern verwenden?', a: 'Jede EIP-1193-kompatible Wallet via WalletConnect v2: MetaMask (Desktop + Mobile), Rainbow, Coinbase Wallet, Trust Wallet u.v.m. Auf Desktop funktioniert auch die MetaMask-Browser-Extension direkt. Die Wallet muss auf Polygon Mainnet konfiguriert sein — SYS wechselt automatisch und fügt das Netz hinzu falls nötig.', open: false },
   { q: 'Warum sehen verbundene Souls meine Dateien nicht?', a: 'Soul.md wird immer automatisch geteilt — dafür ist kein zusätzlicher Schritt nötig. Vault-Dateien (Audio, Bilder, Kontext) sind jedoch nur sichtbar, wenn sie explizit in den Public Vault hochgeladen wurden. Das geht im Bereich „Dateien" → Kategorie wählen → Datei auswählen → „In Public Vault hochladen" aktivieren. Außerdem muss der Vault-Zugang offen sein (Kachel „Vault-Zugang"). Ohne diesen Schritt bleiben Dateien im privaten Vault und sind für niemanden außer dir erreichbar.', open: false },
-  { q: 'Muss ich für Soul Network etwas in der App konfigurieren?', a: 'Für das Teilen von soul.md: Nein. Sobald eine gegenseitige Verbindung besteht, wird der soul_grant automatisch angelegt und vault_public.enabled gesetzt — kein manuelles Konfigurieren nötig. Für das Teilen von Vault-Dateien (Audio, Bilder, Kontext): Ja — diese müssen im Bereich „Dateien" separat in den Public Vault hochgeladen werden. Das ist ein bewusster Schritt, damit keine Dateien unbeabsichtigt geteilt werden.', open: false },
-  { q: 'Was teilt soul.md vs. vault_public?', a: 'soul.md ist deine Identitätsdatei — sie wird bei gegenseitiger Verbindung automatisch über den /network-Endpunkt geteilt. Kein Upload in den Public Vault nötig. vault_public ist ein separates Verzeichnis für Vault-Dateien (Audio, Bilder, Kontext-Dokumente), die du explizit für verbundene Souls freigeben möchtest. Beide Mechanismen greifen ineinander: soul.md liefert den Textkontext, vault_public liefert die Mediendateien. Ein KI-Agent kann damit nicht nur über dich lesen, sondern auch deine Stimme hören oder deine Bilder sehen — aber nur wenn du das explizit eingerichtet hast.', open: false },
-  { q: 'Was bedeutet „Server-Soul ist mit einem anderen Schlüssel verschlüsselt"?', a: 'Die soul.md auf dem Server wurde mit einem anderen Vault-Schlüssel verschlüsselt als dem aktuell aktiven — zum Beispiel weil der Vault zuletzt von einem anderen Gerät oder mit anderen Schlüsselwörtern geöffnet wurde. Lösung: Vault öffnen (Kachel „Vault-Zugang" → Entsperren) → dann Vault synchronisieren (Kachel „Vault-Explorer" → Sync). Danach klappt der Soul-Abgleich.', open: false },
-  { q: 'Was passiert beim Soul-Sync wenn beide Seiten denselben Stand haben?', a: 'Nichts — das Sync-Panel erscheint nicht. Es wird nur angezeigt wenn der Inhalt der server-seitigen soul.md vom lokal gespeicherten Stand abweicht. Der Vergleich läuft beim Session-Start automatisch im Hintergrund.', open: false },
-  { q: 'Kann der Soul-Sync Änderungen automatisch zusammenführen (Merge)?', a: 'Nein. Es gibt keine automatische Zusammenführung. Immer gewinnt eine Seite vollständig — entweder Server oder Lokal. Wenn du Inhalte aus beiden Versionen behalten möchtest, musst du die soul.md-Datei vorher manuell sichern und die gewünschten Sektionen per Text-Editor zusammenführen.', open: false },
+  { q: 'Muss ich für Soul Network etwas in der App konfigurieren?', a: 'Für das Teilen von sys.md: Nein. Sobald eine gegenseitige Verbindung besteht, wird der soul_grant automatisch angelegt und vault_public.enabled gesetzt — kein manuelles Konfigurieren nötig. Für das Teilen von Vault-Dateien (Audio, Bilder, Kontext): Ja — diese müssen im Bereich „Dateien" separat in den Public Vault hochgeladen werden. Das ist ein bewusster Schritt, damit keine Dateien unbeabsichtigt geteilt werden.', open: false },
+  { q: 'Was teilt sys.md vs. vault_public?', a: 'sys.md ist deine Identitätsdatei — sie wird bei gegenseitiger Verbindung automatisch über den /network-Endpunkt geteilt. Kein Upload in den Public Vault nötig. vault_public ist ein separates Verzeichnis für Vault-Dateien (Audio, Bilder, Kontext-Dokumente), die du explizit für verbundene Souls freigeben möchtest. Beide Mechanismen greifen ineinander: sys.md liefert den Textkontext, vault_public liefert die Mediendateien. Ein KI-Agent kann damit nicht nur über dich lesen, sondern auch deine Stimme hören oder deine Bilder sehen — aber nur wenn du das explizit eingerichtet hast.', open: false },
+  { q: 'Was bedeutet „Server-Soul ist mit einem anderen Schlüssel verschlüsselt"?', a: 'Die sys.md auf dem Server wurde mit einem anderen Vault-Schlüssel verschlüsselt als dem aktuell aktiven — zum Beispiel weil der Vault zuletzt von einem anderen Gerät oder mit anderen Schlüsselwörtern geöffnet wurde. Lösung: Vault öffnen (Kachel „Vault-Zugang" → Entsperren) → dann Vault synchronisieren (Kachel „Vault-Explorer" → Sync). Danach klappt der Soul-Abgleich.', open: false },
+  { q: 'Was passiert beim Soul-Sync wenn beide Seiten denselben Stand haben?', a: 'Nichts — das Sync-Panel erscheint nicht. Es wird nur angezeigt wenn der Inhalt der server-seitigen sys.md vom lokal gespeicherten Stand abweicht. Der Vergleich läuft beim Session-Start automatisch im Hintergrund.', open: false },
+  { q: 'Kann der Soul-Sync Änderungen automatisch zusammenführen (Merge)?', a: 'Nein. Es gibt keine automatische Zusammenführung. Immer gewinnt eine Seite vollständig — entweder Server oder Lokal. Wenn du Inhalte aus beiden Versionen behalten möchtest, musst du die sys.md-Datei vorher manuell sichern und die gewünschten Sektionen per Text-Editor zusammenführen.', open: false },
   { q: 'Warum zeigt die KI keine Bilder aus meinem Vault?', a: 'Drei häufige Ursachen: (1) Die Bilder sind nicht im Vault — lokaler Vault muss verbunden sein, oder Bilder müssen per API-Kontext auf den VPS hochgeladen sein. (2) Der Vault-Zugang ist geschlossen — die Kachel Vault-Zugang muss offen sein, damit der VPS-Zugriff funktioniert. (3) Die KI wurde nicht explizit gefragt — frag sie direkt: Zeig mir ein Bild von dir.', open: false },
   { q: 'Welche Bildformate werden im Chat unterstützt?', a: 'JPG, PNG, WebP und AVIF — alle Formate die der Browser nativ darstellen kann. Die Bilder werden direkt aus dem Vault geladen und nie an externe Dienste weitergegeben. Audio- und Videodateien werden derzeit nicht als Inline-Medien im Chat angezeigt.', open: false },
 ])

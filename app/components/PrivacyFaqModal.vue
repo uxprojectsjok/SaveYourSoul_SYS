@@ -105,7 +105,7 @@
             <div>
               <h3 class="text-base font-semibold text-[var(--sys-fg)] mb-1">Sind meine Soul-Daten auf dem Server verschlüsselt?</h3>
               <p>
-                Ja — Verschlüsselung ist Standard. soul.md und alle Vault-Dateien werden
+                Ja — Verschlüsselung ist Standard. sys.md und alle Vault-Dateien werden
                 <strong class="text-[var(--sys-fg)]">standardmäßig mit AES-256-CBC verschlüsselt</strong>,
                 bevor sie den Browser verlassen. Der Server speichert niemals Klartext — außer du aktivierst
                 bewusst den Open-Modus (für Public-Network-Souls).

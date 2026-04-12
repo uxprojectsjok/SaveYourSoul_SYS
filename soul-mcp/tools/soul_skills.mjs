@@ -13,7 +13,7 @@ const PROFILE_LABELS = {
 export function register(server, token) {
   server.tool(
     'soul_skills',
-    'Generiert vollständige Claude-Skill-Definitionen aus ALLEN Soul-Vault-Daten:\n1. soul.md Sektionen → Skill pro Themenbereich\n2. Vault-Kontext-Dateien (.md/.txt) → Skill pro Dokument\n3. Gespeicherte Profile (face/voice/motion/expertise) → im Root-Skill integriert\n\nGibt fertige .md-Dateien zurück – speicherbar unter ~/.claude/skills/.',
+    'Generiert vollständige Claude-Skill-Definitionen aus ALLEN Soul-Vault-Daten:\n1. sys.md Sektionen → Skill pro Themenbereich\n2. Vault-Kontext-Dateien (.md/.txt) → Skill pro Dokument\n3. Gespeicherte Profile (face/voice/motion/expertise) → im Root-Skill integriert\n\nGibt fertige .md-Dateien zurück – speicherbar unter ~/.claude/skills/.',
     {},
     async () => {
       try {
@@ -29,14 +29,14 @@ export function register(server, token) {
         const slug     = toSlug(name);
         const skills   = [];
 
-        // ── 1. Sektionen aus soul.md ──────────────────────────────────────────
+        // ── 1. Sektionen aus sys.md ──────────────────────────────────────────
         for (const [heading, content] of Object.entries(sections)) {
           if (SKIP_SECTIONS.has(heading) || content.length < 80) continue;
           const sectionSlug = toSlug(heading).substring(0, 40);
           skills.push({
             filename: `${slug}-${sectionSlug}.md`,
             heading,
-            source: 'soul.md',
+            source: 'sys.md',
             skill: skillFile(slug, sectionSlug, heading, name, content),
           });
         }
@@ -82,9 +82,9 @@ ${skillIndex || '(noch keine Sektionen generiert)'}
 `;
 
         skills.unshift({
-          filename: `${slug}-soul.md`,
+          filename: `${slug}-sys.md`,
           heading: 'Root (Soul-Kontext)',
-          source: 'soul.md + profile',
+          source: 'sys.md + profile',
           skill: rootSkill,
         });
 

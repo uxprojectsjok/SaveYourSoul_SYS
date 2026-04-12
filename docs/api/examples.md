@@ -25,10 +25,10 @@ curl -s "$BASE/api/context" \
 
 ---
 
-## 2. Upload soul.md (plaintext, open mode)
+## 2. Upload sys.md (plaintext, open mode)
 
 ```bash
-SOUL_CONTENT=$(cat soul.md)
+SOUL_CONTENT=$(cat sys.md)
 
 curl -s -X PUT "$BASE/api/context" \
   -H "Authorization: Bearer $SOUL_ID.$CERT" \
@@ -42,7 +42,7 @@ curl -s -X PUT "$BASE/api/context" \
 
 ---
 
-## 3. Unlock vault + read encrypted soul.md
+## 3. Unlock vault + read encrypted sys.md
 
 ```bash
 VAULT_KEY="$(openssl rand -hex 32)"

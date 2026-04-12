@@ -61,7 +61,7 @@ via Lua-Scripting. Die `server/api/*.js`-Handler existieren **nur für `nuxt dev
 
 /var/www/YOUR_DOMAIN/                   # Static Files (aus .output/public/)
 /usr/local/openresty/site/              # OPM-Packages (z.B. lua-resty-openssl)
-/var/lib/sys/souls/{soul_id}/           # Soul-Daten (api_context.json, soul.md, vault/)
+/var/lib/sys/souls/{soul_id}/           # Soul-Daten (api_context.json, sys.md, vault/)
 ```
 
 ---

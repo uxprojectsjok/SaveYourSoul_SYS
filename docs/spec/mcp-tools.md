@@ -47,7 +47,7 @@ mechanism as direct API service-tokens (see `spec/auth.md` §3).
 
 ### 3.1 soul_read
 
-Read the full soul.md content.
+Read the full sys.md content.
 
 **Requires:** `soul` permission
 
@@ -62,7 +62,7 @@ Read the full soul.md content.
 
 ### 3.2 soul_write
 
-Update a `## Section` in soul.md.
+Update a `## Section` in sys.md.
 
 **Requires:** `soul` permission
 
@@ -119,7 +119,7 @@ List declared skills or invoke a skill handler.
 { "action": "invoke", "skill": "skill-name", "params": {} }
 ```
 
-Skills are declared in the `## Skills` section of soul.md as structured YAML blocks.
+Skills are declared in the `## Skills` section of sys.md as structured YAML blocks.
 
 ---
 
@@ -299,7 +299,7 @@ List all connected souls in the Soul Network.
 
 ### 3.14 network_peer_get
 
-Read the soul.md of a connected peer (if they have granted access).
+Read the sys.md of a connected peer (if they have granted access).
 
 **Requires:** `soul` permission + peer must have granted access
 
@@ -353,7 +353,7 @@ This tool SHOULD be called before any destructive or irreversible operation.
 
 ### 3.17 calendar_read
 
-Read the `## Calendar` section of soul.md.
+Read the `## Calendar` section of sys.md.
 
 **Requires:** `calendar` permission
 
@@ -402,7 +402,7 @@ All tools return structured errors:
 | `encrypted` | 403 | Content is encrypted, no key available |
 | `permission_denied` | 403 | Service-token lacks required permission |
 | `not_found` | 404 | Resource does not exist |
-| `soul_not_synced` | 404 | No soul.md uploaded to VPS |
+| `soul_not_synced` | 404 | No sys.md uploaded to VPS |
 | `api_disabled` | 403 | API context not enabled by user |
 
 ---

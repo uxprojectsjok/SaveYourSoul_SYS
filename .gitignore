@@ -2,29 +2,52 @@
 .output/
 .nuxt/
 dist/
-
-# Dependencies
 node_modules/
 
-# Environment files (keep only .env.example)
+# Secrets & environment
 .env
 .env.*
 *.local
 
-# Production vhost (domain-specific — use server/openresty/vhost.conf.template instead)
-server/openresty/sys.uxprojects-jok.com.nginx
+# Internal operations docs
+docs/WARTUNG.md
+docs/Depoly.md
+docs/DSGVO_DSFA.md
+docs/INVESTOR_REPORT.md
+docs/INVESTOR_REPORT.pdf
+docs/datenschutz_wartung.txt
+docs/legal/
 
-# Claude Code local files
-.claude/
-**/.claude/
+# VPS-specific configs
+server/openresty/vhost_backup
+server/openresty/old_*
 
-# OS & editor artifacts
+# Large binaries & media (served separately)
+docs/*.pdf
+docs/*.png
+docs/Screenshot*
+public/fonts/
+public/sys/
+public/etc/
+public/denkstoff/
+public/plausible/
+
+# OS & editor
 .DS_Store
 Thumbs.db
+.idea/
+.vscode/
 *.swp
-*.swo
-server/openresty/old_vps_sys.uxprojects-jok.com
-server/openresty/vhost_backup
-CLAUDE.md
-scripts/vps/claude-remote-manage.sh
-scripts/vps/setup-claude-remote.sh
+
+# Nuxt cache
+.nitro/
+
+# soul-mcp build
+soul-mcp/dist/
+
+# Test data with personal content
+test/*.soul
+
+# Internal operational docs
+docs/claude_chat.md
+docs/SYS_HANDOFF.md

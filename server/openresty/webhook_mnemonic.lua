@@ -247,7 +247,7 @@ end
 
 -- Soul-Inhalt (ggf. entschlüsseln)
 if perm.soul then
-  local sf = io.open(base_dir .. "/soul.md", "rb")
+  local sf = io.open(base_dir .. "/sys.md", "rb")
   if sf then
     local content = sf:read("*a"); sf:close()
     local MAGIC = "SYS\x01"

@@ -93,10 +93,10 @@
         <!-- ═══ OVERVIEW ═══ -->
         <section id="overview" class="doc-section mb-16 scroll-mt-20">
           <DocHeading level="1" badge="Overview">What SYS is</DocHeading>
-          <p class="doc-lead">A portable, user-controlled identity layer for AI systems. The core unit is soul.md — a plain Markdown file that encodes identity, grows with each session, and serves as persistent context for AI systems.</p>
+          <p class="doc-lead">A portable, user-controlled identity layer for AI systems. The core unit is sys.md — a plain Markdown file that encodes identity, grows with each session, and serves as persistent context for AI systems.</p>
 
           <div class="doc-info-box my-6 font-mono text-xs text-[var(--sys-fg-dim)] leading-relaxed">
-            <div>soul.md  →  sessionStorage (browser)       never leaves without user action</div>
+            <div>sys.md  →  sessionStorage (browser)       never leaves without user action</div>
             <div class="ml-9">→  VPS (AES-256-CBC, optional)     user-initiated</div>
             <div class="ml-9">→  AI context (Anthropic Claude)   transient, user-initiated</div>
             <div class="ml-9">→  MCP tools (soul_read/write)     authorized per service-token</div>
@@ -145,7 +145,7 @@
             <p class="text-xs text-[var(--sys-fg-dim)]">This guide assumes access to a running SYS instance. For self-hosting see <code class="doc-code">docs/PRODUCTION_SETUP.md</code>.</p>
           </div>
 
-          <DocHeading level="2">1. Minimum valid soul.md</DocHeading>
+          <DocHeading level="2">1. Minimum valid sys.md</DocHeading>
           <DocCode lang="yaml">---
 soul_id: 00000000-0000-0000-0000-000000000000  # UUID v4 — REQUIRED
 soul_name: "Your Name"
@@ -169,7 +169,7 @@ Content-Type: application/json
 
 { "soul_id": "your-uuid-v4" }</DocCode>
           <DocCode lang="json">{ "cert": "a3f8b2c1d4e5f6a7b8c9d0e1f2a3b4c5" }</DocCode>
-          <p class="doc-p">Write the cert into your soul.md frontmatter. All subsequent requests use:</p>
+          <p class="doc-p">Write the cert into your sys.md frontmatter. All subsequent requests use:</p>
           <DocCode>Authorization: Bearer {soul_id}.{cert}</DocCode>
 
           <DocHeading level="2">3. Validate</DocHeading>
@@ -177,7 +177,7 @@ Content-Type: application/json
 Authorization: Bearer {soul_id}.{cert}</DocCode>
           <p class="doc-p">Returns <code class="doc-code">200 OK</code> on success, <code class="doc-code">401</code> otherwise.</p>
 
-          <DocHeading level="2">4. Upload soul.md</DocHeading>
+          <DocHeading level="2">4. Upload sys.md</DocHeading>
           <DocCode lang="http">PUT /api/context
 Authorization: Bearer {soul_id}.{cert}
 Content-Type: application/json
@@ -202,7 +202,7 @@ Authorization: Bearer {soul_id}.{cert}
 
         <!-- ═══ SOUL.MD SPEC ═══ -->
         <section id="soul-md" class="doc-section mb-16 scroll-mt-20">
-          <DocHeading level="1" badge="Spec">soul.md Format</DocHeading>
+          <DocHeading level="1" badge="Spec">sys.md Format</DocHeading>
           <p class="doc-lead">A plain UTF-8 Markdown file. YAML frontmatter carries protocol metadata. The body is human-readable identity content consumable by AI systems.</p>
 
           <DocHeading level="2">Frontmatter Fields</DocHeading>
@@ -489,7 +489,7 @@ curl -s -X POST "$BASE/api/fetch-bundle" \
           <p class="doc-p">Files starting with <code class="doc-code">53 59 53 01</code> are encrypted. Files without this magic header are treated as plaintext.</p>
 
           <DocHeading level="2">Raw Endpoint &amp; Client-Side Decrypt Fallback</DocHeading>
-          <p class="doc-p"><code class="doc-code">GET /api/soul?raw=1</code> returns the raw encrypted bytes of <code class="doc-code">soul.md</code> without server-side decryption. This is used for backup / cloud push and as a fallback when the server's active vault session has a different key than the client.</p>
+          <p class="doc-p"><code class="doc-code">GET /api/soul?raw=1</code> returns the raw encrypted bytes of <code class="doc-code">sys.md</code> without server-side decryption. This is used for backup / cloud push and as a fallback when the server's active vault session has a different key than the client.</p>
           <p class="doc-p">When the normal <code class="doc-code">GET /api/soul</code> returns <code class="doc-code">decryption_failed</code> or an <code class="doc-code">encrypted</code> status, the browser falls back to:</p>
           <DocCode lang="js">// useSoul.js – _decryptSoulBuffer()
 const raw = await fetch('/api/soul?raw=1');
@@ -512,7 +512,7 @@ const plain = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, cipherte
     "salt": "&lt;base64 random 16 bytes&gt;"
   },
   "files": [
-    { "path": "soul.md", "iv": "&lt;base64 12 bytes&gt;", "data": "&lt;base64 AES-256-GCM ciphertext + 16-byte tag&gt;" }
+    { "path": "sys.md", "iv": "&lt;base64 12 bytes&gt;", "data": "&lt;base64 AES-256-GCM ciphertext + 16-byte tag&gt;" }
   ]
 }</DocCode>
 
@@ -548,7 +548,7 @@ const plain = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, cipherte
 
           <DocHeading level="2">VPS Directory Structure</DocHeading>
           <DocCode>/var/lib/sys/souls/{soul_id}/
-├── soul.md                    ← identity file (encrypted or plain)
+├── sys.md                    ← identity file (encrypted or plain)
 ├── api_context.json           ← permissions, vault index, vault_key_hex
 ├── soul_connections.json      ← peer network connections
 └── vault/
@@ -697,7 +697,7 @@ import { h } from 'vue'
 useHead({
   title: 'Developer Docs · SaveYourSoul',
   meta: [
-    { name: 'description', content: 'SYS Protocol specification — soul.md format, authentication model, MCP tools, API reference, and architecture docs.' }
+    { name: 'description', content: 'SYS Protocol specification — sys.md format, authentication model, MCP tools, API reference, and architecture docs.' }
   ]
 })
 
@@ -717,7 +717,7 @@ const nav = [
     id: 'spec',
     title: 'Specification',
     items: [
-      { id: 'soul-md', title: 'soul.md Format' },
+      { id: 'soul-md', title: 'sys.md Format' },
       { id: 'auth', title: 'Auth Model' },
       { id: 'mcp-tools', title: 'MCP Tools' },
     ]
@@ -766,18 +766,18 @@ onMounted(() => {
 // ── Data ────────────────────────────────────────────────────────────────────
 
 const principles = [
-  { p: 'Local-first', impl: 'soul.md lives in sessionStorage; vault files in local filesystem' },
+  { p: 'Local-first', impl: 'sys.md lives in sessionStorage; vault files in local filesystem' },
   { p: 'Privacy-by-design', impl: 'AES-256-CBC encryption before any server upload' },
   { p: 'Stateless auth', impl: 'HMAC-SHA256 cert derived from key + soul_id — no session DB' },
   { p: 'User-controlled sharing', impl: 'Granular service-token permissions per data type' },
-  { p: 'Protocol, not platform', impl: 'soul.md format is open; any compatible server is valid' },
+  { p: 'Protocol, not platform', impl: 'sys.md format is open; any compatible server is valid' },
 ]
 
 const concepts = [
-  { term: 'soul.md', def: 'The identity file. Plain Markdown, YAML frontmatter, grows over time.' },
+  { term: 'sys.md', def: 'The identity file. Plain Markdown, YAML frontmatter, grows over time.' },
   { term: 'soul_id', def: 'UUID v4. Primary key for all server operations. Never changes.' },
   { term: 'soul_cert', def: '32 hex chars. HMAC-SHA256(SOUL_MASTER_KEY, soul_id)[0:32]. Stateless auth token.' },
-  { term: 'vault_key', def: '32-byte AES key. Encrypts soul.md and vault files. Server never stores in plaintext.' },
+  { term: 'vault_key', def: '32-byte AES key. Encrypts sys.md and vault files. Server never stores in plaintext.' },
   { term: 'service-token', def: '64 hex chars. Scoped access token for external services and MCP clients.' },
   { term: 'vault', def: 'Local filesystem folder. Contains audio, images, video, context files.' },
   { term: 'soul_grant', def: 'Permission record created when two souls connect in the network.' },
@@ -833,8 +833,8 @@ const oauthSteps = [
 ]
 
 const mcpTools = [
-  { name: 'soul_read', perm: 'soul', desc: 'Read the full soul.md content' },
-  { name: 'soul_write', perm: 'soul', desc: 'Update a ## Section in soul.md (replace/append/prepend)' },
+  { name: 'soul_read', perm: 'soul', desc: 'Read the full sys.md content' },
+  { name: 'soul_write', perm: 'soul', desc: 'Update a ## Section in sys.md (replace/append/prepend)' },
   { name: 'soul_maturity', perm: 'soul', desc: 'Compute and optionally persist the maturity score (0–100)' },
   { name: 'soul_skills', perm: 'soul', desc: 'Read/write structured skill declarations from ## Skills' },
   { name: 'soul_cloud_push', perm: 'soul', desc: 'Push AES-256-GCM encrypted bundle to Arweave or cloud' },
@@ -848,7 +848,7 @@ const mcpTools = [
   { name: 'video_get', perm: 'video', desc: 'Get a specific video file' },
   { name: 'context_list', perm: 'context_files', desc: 'List synced context documents' },
   { name: 'context_get', perm: 'context_files', desc: 'Get a specific context document' },
-  { name: 'calendar_read', perm: 'calendar', desc: 'Read the ## Calendar section of soul.md' },
+  { name: 'calendar_read', perm: 'calendar', desc: 'Read the ## Calendar section of sys.md' },
   { name: 'network_list', perm: 'soul', desc: 'List connected souls and their public manifests' },
   { name: 'profile_get', perm: 'soul', desc: 'Read a structured profile (e.g. expertise.json)' },
   { name: 'profile_save', perm: 'soul', desc: 'Write a structured profile' },
@@ -859,13 +859,13 @@ const endpoints = [
   { method: 'POST', path: '/api/soul-sign-session', auth: 'none', desc: 'Sign a growth chain entry' },
   { method: 'GET', path: '/api/validate', auth: 'soul_cert', desc: 'Validate cert (200 or 401)' },
   { method: 'GET', path: '/api/context', auth: 'soul_cert', desc: 'Read API context + permissions' },
-  { method: 'PUT', path: '/api/context', auth: 'soul_cert', desc: 'Update context + upload soul.md' },
+  { method: 'PUT', path: '/api/context', auth: 'soul_cert', desc: 'Update context + upload sys.md' },
   { method: 'POST', path: '/api/vault/unlock', auth: 'soul_cert', desc: 'Unlock vault with AES key' },
   { method: 'POST', path: '/api/vault/lock', auth: 'soul_cert', desc: 'Lock vault immediately' },
   { method: 'GET', path: '/api/vault/session', auth: 'soul_cert', desc: 'Query vault session status' },
   { method: 'POST', path: '/api/vault/sync', auth: 'soul_cert', desc: 'Upload a file to vault' },
   { method: 'GET', path: '/api/vault/manifest', auth: 'vault_auth', desc: 'Vault index' },
-  { method: 'GET', path: '/api/soul', auth: 'vault_auth', desc: 'Read soul.md (decrypts on-the-fly)' },
+  { method: 'GET', path: '/api/soul', auth: 'vault_auth', desc: 'Read sys.md (decrypts on-the-fly)' },
   { method: 'GET', path: '/api/vault/audio[/{file}]', auth: 'vault_auth', desc: 'List or get audio files' },
   { method: 'GET', path: '/api/vault/video[/{file}]', auth: 'vault_auth', desc: 'List or get video files' },
   { method: 'GET', path: '/api/vault/images[/{file}]', auth: 'vault_auth', desc: 'List or get image files' },
@@ -928,7 +928,7 @@ const luaScripts = [
   { file: 'api_context.lua', phase: 'content', purpose: 'GET/PUT /api/context' },
   { file: 'vault_unlock.lua', phase: 'content', purpose: 'vault session management' },
   { file: 'vault_sync.lua', phase: 'content', purpose: 'file upload + ClamAV + ffmpeg' },
-  { file: 'api_serve.lua', phase: 'content', purpose: 'soul.md + vault file serving' },
+  { file: 'api_serve.lua', phase: 'content', purpose: 'sys.md + vault file serving' },
   { file: 'webhook.lua', phase: 'content', purpose: 'generic webhook' },
   { file: 'webhook_mnemonic.lua', phase: 'content', purpose: 'BIP39-authenticated webhook' },
   { file: 'fetch_bundle.lua', phase: 'content', purpose: 'fetch encrypted bundle (no auth)' },

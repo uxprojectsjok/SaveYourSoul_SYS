@@ -2,7 +2,7 @@
 
 **Protocol, not a product.**
 
-SYS defines a portable, user-controlled identity layer for AI systems. The core unit is the **soul.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile. It lives in the user's browser, grows with each session, and serves as authentic context for AI systems.
+SYS defines a portable, user-controlled identity layer for AI systems. The core unit is the **sys.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile. It lives in the user's browser, grows with each session, and serves as authentic context for AI systems.
 
 This repository contains the protocol specification and a reference implementation. The reference implementation is invite-only and serves as an example implementation only. It is not intended as a deployable product. Any compatible implementation can be built independently.
 
@@ -13,13 +13,13 @@ This repository contains the protocol specification and a reference implementati
 ## Core Concept
 
 ```
-soul.md  →  sessionStorage (browser)  →  never leaves without user action
+sys.md  →  sessionStorage (browser)  →  never leaves without user action
          →  VPS (encrypted, AES-256-CBC, user-initiated)
          →  AI context (Anthropic Claude API, transient, user-initiated)
          →  MCP tools (soul_read / soul_write, authorized per token)
 ```
 
-The soul.md belongs to the user. The operator has no access to encrypted content. Encryption is the default, plaintext is an explicit opt-in.
+The sys.md belongs to the user. The operator has no access to encrypted content. Encryption is the default, plaintext is an explicit opt-in.
 
 ---
 
@@ -43,12 +43,12 @@ The soul.md belongs to the user. The operator has no access to encrypted content
 │   ├── spec/                Protocol specifications (soul-md, auth, mcp-tools)
 │   ├── api/                 API reference & examples
 │   └── architecture/        OpenResty, vault, encryption internals
-└── test/                    soul.md test fixtures
+└── test/                    sys.md test fixtures
 ```
 
 ---
 
-## soul.md Format
+## sys.md Format
 
 ```markdown
 ---
@@ -122,7 +122,7 @@ bearer = soul_id + "." + soul_cert
 
 ## MCP Integration
 
-`soul-mcp/` implements the [Model Context Protocol](https://modelcontextprotocol.io) with OAuth 2.0 + PKCE. Claude, or any MCP-compatible AI client, can connect and access soul.md and vault files with granular permissions.
+`soul-mcp/` implements the [Model Context Protocol](https://modelcontextprotocol.io) with OAuth 2.0 + PKCE. Claude, or any MCP-compatible AI client, can connect and access sys.md and vault files with granular permissions.
 
 Key tools: `soul_read`, `soul_write`, `vault_manifest`, `audio_list`, `network_list`
 

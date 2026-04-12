@@ -19,7 +19,7 @@ The vault is opt-in. A soul can exist and function without any vault files.
 
 ```
 /var/lib/sys/souls/{soul_id}/
-├── soul.md                    ← identity file (encrypted or plain)
+├── sys.md                    ← identity file (encrypted or plain)
 ├── api_context.json           ← permissions, vault index, vault_key_hex
 ├── soul_connections.json      ← peer network connections
 └── vault/
@@ -131,7 +131,7 @@ Session entry format:
 `expires_at = 0` means the session never expires (`"unlimited"` duration).
 
 The session is required for:
-- Serving decrypted soul.md (`GET /api/soul`)
+- Serving decrypted sys.md (`GET /api/soul`)
 - Serving decrypted vault files (`GET /api/vault/{type}/{file}`)
 - Service-token access when `vault_key_hex` is not persisted
 

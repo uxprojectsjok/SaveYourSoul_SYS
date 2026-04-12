@@ -529,7 +529,7 @@ onMounted(async () => {
 
   // ── Cert-Vorvalidierung ────────────────────────────────────────────────
   // NACH dem Vault-Restore: Cert immer vom Server holen – überschreibt jeden
-  // veralteten Cert aus sessionStorage oder Vault-soul.md.
+  // veralteten Cert aus sessionStorage oder Vault-sys.md.
   await refreshCert();
 
   try {
@@ -552,7 +552,7 @@ onMounted(async () => {
 
 
 // ── Vault-Soul-Sync ───────────────────────────────────────────────────────────
-// Importiert die Vault soul.md wenn sie neuer ist als die sessionStorage-Soul.
+// Importiert die Vault sys.md wenn sie neuer ist als die sessionStorage-Soul.
 // Richtung: Vault → sessionStorage (beim Laden).
 
 function syncVaultSoul() {
@@ -575,7 +575,7 @@ function syncVaultSoul() {
   }
 }
 
-// Importiert soul.md aus Vault ohne Datums-Check (für manuellen Reload).
+// Importiert sys.md aus Vault ohne Datums-Check (für manuellen Reload).
 function forceReloadVaultSoul() {
   const vaultSoulFile = contextFiles.value.find(f =>
     f.name.toLowerCase().endsWith(".md") && validateSoul(f.text).valid
@@ -591,12 +591,12 @@ async function handleVaultConnect() {
   if (!soulMeta.value?.id) return;
 
   if (vaultConnected.value) {
-    // Bereits verbunden → Vault neu scannen + soul.md erzwungen laden
+    // Bereits verbunden → Vault neu scannen + sys.md erzwungen laden
     vaultScanning.value = true;
     await scanVault();
     forceReloadVaultSoul();
     updateVaultInSoul(fileManifest.value);
-    // Cert immer nach Vault-Import auffrischen – Vault-soul.md hat ggf. alten Cert
+    // Cert immer nach Vault-Import auffrischen – Vault-sys.md hat ggf. alten Cert
     await refreshCert();
     vaultScanning.value = false;
     vaultStatus.value = { ok: true };
@@ -608,7 +608,7 @@ async function handleVaultConnect() {
   if (connected) {
     syncVaultSoul(); // Beim ersten Connect: Datums-Check ist OK
     updateVaultInSoul(fileManifest.value);
-    // Cert immer nach Vault-Import auffrischen – Vault-soul.md hat ggf. alten Cert
+    // Cert immer nach Vault-Import auffrischen – Vault-sys.md hat ggf. alten Cert
     await refreshCert();
   }
 }
@@ -626,7 +626,7 @@ async function handleCheckServer() {
 // ── Voice ────────────────────────────────────────────────────────────────────
 
 // Wird aufgerufen wenn VoiceRecorder eine Stimmprobe im Vault gespeichert hat.
-// Schreibt den Verweis auf voice_profile.json in das soul.md Frontmatter.
+// Schreibt den Verweis auf voice_profile.json in das sys.md Frontmatter.
 async function handleVoiceSaved(filename) {
   if (!soulContent.value) return;
   soulContent.value = updateFrontmatterField(
@@ -639,7 +639,7 @@ async function handleVoiceSaved(filename) {
 }
 
 // Wird aufgerufen wenn MotionRecorder ein Bewegungsmuster im Vault gespeichert hat.
-// Schreibt den Verweis auf motion_profile.json in das soul.md Frontmatter.
+// Schreibt den Verweis auf motion_profile.json in das sys.md Frontmatter.
 async function handleMotionSaved(filename) {
   if (!soulContent.value) return;
   soulContent.value = updateFrontmatterField(
