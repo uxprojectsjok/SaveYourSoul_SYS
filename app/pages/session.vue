@@ -635,7 +635,7 @@ async function handleVoiceSaved(filename) {
     "voice_samples/voice_profile.json"
   );
   save();
-  if (vaultConnected.value) await writeSoulMd(soulContent.value, "soul");
+  if (vaultConnected.value) await writeSoulMd(soulContent.value, "sys");
 }
 
 // Wird aufgerufen wenn MotionRecorder ein Bewegungsmuster im Vault gespeichert hat.
@@ -648,7 +648,7 @@ async function handleMotionSaved(filename) {
     "motion_samples/motion_profile.json"
   );
   save();
-  if (vaultConnected.value) await writeSoulMd(soulContent.value, "soul");
+  if (vaultConnected.value) await writeSoulMd(soulContent.value, "sys");
 }
 
 // ── Soul-Anreicherung ────────────────────────────────────────────────────────
@@ -681,7 +681,7 @@ async function triggerEnrichment() {
 
       // Richtung: sessionStorage → Vault (nach jedem Enrichment)
       if (vaultConnected.value) {
-        await writeSoulMd(soulContent.value, "soul");
+        await writeSoulMd(soulContent.value, "sys");
       }
     }
 

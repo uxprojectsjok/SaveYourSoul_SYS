@@ -243,7 +243,7 @@ const { isConnected: vaultConnected, writeSoulMd } = useVault()
 const { isDark } = useColorScheme()
 
 async function saveToVaultIfConnected() {
-  if (vaultConnected.value) await writeSoulMd(soulContent.value, 'soul')
+  if (vaultConnected.value) await writeSoulMd(soulContent.value, 'sys')
 }
 
 const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']

@@ -185,7 +185,7 @@ async function handleAcceptServer() {
   acceptServerVersion();
   // Vault-Datei ebenfalls aktualisieren, damit lokale Kopie nicht veraltet bleibt
   if (vaultConnected.value) {
-    await writeSoulMd(soulContent.value, 'soul');
+    await writeSoulMd(soulContent.value, 'sys');
   }
 }
 

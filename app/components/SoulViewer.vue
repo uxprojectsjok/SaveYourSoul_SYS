@@ -370,7 +370,7 @@ async function saveEdit(key) {
   const updated = updateSection(soulContent.value, key, editText.value);
   updateContent(updated);
   if (vaultConnected.value) {
-    writeSoulMd(soulContent.value, "soul").catch(() => {});
+    writeSoulMd(soulContent.value, "sys").catch(() => {});
   }
   editingSection.value = null;
   editText.value = "";
@@ -402,7 +402,7 @@ async function triggerEnrichment() {
       };
       appendGrowthEntry();
       if (vaultConnected.value) {
-        await writeSoulMd(soulContent.value, "soul").catch(() => {});
+        await writeSoulMd(soulContent.value, "sys").catch(() => {});
       }
     }
     setTimeout(() => { enrichStatus.value = null; }, 4000);
@@ -461,7 +461,7 @@ const changedSections = computed(() => {
 async function handleAcceptServer() {
   acceptServerVersion();
   if (vaultConnected.value) {
-    await writeSoulMd(soulContent.value, "soul").catch(() => {});
+    await writeSoulMd(soulContent.value, "sys").catch(() => {});
   }
 }
 
