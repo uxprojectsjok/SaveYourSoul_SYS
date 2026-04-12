@@ -2,10 +2,10 @@ import { z } from 'zod';
 import { getJson, getRawBytes } from '../lib/api.mjs';
 
 /**
- * soul_cloud_push – lädt die verschlüsselte soul.md auf einen Cloud-Speicher hoch.
+ * soul_cloud_push – lädt die verschlüsselte sys.md auf einen Cloud-Speicher hoch.
  *
  * Sicherheitsprinzip: Es werden AUSSCHLIESSLICH verschlüsselte Bytes hochgeladen.
- * Die soul.md wird nie entschlüsselt — der Server liefert via ?raw=1 den
+ * Die sys.md wird nie entschlüsselt — der Server liefert via ?raw=1 den
  * AES-256-CBC Ciphertext (SYSCRYPT01-Format) direkt zurück.
  *
  * Unterstützte Ziele:
@@ -33,7 +33,7 @@ async function uploadToArweave(encryptedBytes, walletKeyJson, gatewayUrl) {
       tags: [
         { name: Buffer.from('Content-Type').toString('base64url'),  value: Buffer.from('application/octet-stream').toString('base64url') },
         { name: Buffer.from('App-Name').toString('base64url'),      value: Buffer.from('SaveYourSoul').toString('base64url') },
-        { name: Buffer.from('Type').toString('base64url'),          value: Buffer.from('soul.md.enc').toString('base64url') },
+        { name: Buffer.from('Type').toString('base64url'),          value: Buffer.from('sys.md.enc').toString('base64url') },
         { name: Buffer.from('Encryption').toString('base64url'),    value: Buffer.from('AES-256-CBC').toString('base64url') },
       ],
       data: Buffer.from(encryptedBytes).toString('base64url'),
@@ -74,7 +74,7 @@ async function uploadToHttps(encryptedBytes, targetUrl, bearerToken) {
 export function register(server, token) {
   server.tool(
     'soul_cloud_push',
-    'Lädt die verschlüsselte soul.md auf einen Cloud-Speicher hoch.\n\nSicherheit: Es werden AUSSCHLIESSLICH AES-256-CBC-verschlüsselte Bytes hochgeladen — niemals Klartext. Die soul.md muss im ciphered-Modus sein, sonst wird der Upload blockiert.\n\nZiele:\n- Arweave: arweave_wallet_key (JWK als JSON-String) → permanente, dezentrale Speicherung\n- HTTPS PUT: target_url + optionaler bearer_token → eigener VPS, R2, S3\n\nNach dem Upload wird die cloud_url als Sync-Quelle gespeichert.',
+    'Lädt die verschlüsselte sys.md auf einen Cloud-Speicher hoch.\n\nSicherheit: Es werden AUSSCHLIESSLICH AES-256-CBC-verschlüsselte Bytes hochgeladen — niemals Klartext. Die sys.md muss im ciphered-Modus sein, sonst wird der Upload blockiert.\n\nZiele:\n- Arweave: arweave_wallet_key (JWK als JSON-String) → permanente, dezentrale Speicherung\n- HTTPS PUT: target_url + optionaler bearer_token → eigener VPS, R2, S3\n\nNach dem Upload wird die cloud_url als Sync-Quelle gespeichert.',
     {
       target:             z.enum(['arweave', 'https']).describe('Upload-Ziel'),
       arweave_wallet_key: z.string().optional().describe('Arweave JWK-Wallet als JSON-String (nur für target="arweave")'),
@@ -92,7 +92,7 @@ export function register(server, token) {
               ok: false,
               error: 'soul_not_encrypted',
               message: 'Cloud-Backup nur für verschlüsselte Souls erlaubt. cipher_mode muss "ciphered" sein.',
-              hint: 'Vault öffnen, soul.md synchronisieren (Verschlüsselung aktivieren), dann erneut versuchen.',
+              hint: 'Vault öffnen, sys.md synchronisieren (Verschlüsselung aktivieren), dann erneut versuchen.',
             }, null, 2) }],
             isError: true,
           };
@@ -103,7 +103,7 @@ export function register(server, token) {
         const encryptedBytes  = Buffer.from(encryptedBuffer);
 
         if (!encryptedBytes || encryptedBytes.length < 20) {
-          throw new Error('Keine verschlüsselten Daten erhalten. soul.md zuerst synchronisieren.');
+          throw new Error('Keine verschlüsselten Daten erhalten. sys.md zuerst synchronisieren.');
         }
 
         let result;
@@ -135,7 +135,7 @@ export function register(server, token) {
               size_bytes: encryptedBytes.length,
               ...result,
               cloud_url_saved: cloudUrl,
-              message: `Verschlüsselte soul.md (${encryptedBytes.length} Bytes) hochgeladen. cloud_url gespeichert: ${cloudUrl}`,
+              message: `Verschlüsselte sys.md (${encryptedBytes.length} Bytes) hochgeladen. cloud_url gespeichert: ${cloudUrl}`,
             }, null, 2),
           }],
         };

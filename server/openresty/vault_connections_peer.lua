@@ -183,10 +183,10 @@ end
 
 -- ── Manifest + alle lesbaren Kontext-Dateien ─────────────────────────────────
 
--- soul.md lesen wenn scope=soul
+-- sys.md lesen wenn scope=soul
 local soul_content = nil
 if has_scope("soul") then
-  local soul_path = SOULS_DIR .. target_id .. "/soul.md"
+  local soul_path = SOULS_DIR .. target_id .. "/sys.md"
   local sf = io.open(soul_path, "r")
   if sf then
     local raw = sf:read("*a"); sf:close()

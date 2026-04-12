@@ -5,7 +5,7 @@ const PROFILE_HINTS = {
   face:      'Analysiere ein Bild mit image_get + Claude Vision, dann profile_save({type:"face", data:{...}}) aufrufen.',
   voice:     'Analysiere eine Audio-Datei mit audio_get, beschreibe Stimme und Stil, dann profile_save speichern.',
   motion:    'Analysiere ein Video mit video_get, beschreibe Bewegungsmuster und Körpersprache, dann profile_save speichern.',
-  expertise: 'Aus soul.md Expertise-Sektionen + context_files destillieren, dann profile_save speichern.',
+  expertise: 'Aus sys.md Expertise-Sektionen + context_files destillieren, dann profile_save speichern.',
 };
 
 export function register(server, token) {

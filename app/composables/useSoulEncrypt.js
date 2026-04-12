@@ -244,11 +244,11 @@ export async function encryptWithKey(cryptoKey, soulMarkdown, vaultFiles, soulNa
   try {
     const encryptedFiles = []
     if (soulMarkdown) {
-      encryptedFiles.push(await encryptFile(cryptoKey, 'soul.md', soulMarkdown))
+      encryptedFiles.push(await encryptFile(cryptoKey, 'sys.md', soulMarkdown))
     }
     for (const file of (vaultFiles ?? [])) {
       if (!file.name || file.buffer == null) continue
-      if (file.name === 'soul.md') continue
+      if (file.name === 'sys.md') continue
       if (file.name.toLowerCase().endsWith('.md')) {
         const preview = new TextDecoder().decode(new Uint8Array(file.buffer).slice(0, 400))
         if (preview.includes('soul_id:')) continue
@@ -277,8 +277,8 @@ export function useSoulEncrypt() {
 
   /**
    * Vault verschlüsseln + als .soul-Bundle downloaden.
-   * Verschlüsselt die soul.md + alle Vault-Dateien (Texte, Bilder, .webm-Aufnahmen).
-   * @param {string} soulMarkdown  - Inhalt der soul.md (Text)
+   * Verschlüsselt die sys.md + alle Vault-Dateien (Texte, Bilder, .webm-Aufnahmen).
+   * @param {string} soulMarkdown  - Inhalt der sys.md (Text)
    * @param {Array}  vaultFiles    - [{ name: string, buffer: ArrayBuffer }] aus useVault.readAllVaultFiles()
    * @param {string} [soulName]    - Anzeigename für den Dateinamen
    * @returns {Promise<boolean>}
@@ -300,18 +300,18 @@ export function useSoulEncrypt() {
       const key            = await deriveKey(mnemonic.value);
       const encryptedFiles = [];
 
-      // soul.md immer zuerst (aus In-Memory-State, kanonische Version)
+      // sys.md immer zuerst (aus In-Memory-State, kanonische Version)
       if (soulMarkdown) {
-        encryptedFiles.push(await encryptFile(key, "soul.md", soulMarkdown));
+        encryptedFiles.push(await encryptFile(key, "sys.md", soulMarkdown));
       }
 
       // Alle Vault-Dateien: Texte, Bilder, Audio/Video (.webm) – alles als binary
       for (const file of (vaultFiles ?? [])) {
         if (!file.name || file.buffer == null) continue;
-        // soul.md aus dem Vault-Ordner überspringen – oben schon aus In-Memory hinzugefügt
-        if (file.name === "soul.md") continue;
+        // sys.md aus dem Vault-Ordner überspringen – oben schon aus In-Memory hinzugefügt
+        if (file.name === "sys.md") continue;
         // Andere .md-Dateien die soul_id: im Frontmatter haben sind Soul-Kopien → überspringen
-        // (z.B. "Soul.Test.md" – selber Inhalt wie soul.md, nur anderer Dateiname)
+        // (z.B. "Soul.Test.md" – selber Inhalt wie sys.md, nur anderer Dateiname)
         if (file.name.toLowerCase().endsWith(".md")) {
           const preview = new TextDecoder().decode(new Uint8Array(file.buffer).slice(0, 400));
           if (preview.includes("soul_id:")) continue;

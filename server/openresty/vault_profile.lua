@@ -1,6 +1,6 @@
 -- vault_profile.lua
 -- Speichert und liest strukturierte Analyse-Profile aus dem Vault.
--- Profile werden mit dem Vault-Schlüssel verschlüsselt (AES-256-CBC, gleiche Magic-Bytes wie soul.md).
+-- Profile werden mit dem Vault-Schlüssel verschlüsselt (AES-256-CBC, gleiche Magic-Bytes wie sys.md).
 -- Bei PUT: Eintrag in api_context.json synced_files.profiles für Vault-Manifest + Browser-Sync.
 -- Auth: Soul-Cert oder Service-Token (via vault_auth.lua access phase)
 --

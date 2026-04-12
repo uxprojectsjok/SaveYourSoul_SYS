@@ -19,7 +19,7 @@ async function elevenFetch(path, apiKey, { method = 'GET', body } = {}) {
 export function register(server, token) {
   server.tool(
     'elevenlabs_agent_update',
-    'Aktualisiert den System-Prompt eines ElevenLabs Conversational-AI-Agenten mit den aktuellen Soul-Daten und gespeicherten Profilen (face/voice/motion/expertise). Liest soul.md + alle Profile, baut einen personalisierten Prompt und patcht den Agenten direkt via ElevenLabs API.\n\nVoraussetzung: ELEVENLABS_API_KEY in soul-mcp/.env gesetzt.',
+    'Aktualisiert den System-Prompt eines ElevenLabs Conversational-AI-Agenten mit den aktuellen Soul-Daten und gespeicherten Profilen (face/voice/motion/expertise). Liest sys.md + alle Profile, baut einen personalisierten Prompt und patcht den Agenten direkt via ElevenLabs API.\n\nVoraussetzung: ELEVENLABS_API_KEY in soul-mcp/.env gesetzt.',
     {
       agent_id:           z.string().describe('ElevenLabs Agent-ID (aus agent_id.json oder ElevenLabs Dashboard)'),
       elevenlabs_api_key: z.string().describe('ElevenLabs API-Key (elevenlabs.io → Profile → API Keys)'),
@@ -123,7 +123,7 @@ function buildProfileBlock(profiles, name) {
 
 function buildSystemPrompt(name, soulMd, profileBlock, language) {
   const lang = language === 'en' ? 'English' : 'Deutsch';
-  // Nur die ersten 3000 Zeichen der soul.md (kürzer = bessere Latenz im Agent)
+  // Nur die ersten 3000 Zeichen der sys.md (kürzer = bessere Latenz im Agent)
   const soulSnippet = soulMd.length > 3000
     ? soulMd.slice(0, 3000) + '\n[…gekürzt]'
     : soulMd;

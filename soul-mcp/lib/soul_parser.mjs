@@ -1,9 +1,9 @@
 /**
- * soul.md Parser – extrahiert Frontmatter und Sektionen.
+ * sys.md Parser – extrahiert Frontmatter und Sektionen.
  * Standalone, kein Import aus SaveYourSoul.
  */
 
-/** Parst YAML-Frontmatter aus soul.md */
+/** Parst YAML-Frontmatter aus sys.md */
 export function parseFrontmatter(md) {
   const match = md.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return {};

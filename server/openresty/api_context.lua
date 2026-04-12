@@ -220,11 +220,11 @@ ctx.updated_at = ngx.now()
 if type(incoming.soul_content_encrypted) == "string" and #incoming.soul_content_encrypted > 0 then
   local decoded = ngx.decode_base64(incoming.soul_content_encrypted)
   if decoded then
-    local sf = io.open(base_dir .. "/soul.md", "wb")
+    local sf = io.open(base_dir .. "/sys.md", "wb")
     if sf then sf:write(decoded); sf:close() end
   end
 elseif type(incoming.soul_content) == "string" and #incoming.soul_content > 0 then
-  -- Größenlimit: max. 2 MB Plaintext soul.md
+  -- Größenlimit: max. 2 MB Plaintext sys.md
   if #incoming.soul_content > 2 * 1024 * 1024 then
     ngx.status = 413
     ngx.header["Content-Type"] = "application/json"
@@ -247,7 +247,7 @@ elseif type(incoming.soul_content) == "string" and #incoming.soul_content > 0 th
     local encrypted = encrypt_content(incoming.soul_content, vkh)
     if encrypted then
       final_content = encrypted
-      local sf = io.open(base_dir .. "/soul.md", "wb")
+      local sf = io.open(base_dir .. "/sys.md", "wb")
       if sf then sf:write(final_content); sf:close() end
     else
       ngx.status = 500
@@ -257,7 +257,7 @@ elseif type(incoming.soul_content) == "string" and #incoming.soul_content > 0 th
     end
   else
     -- Open mode: Klartext nur wenn explizit cipher_mode="open" gesetzt
-    local sf = io.open(base_dir .. "/soul.md", "w")
+    local sf = io.open(base_dir .. "/sys.md", "w")
     if sf then sf:write(final_content); sf:close() end
   end
 end

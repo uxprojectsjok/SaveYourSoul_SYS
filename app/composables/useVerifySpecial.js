@@ -21,7 +21,7 @@ export function useVerifySpecial() {
    *   { score: 0–14, hints: ["..."] }
    *
    * @param {string} soulToken  – Bearer-Token
-   * @param {string} soulContent – Inhalt der soul.md (wird auf Kern-Identität reduziert)
+   * @param {string} soulContent – Inhalt der sys.md (wird auf Kern-Identität reduziert)
    */
   async function verifySoul(soulToken, soulContent) {
     if (verifying.value) return;
@@ -99,7 +99,7 @@ hints sind kurze Belege (max 60 Zeichen je). Wenn nichts gefunden: leeres Array.
     }
   }
 
-  /** Nur Kern-Identität + Werte aus soul.md extrahieren */
+  /** Nur Kern-Identität + Werte aus sys.md extrahieren */
   function extractIdentitySections(md) {
     const sections = ["Kern-Identität", "Werte & Überzeugungen", "Wiederkehrende Themen & Obsessionen"];
     const lines = md.split("\n");

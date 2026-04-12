@@ -40,7 +40,7 @@
       <p class="text-base text-[var(--sys-fg-muted)] mb-3">Folgende Daten werden nur dann auf dem VPS gespeichert, wenn der Nutzer dies explizit durch Upload oder Verbindungsaufbau veranlasst:</p>
       <div class="space-y-2">
         <div class="flex gap-3 text-sm">
-          <code class="font-mono text-xs text-[var(--sys-violet)] w-36 flex-none pt-0.5">soul.md</code>
+          <code class="font-mono text-xs text-[var(--sys-violet)] w-36 flex-none pt-0.5">sys.md</code>
           <span class="text-[var(--sys-fg-muted)]">Identitätsdatei (Markdown mit YAML-Frontmatter). Inhalt vom Nutzer erstellt. Wird standardmäßig AES-256-CBC verschlüsselt gespeichert. Open-Modus (Klartext) nur als explizites Opt-in für Public-Network-Souls.</span>
         </div>
         <div class="flex gap-3 text-sm">
@@ -64,7 +64,7 @@
       <h3 class="text-base font-semibold text-[var(--sys-fg)] mb-2 mt-6">2.2 Lokal im Browser gespeicherte Daten (kein Server)</h3>
       <p class="text-base text-[var(--sys-fg-muted)] mb-2">Folgende Daten verbleiben ausschließlich im Browser des Nutzers und werden nicht übertragen:</p>
       <ul class="space-y-1 text-base text-[var(--sys-fg-muted)] list-disc list-inside ml-2">
-        <li>soul.md und soul_cert im <code class="font-mono text-xs text-[var(--sys-violet)]">sessionStorage</code> (gelöscht beim Tab-Schließen)</li>
+        <li>sys.md und soul_cert im <code class="font-mono text-xs text-[var(--sys-violet)]">sessionStorage</code> (gelöscht beim Tab-Schließen)</li>
         <li>Vault-Handle (Ordnerverknüpfung) in <code class="font-mono text-xs text-[var(--sys-violet)]">IndexedDB</code> — kein Dateiinhalt, nur Pfadreferenz</li>
         <li>Lokale Vault-Dateien über die File System Access API — verbleiben im lokalen Ordner des Nutzers</li>
       </ul>
@@ -91,7 +91,7 @@
         </div>
         <div class="flex gap-3">
           <span class="text-[var(--sys-fg)] font-medium w-36 flex-none">KI-Kontext</span>
-          <span>Bereitstellung der soul.md als Systemkontext für KI-Dienste, sofern vom Nutzer durch Service-Token freigegeben.</span>
+          <span>Bereitstellung der sys.md als Systemkontext für KI-Dienste, sofern vom Nutzer durch Service-Token freigegeben.</span>
         </div>
         <div class="flex gap-3">
           <span class="text-[var(--sys-fg)] font-medium w-36 flex-none">Soul Network</span>
@@ -107,7 +107,7 @@
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">4. Rechtsgrundlagen</h2>
       <div class="space-y-2 text-sm text-[var(--sys-fg-muted)]">
-        <p><strong class="text-[var(--sys-fg)]">Art. 6 Abs. 1 lit. a DSGVO</strong> — Einwilligung: Verarbeitung der soul.md und zugehöriger Vault-Daten auf Basis der aktiven Nutzung durch eingeladene Personen, die der Verarbeitung durch Teilnahme zustimmen. Die Einwilligung kann jederzeit durch Löschung der eigenen Daten widerrufen werden. Der Widerruf berührt nicht die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung (Art. 7 Abs. 3 DSGVO).</p>
+        <p><strong class="text-[var(--sys-fg)]">Art. 6 Abs. 1 lit. a DSGVO</strong> — Einwilligung: Verarbeitung der sys.md und zugehöriger Vault-Daten auf Basis der aktiven Nutzung durch eingeladene Personen, die der Verarbeitung durch Teilnahme zustimmen. Die Einwilligung kann jederzeit durch Löschung der eigenen Daten widerrufen werden. Der Widerruf berührt nicht die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung (Art. 7 Abs. 3 DSGVO).</p>
         <p><strong class="text-[var(--sys-fg)]">Art. 6 Abs. 1 lit. a DSGVO</strong> — Einwilligung (optionale Funktionen): Soul Network (Verbindungsaufbau), Blockchain-Verankerung und Freigabe von Vault-Dateien für verbundene Dienste.</p>
         <p><strong class="text-[var(--sys-fg)]">Art. 6 Abs. 1 lit. a DSGVO</strong> — Einwilligung: Anonyme Webanalyse über Plausible Analytics (selbst gehostet, cookiefrei) nach Zustimmung im Datenschutz-Dialog.</p>
         <p><strong class="text-[var(--sys-fg)]">Art. 6 Abs. 1 lit. f DSGVO</strong> — Berechtigtes Interesse: Server-Logdateien für technischen Betrieb und Sicherheit sowie Speicherung des <code class="font-mono text-xs text-[var(--sys-violet)]">vault_key_hex</code> zur Ermöglichung autorisierter Service-Token-Zugriffe.</p>
@@ -120,7 +120,7 @@
         <p><strong class="text-[var(--sys-fg)]">Externe Dienste mit Service-Token:</strong> Der Nutzer kann selbst gewählten externen Diensten (z. B. KI-Dienste, Sprachsysteme, eigene Systeme) über Service-Tokens kontrollierten Zugriff auf seine Soul-Daten gewähren. Die Datenweitergabe erfolgt ausschließlich auf Initiative und unter vollständiger Kontrolle des Nutzers.</p>
         <p><strong class="text-[var(--sys-fg)]">Soul Network (verbundene Souls):</strong> Bei gegenseitig aufgebauten Verbindungen erhalten verbundene Souls-Betreiber Lesezugriff auf freigegebene Inhalte. Grundlage ist ein automatisch angelegter <code class="font-mono text-xs text-[var(--sys-violet)]">soul_grant</code>, der durch den Verbindungsaufbau erteilt wird. Vault-Dateien (Audio, Bilder, Kontext) müssen zusätzlich explizit in den Public Vault hochgeladen werden.</p>
         <p><strong class="text-[var(--sys-fg)]">Kein Verkauf. Kein Tracking. Kein Profiling:</strong> Personenbezogene Daten werden nicht an Werbetreibende oder Dritte zu Marketingzwecken weitergegeben. Die eingesetzte Webanalyse (Plausible, selbst gehostet) gibt keine Daten an Dritte weiter.</p>
-        <p><strong class="text-[var(--sys-fg)]">KI-Dienste (Anthropic Claude):</strong> Bei der Nutzung der Chat-Funktion wird die soul.md als Systemkontext an die Anthropic Claude API (USA) übermittelt. Es handelt sich um eine <strong class="text-[var(--sys-fg)]">Drittlandübermittlung</strong> gemäß Art. 44 ff. DSGVO. Rechtsgrundlage sind die EU-Standardvertragsklauseln (SCC, Art. 46 Abs. 2 lit. c DSGVO) sowie ein Auftragsverarbeitungsvertrag (AVV) mit Anthropic. Datenschutzerklärung von Anthropic: <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">anthropic.com/privacy</a></p>
+        <p><strong class="text-[var(--sys-fg)]">KI-Dienste (Anthropic Claude):</strong> Bei der Nutzung der Chat-Funktion wird die sys.md als Systemkontext an die Anthropic Claude API (USA) übermittelt. Es handelt sich um eine <strong class="text-[var(--sys-fg)]">Drittlandübermittlung</strong> gemäß Art. 44 ff. DSGVO. Rechtsgrundlage sind die EU-Standardvertragsklauseln (SCC, Art. 46 Abs. 2 lit. c DSGVO) sowie ein Auftragsverarbeitungsvertrag (AVV) mit Anthropic. Datenschutzerklärung von Anthropic: <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">anthropic.com/privacy</a></p>
         <p><strong class="text-[var(--sys-fg)]">Blockchain-Anker (WalletConnect / Reown AppKit):</strong> Die optionale Blockchain-Verankerung der Soul-Identität auf Polygon Mainnet nutzt WalletConnect (Reown AppKit) zur Wallet-Verbindung. Beim Verbindungsaufbau werden dabei technische Verbindungsdaten (keine Soul-Inhalte) über die WalletConnect-Cloud-Infrastruktur (USA) weitergeleitet. Diese Funktion ist vollständig optional und wird nur auf ausdrückliche Initiative des Nutzers aktiviert. On-chain werden ausschließlich kryptografische Hashes — kein Klartext, kein Name, kein Inhalt — gespeichert. Datenschutzinformation: <a href="https://walletconnect.com/privacy" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">walletconnect.com/privacy</a></p>
       </div>
     </section>
@@ -130,7 +130,7 @@
       <div class="p-4 rounded-xl border border-[var(--sys-border)] bg-[var(--sys-bg-surface)] space-y-3">
         <p class="text-base text-[var(--sys-fg-muted)] leading-relaxed">
           <strong class="text-[var(--sys-fg)]">Verschlüsselung ist Standard, nicht Option.</strong>
-          soul.md und alle Vault-Dateien werden standardmäßig mit AES-256-CBC verschlüsselt bevor sie den Browser verlassen. Klartext-Modus (Open) ist nur für Public-Network-Souls vorgesehen und erfordert eine bewusste Aktivierung.
+          sys.md und alle Vault-Dateien werden standardmäßig mit AES-256-CBC verschlüsselt bevor sie den Browser verlassen. Klartext-Modus (Open) ist nur für Public-Network-Souls vorgesehen und erfordert eine bewusste Aktivierung.
         </p>
         <p class="text-base text-[var(--sys-fg-muted)] leading-relaxed">
           <strong class="text-[var(--sys-fg)]">Cloud-Backup immer verschlüsselt.</strong>
@@ -147,7 +147,7 @@
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">7. Speicherdauer</h2>
       <div class="space-y-2 text-sm text-[var(--sys-fg-muted)]">
-        <p>VPS-Daten (soul.md, Vault-Dateien, api_context.json, soul_connections.json) werden gespeichert bis zur aktiven Löschung durch den Nutzer — oder auf schriftliche Anfrage an <a href="mailto:info@uxprojects-jok.com" class="text-[var(--sys-violet)] hover:underline underline-offset-2">info@uxprojects-jok.com</a>, spätestens innerhalb von 30 Tagen (Art. 17 DSGVO). Der Nutzer kann alle VPS-Daten jederzeit vollständig über die App löschen (Kachel „Alle VPS-Daten löschen").</p>
+        <p>VPS-Daten (sys.md, Vault-Dateien, api_context.json, soul_connections.json) werden gespeichert bis zur aktiven Löschung durch den Nutzer — oder auf schriftliche Anfrage an <a href="mailto:info@uxprojects-jok.com" class="text-[var(--sys-violet)] hover:underline underline-offset-2">info@uxprojects-jok.com</a>, spätestens innerhalb von 30 Tagen (Art. 17 DSGVO). Der Nutzer kann alle VPS-Daten jederzeit vollständig über die App löschen (Kachel „Alle VPS-Daten löschen").</p>
         <p>sessionStorage-Daten werden beim Schließen des Browser-Tabs automatisch gelöscht.</p>
         <p>IndexedDB-Daten (Vault-Handle) verbleiben bis zur manuellen Trennung des Vaults in der App.</p>
         <p>Server-Logdateien: bis zu 14 Tage.</p>
@@ -191,7 +191,7 @@
         </div>
         <div class="flex gap-3">
           <span class="font-medium text-[var(--sys-fg)] w-36 flex-none">Portabilität</span>
-          <span>Art. 20 DSGVO — Daten in maschinenlesbarem Format (soul.md ist per Definition portabel)</span>
+          <span>Art. 20 DSGVO — Daten in maschinenlesbarem Format (sys.md ist per Definition portabel)</span>
         </div>
         <div class="flex gap-3">
           <span class="font-medium text-[var(--sys-fg)] w-36 flex-none">Widerruf</span>
@@ -210,8 +210,8 @@
 
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">11. Besondere Datenkategorien (Art. 9 DSGVO)</h2>
-      <p class="text-base text-[var(--sys-fg-muted)]">Das Persönlichkeitsprofil (soul.md) kann auf freiwilliger Basis Angaben enthalten, die <strong class="text-[var(--sys-fg)]">besonderen Kategorien personenbezogener Daten</strong> nach Art. 9 DSGVO zählen — insbesondere weltanschauliche oder religiöse Überzeugungen, politische Ansichten, Gesundheitsdaten, psychologische Profile oder biometrische Merkmale (z. B. Stimmprofil).</p>
-      <p class="text-base text-[var(--sys-fg-muted)] mt-2">Da die soul.md standardmäßig AES-256-CBC-verschlüsselt auf dem VPS gespeichert wird und dem Betreiber inhaltlich nicht zugänglich ist, verarbeitet der Betreiber in der Regel keine besonderen Kategorien personenbezogener Daten im Sinne von Art. 9 DSGVO. Soweit der Nutzer Inhalte seiner soul.md aktiv über die Chat-Funktion an die Anthropic Claude API überträgt, erfolgt dies auf ausdrückliche eigene Initiative — jede einzelne Übertragung stellt eine <strong class="text-[var(--sys-fg)]">ausdrückliche Einwilligung</strong> gemäß Art. 9 Abs. 2 lit. a DSGVO dar. Die Anthropic API ist als Auftragsverarbeiter tätig und verarbeitet die Daten nur transient. Die Einwilligung kann jederzeit durch Einstellung der Chat-Nutzung widerrufen werden; der Widerruf berührt nicht die Rechtmäßigkeit der bis dahin erfolgten Verarbeitung.</p>
+      <p class="text-base text-[var(--sys-fg-muted)]">Das Persönlichkeitsprofil (sys.md) kann auf freiwilliger Basis Angaben enthalten, die <strong class="text-[var(--sys-fg)]">besonderen Kategorien personenbezogener Daten</strong> nach Art. 9 DSGVO zählen — insbesondere weltanschauliche oder religiöse Überzeugungen, politische Ansichten, Gesundheitsdaten, psychologische Profile oder biometrische Merkmale (z. B. Stimmprofil).</p>
+      <p class="text-base text-[var(--sys-fg-muted)] mt-2">Da die sys.md standardmäßig AES-256-CBC-verschlüsselt auf dem VPS gespeichert wird und dem Betreiber inhaltlich nicht zugänglich ist, verarbeitet der Betreiber in der Regel keine besonderen Kategorien personenbezogener Daten im Sinne von Art. 9 DSGVO. Soweit der Nutzer Inhalte seiner sys.md aktiv über die Chat-Funktion an die Anthropic Claude API überträgt, erfolgt dies auf ausdrückliche eigene Initiative — jede einzelne Übertragung stellt eine <strong class="text-[var(--sys-fg)]">ausdrückliche Einwilligung</strong> gemäß Art. 9 Abs. 2 lit. a DSGVO dar. Die Anthropic API ist als Auftragsverarbeiter tätig und verarbeitet die Daten nur transient. Die Einwilligung kann jederzeit durch Einstellung der Chat-Nutzung widerrufen werden; der Widerruf berührt nicht die Rechtmäßigkeit der bis dahin erfolgten Verarbeitung.</p>
     </section>
 
     <section>

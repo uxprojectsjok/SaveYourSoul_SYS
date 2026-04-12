@@ -556,7 +556,7 @@ export function useVault() {
   /**
    * Verbindet einen bereits geöffneten Directory-Handle als Vault.
    * Wird nach dem Decrypt-Restore aufgerufen — kein showDirectoryPicker() nötig.
-   * @param {string} soulId - Soul-ID aus dem soul.md Frontmatter
+   * @param {string} soulId - Soul-ID aus dem sys.md Frontmatter
    * @param {FileSystemDirectoryHandle} handle - Bereits geöffneter Handle mit readwrite-Berechtigung
    * @returns {Promise<boolean>}
    */

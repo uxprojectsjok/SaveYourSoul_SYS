@@ -82,7 +82,7 @@ file with the following structure:
   },
   "files": [
     {
-      "path": "soul.md",
+      "path": "sys.md",
       "iv": "<base64 12 bytes>",
       "data": "<base64 AES-256-GCM ciphertext + 16-byte tag>"
     }

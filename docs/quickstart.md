@@ -6,9 +6,9 @@
 
 ---
 
-## 1. Create your soul.md
+## 1. Create your sys.md
 
-A soul.md is a plain Markdown file. Minimum valid soul.md:
+A sys.md is a plain Markdown file. Minimum valid sys.md:
 
 ```markdown
 ---
@@ -47,7 +47,7 @@ Content-Type: application/json
 { "cert": "a3f8b2c1d4e5f6a7b8c9d0e1f2a3b4c5" }
 ```
 
-Write the cert into your soul.md frontmatter:
+Write the cert into your sys.md frontmatter:
 
 ```yaml
 soul_cert: a3f8b2c1d4e5f6a7b8c9d0e1f2a3b4c5
@@ -72,7 +72,7 @@ Returns `200 OK` if the cert is valid. Returns `401` otherwise.
 
 ---
 
-## 4. Upload your soul.md to the VPS
+## 4. Upload your sys.md to the VPS
 
 ```http
 PUT /api/context
@@ -105,14 +105,14 @@ If uploading plaintext (open mode only):
 
 ---
 
-## 5. Read your soul.md via API
+## 5. Read your sys.md via API
 
 ```http
 GET /api/soul
 Authorization: Bearer {soul_id}.{cert}
 ```
 
-Returns the soul.md as `text/markdown`. If the file is encrypted and
+Returns the sys.md as `text/markdown`. If the file is encrypted and
 no vault session is active, returns `403 { "error": "encrypted" }`.
 
 ---
@@ -150,7 +150,7 @@ See [spec/mcp-tools.md](spec/mcp-tools.md) for the full tool catalog.
 
 | Goal | Read |
 |---|---|
-| Understand the soul.md format | [spec/soul-md.md](spec/soul-md.md) |
+| Understand the sys.md format | [spec/soul-md.md](spec/soul-md.md) |
 | Set up external service access | [api/endpoints.md](api/endpoints.md) |
 | Self-host a SYS instance | [PRODUCTION_SETUP.md](PRODUCTION_SETUP.md) |
 | Connect an AI agent via MCP | [spec/mcp-tools.md](spec/mcp-tools.md) |

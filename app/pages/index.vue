@@ -1141,11 +1141,11 @@
               class="mt-4 font-black uppercase tracking-tight text-[var(--sys-fg)]"
               style="font-size: clamp(1.8rem, 5vw, 2.8rem); letter-spacing: -0.03em; line-height: 1.05"
             >
-              soul.md.<br />
+              sys.md.<br />
               <span class="text-white/60">Von jeder KI lesbar.</span>
             </h2>
             <p class="mt-4 text-[var(--sys-fg-muted)] text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-              soul.md ist ein offenes Protokoll. Jede KI die MCP versteht — Claude, GPT, lokale Modelle — kann deine Soul direkt als Kontext laden. Kein Account bei einer Plattform. Kein Vendor-Lock-in. Die KI dirigiert, du behältst die Kontrolle.
+              sys.md ist ein offenes Protokoll. Jede KI die MCP versteht — Claude, GPT, lokale Modelle — kann deine Soul direkt als Kontext laden. Kein Account bei einer Plattform. Kein Vendor-Lock-in. Die KI dirigiert, du behältst die Kontrolle.
             </p>
           </div>
 
@@ -2362,7 +2362,7 @@ const ecosystemPhases = [
 const landingFAQ = [
   {
     q: "Was ist eine Soul?",
-    a: "Eine Soul ist deine persönliche Identitätsdatei (soul.md) — kryptographisch signiert, lokal gespeichert. Sie enthält dein Profil, deine Gedanken und wächst mit jeder Session. Die KI nutzt sie als Kontext, damit Gespräche wirklich zu dir passen.",
+    a: "Eine Soul ist deine persönliche Identitätsdatei (sys.md) — kryptographisch signiert, lokal gespeichert. Sie enthält dein Profil, deine Gedanken und wächst mit jeder Session. Die KI nutzt sie als Kontext, damit Gespräche wirklich zu dir passen.",
   },
   {
     q: "Was kann ich im Vault speichern?",
@@ -2372,7 +2372,7 @@ const landingFAQ = [
     q: "Wie muss der Vault-Ordner aufgebaut sein?",
     html: `<p class="mb-3">Der Vault ist ein gewöhnlicher Ordner auf deinem Gerät — der Aufbau spiegelt 1:1 die Struktur auf dem Server wider:</p>
 <pre class="text-xs font-mono leading-relaxed bg-[rgba(255,255,255,0.03)] border border-white/8 rounded-xl px-4 py-3 overflow-x-auto whitespace-pre" style="color:rgba(255,255,255,0.65)">MeinVault/
-├── soul.md                   ← wird automatisch verwaltet
+├── sys.md                   ← wird automatisch verwaltet
 │
 ├── profile/
 │   └── expertise.json        ← KI-Profil (Name frei wählbar)
@@ -2426,15 +2426,15 @@ const landingFAQ = [
   },
   {
     q: "Wie wächst meine Soul?",
-    a: "Nach jeder Chat-Session kannst du deine Soul anreichern lassen. Die KI analysiert das Gespräch und aktualisiert relevante Abschnitte in deiner soul.md — automatisch. Mit dem MCP-Prompt /soul_guide schreibt die KI eigenständig nach bedeutsamen Gesprächen.",
+    a: "Nach jeder Chat-Session kannst du deine Soul anreichern lassen. Die KI analysiert das Gespräch und aktualisiert relevante Abschnitte in deiner sys.md — automatisch. Mit dem MCP-Prompt /soul_guide schreibt die KI eigenständig nach bedeutsamen Gesprächen.",
   },
   {
     q: "Was ist der Blockchain-Anker?",
     a: "Ein optionaler HMAC-signierter Eintrag auf Polygon, der deinen Soul-Hash mit Zeitstempel on-chain speichert. Damit kannst du Autorenschaft und Zeitpunkt deiner Identitätsdatei unveränderlich nachweisen.",
   },
   {
-    q: "Was bedeutet soul.md als offenes Protokoll?",
-    a: "soul.md ist keine proprietäre Datenstruktur — es ist eine lesbare Markdown-Datei, die jede KI als Kontext verwenden kann. Wer die Soul-ID kennt und einen Service-Token hat, kann die Soul abrufen. Der Server entschlüsselt dabei serverseitig — der Empfänger bekommt immer Klartext. Kein Plattformzwang, kein Vendor-Lock-in. Das MCP-Protokoll (Model Context Protocol) macht das für KI-Agenten standardisiert nutzbar.",
+    q: "Was bedeutet sys.md als offenes Protokoll?",
+    a: "sys.md ist keine proprietäre Datenstruktur — es ist eine lesbare Markdown-Datei, die jede KI als Kontext verwenden kann. Wer die Soul-ID kennt und einen Service-Token hat, kann die Soul abrufen. Der Server entschlüsselt dabei serverseitig — der Empfänger bekommt immer Klartext. Kein Plattformzwang, kein Vendor-Lock-in. Das MCP-Protokoll (Model Context Protocol) macht das für KI-Agenten standardisiert nutzbar.",
   },
   {
     q: "Was kann ein KI-Agent über MCP mit meiner Soul tun?",
@@ -2501,11 +2501,11 @@ const landingFAQ = [
   },
   {
     q: "Was ist das Soul Network?",
-    a: "Das Soul Network ermöglicht es, Souls direkt peer-to-peer miteinander zu verbinden. Du gibst deine Soul-ID an Personen weiter, denen du vertraust. Sobald beide Seiten verbunden haben (gegenseitig / mutual), wird automatisch ein soul_grant angelegt — kein manuelles Konfigurieren nötig. KI-Agenten können dann den freigegebenen Kontext verbundener Souls in ihre Antworten einbeziehen. soul.md wird immer automatisch geteilt; Vault-Dateien (Audio, Bilder, Kontext) müssen separat im Bereich Dateien in den Public Vault hochgeladen werden.",
+    a: "Das Soul Network ermöglicht es, Souls direkt peer-to-peer miteinander zu verbinden. Du gibst deine Soul-ID an Personen weiter, denen du vertraust. Sobald beide Seiten verbunden haben (gegenseitig / mutual), wird automatisch ein soul_grant angelegt — kein manuelles Konfigurieren nötig. KI-Agenten können dann den freigegebenen Kontext verbundener Souls in ihre Antworten einbeziehen. sys.md wird immer automatisch geteilt; Vault-Dateien (Audio, Bilder, Kontext) müssen separat im Bereich Dateien in den Public Vault hochgeladen werden.",
   },
   {
     q: "Was muss ich für das Soul Network einrichten?",
-    a: "Drei Schritte: (1) Verbindung aufbauen — Soul-ID austauschen und im Soul Network eingeben. Der soul_grant wird automatisch angelegt. (2) Dateien hochladen — nur für Vault-Dateien (Audio, Bilder, Kontext): Im Bereich Dateien die gewünschten Dateien mit der Option In Public Vault hochladen hochladen. soul.md wird automatisch geteilt und braucht keinen separaten Upload. (3) Vault-Zugang offen halten — die Kachel Vault-Zugang muss aktiv sein, damit verbundene Souls auf Dateien zugreifen können.",
+    a: "Drei Schritte: (1) Verbindung aufbauen — Soul-ID austauschen und im Soul Network eingeben. Der soul_grant wird automatisch angelegt. (2) Dateien hochladen — nur für Vault-Dateien (Audio, Bilder, Kontext): Im Bereich Dateien die gewünschten Dateien mit der Option In Public Vault hochladen hochladen. sys.md wird automatisch geteilt und braucht keinen separaten Upload. (3) Vault-Zugang offen halten — die Kachel Vault-Zugang muss aktiv sein, damit verbundene Souls auf Dateien zugreifen können.",
   },
   {
     q: "Wie sicher ist die Vault-ID als Zugangskontrolle?",

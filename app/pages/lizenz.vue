@@ -40,7 +40,7 @@
         <section>
           <h2 class="text-xs uppercase tracking-[0.15em] font-semibold text-[var(--sys-fg-dim)] mb-3">1. Open-Source-Lizenz (Apache 2.0)</h2>
           <p class="text-sm text-[var(--sys-fg-muted)] mb-3">
-            Das <strong class="text-[var(--sys-fg)]">soul.md-Format</strong> sowie ausgewählte offene Komponenten von SaveYourSoul werden unter der
+            Das <strong class="text-[var(--sys-fg)]">sys.md-Format</strong> sowie ausgewählte offene Komponenten von SaveYourSoul werden unter der
             <strong class="text-[var(--sys-fg)]">Apache License 2.0</strong> veröffentlicht.
           </p>
           <div class="p-4 rounded-xl border border-[var(--sys-border)] bg-[var(--sys-bg-surface)] font-mono text-xs text-[var(--sys-fg-muted)] leading-relaxed">
@@ -98,10 +98,10 @@
           <h2 class="text-xs uppercase tracking-[0.15em] font-semibold text-[var(--sys-fg-dim)] mb-3">4. Soul-Daten: Eigentümerschaft</h2>
           <p class="text-sm text-[var(--sys-fg-muted)]">
             <strong class="text-[var(--sys-fg)]">Der Nutzer behält alle Rechte an seinen Daten.</strong>
-            soul.md und alle Vault-Inhalte sind vom Nutzer erstellte Werke. Die Nutzung von SaveYourSoul begründet keine Übertragung von Eigentumsrechten oder Nutzungsrechten an den Betreiber. Der Betreiber beansprucht kein Recht zur Nutzung, Verarbeitung oder Weitergabe von Inhalten, die über die technisch notwendige Bereitstellung des Dienstes hinausgehen.
+            sys.md und alle Vault-Inhalte sind vom Nutzer erstellte Werke. Die Nutzung von SaveYourSoul begründet keine Übertragung von Eigentumsrechten oder Nutzungsrechten an den Betreiber. Der Betreiber beansprucht kein Recht zur Nutzung, Verarbeitung oder Weitergabe von Inhalten, die über die technisch notwendige Bereitstellung des Dienstes hinausgehen.
           </p>
           <p class="text-sm text-[var(--sys-fg-muted)] mt-3">
-            Das soul.md-Format ist ein offenes Format (Apache 2.0). Nutzer können ihre Identitätsdaten jederzeit exportieren, migrieren oder in anderen kompatiblen Systemen verwenden.
+            Das sys.md-Format ist ein offenes Format (Apache 2.0). Nutzer können ihre Identitätsdaten jederzeit exportieren, migrieren oder in anderen kompatiblen Systemen verwenden.
           </p>
         </section>
 

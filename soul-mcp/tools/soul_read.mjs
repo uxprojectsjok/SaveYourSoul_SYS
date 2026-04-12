@@ -4,7 +4,7 @@ export function register(server, token) {
   server.tool(
     'soul_read',
     [
-      'Liest den vollständigen Soul-Inhalt (soul.md): Persönlichkeit, Werte, Biografie, Projekte, Ziele, Kommunikationsstil.',
+      'Liest den vollständigen Soul-Inhalt (sys.md): Persönlichkeit, Werte, Biografie, Projekte, Ziele, Kommunikationsstil.',
       '',
       'WICHTIG – Verhaltensregel für den KI-Agenten:',
       '1. soul_read ZU BEGINN JEDER SITZUNG aufrufen, bevor geantwortet wird.',

@@ -9,12 +9,12 @@
 
 ## Overview
 
-SYS defines a portable, user-controlled identity layer for AI systems. The core unit is the **soul.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile and grows with each interaction. The soul.md never leaves the user's device unless the user explicitly initiates a transfer.
+SYS defines a portable, user-controlled identity layer for AI systems. The core unit is the **sys.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile and grows with each interaction. The sys.md never leaves the user's device unless the user explicitly initiates a transfer.
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │                   Browser (SPA)                     │
-│  soul.md → sessionStorage  (cleared on tab close)   │
+│  sys.md → sessionStorage  (cleared on tab close)   │
 │  Vault → local filesystem  (File System Access API) │
 └────────────────────┬────────────────────────────────┘
                      │ HTTPS / TLS
@@ -25,7 +25,7 @@ SYS defines a portable, user-controlled identity layer for AI systems. The core 
 │  /               → Static SPA  (.output/public/)    │
 │  /api/soul-cert  → soul_cert.lua   (unauthenticated)│
 │  /api/chat       → soul_auth.lua  → Anthropic API   │
-│  /api/soul       → vault_auth.lua → soul.md serve   │
+│  /api/soul       → vault_auth.lua → sys.md serve   │
 │  /api/context    → vault_auth.lua → api_context.lua │
 │  /api/vault/*    → vault_auth.lua → vault_sync.lua  │
 │  /api/webhook    → vault_auth.lua → webhook.lua     │
@@ -37,7 +37,7 @@ SYS defines a portable, user-controlled identity layer for AI systems. The core 
 ┌─────────────────────────────────────────────────────┐
 │       /var/lib/sys/souls/{soul_id}/                 │
 │                                                     │
-│  soul.md              identity file (enc. or plain) │
+│  sys.md              identity file (enc. or plain) │
 │  api_context.json     permissions + vault index     │
 │  soul_connections.json  network connections         │
 │  vault/audio/           audio files                 │
@@ -62,9 +62,9 @@ Prod:  Browser → OpenResty → Lua scripts in /etc/openresty/lua/
 
 ---
 
-## soul.md — Protocol Specification
+## sys.md — Protocol Specification
 
-The soul.md is a standard Markdown file. The YAML frontmatter is machine-readable; the body is structured by `## Section` headings.
+The sys.md is a standard Markdown file. The YAML frontmatter is machine-readable; the body is structured by `## Section` headings.
 
 ```markdown
 ---
@@ -126,7 +126,7 @@ _What is she still looking for?_
 | ------------ | -------- | ------------------------------------------------------------------ |
 | `soul_id`    | UUID v4  | Globally unique identifier. Primary key for all server operations. |
 | `name`       | string   | Display name (chosen by user).                                     |
-| `version`    | string   | soul.md schema version.                                            |
+| `version`    | string   | sys.md schema version.                                            |
 | `created_at` | ISO 8601 | Creation timestamp.                                                |
 | `updated_at` | ISO 8601 | Last modification timestamp.                                       |
 | `maturity`   | 0–100    | Computed completeness score. See `shared/utils/soulMaturity.js`.   |
@@ -164,12 +164,12 @@ The server recomputes the expected cert and compares with constant-time equality
 ```
 
 Local (browser only):
-soul.md + vault files → AES-256-GCM → .soul bundle
+sys.md + vault files → AES-256-GCM → .soul bundle
 Key: derived from Passkey (WebAuthn) or BIP39 mnemonic
 Server never sees this key.
 
 VPS upload (default):
-soul.md + vault files → AES-256-CBC → stored on VPS
+sys.md + vault files → AES-256-CBC → stored on VPS
 Magic prefix: SYSCRYPT01 (bytes: 53 59 53 01)
 Format: [4 magic bytes][16 IV bytes][ciphertext]
 Key: vault_key_hex stored in api_context.json
@@ -190,7 +190,7 @@ soul_cert is a Bearer token — TLS is the transport security.
 ```
 
 /var/lib/sys/souls/{soul_id}/
-├── soul.md ← SYSCRYPT01 prefix if encrypted
+├── sys.md ← SYSCRYPT01 prefix if encrypted
 ├── api_context.json ← permissions, vault_key_hex, synced_files index
 ├── soul_connections.json ← peer connections (soul_id, alias, grant level)
 └── vault/
@@ -251,8 +251,8 @@ The `soul-mcp/` directory contains a Node.js MCP server implementing the [Model 
 
 | Tool                                | Description                                               |
 | ----------------------------------- | --------------------------------------------------------- |
-| `soul_read`                         | Read the full soul.md content                             |
-| `soul_write`                        | Update a `## Section` in soul.md (replace/append/prepend) |
+| `soul_read`                         | Read the full sys.md content                             |
+| `soul_write`                        | Update a `## Section` in sys.md (replace/append/prepend) |
 | `soul_maturity`                     | Compute and update the maturity score                     |
 | `soul_skills`                       | List and invoke soul skills                               |
 | `profile_get` / `profile_save`      | reads and writes profiles to the Vault                    |
@@ -313,7 +313,7 @@ SaveYourSoul/
 ├── soul-voice-clone/       ← ElevenLabs voice clone + agent
 ├── browser-extension/      ← Chrome MV3 extension
 ├── docs/                   ← Protocol documentation
-├── test/                   ← soul.md test fixtures
+├── test/                   ← sys.md test fixtures
 └── utils/                  ← Build utilities (killMetas.mjs, …)
 ```
 
@@ -341,7 +341,7 @@ One variable is baked into the client bundle at build time:
 
 Apache License 2.0. See [LICENSE](LICENSE).
 
-The soul.md format, API conventions, and MCP tool schema are intended as an open protocol. Compatible implementations are encouraged — independent of this reference implementation.
+The sys.md format, API conventions, and MCP tool schema are intended as an open protocol. Compatible implementations are encouraged — independent of this reference implementation.
 
 ---
 

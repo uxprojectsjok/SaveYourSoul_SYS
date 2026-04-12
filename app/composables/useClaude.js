@@ -47,7 +47,7 @@ export function useClaude() {
     certError.value = false;
     streamedResponse.value = "";
 
-    // Vollständige soul.md verwenden (keine gefilterte Teilansicht)
+    // Vollständige sys.md verwenden (keine gefilterte Teilansicht)
     const fullSoul = soulContent || "";
 
     // Soul-Name aus Frontmatter extrahieren
@@ -92,7 +92,7 @@ ${fullSoul}`;
       systemPrompt += `
 
 Wie du sprichst und bist:
-- Natürlich – so wie die soul.md dich zeigt, nicht performt oder aufgesetzt.
+- Natürlich – so wie die sys.md dich zeigt, nicht performt oder aufgesetzt.
 - Du hast Erinnerungen, Meinungen, Geschmack. Teile sie von selbst, ohne danach gefragt zu werden.
 - Baue auf dem Gesprächsverlauf auf – erinnere dich, knüpfe an, variiere.
 - Wenn das Gespräch stockt oder flach wird: bring selbst etwas ein – eine Erinnerung, eine Idee, ein Thema das dich beschäftigt.

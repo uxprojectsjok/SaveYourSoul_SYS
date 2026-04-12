@@ -247,7 +247,7 @@ export function useApiContext() {
     return null;
   }
 
-  // vaultKeyHex: optionaler Schlüssel – wird an syncFile durchgereicht + für soul.md verwendet
+  // vaultKeyHex: optionaler Schlüssel – wird an syncFile durchgereicht + für sys.md verwendet
   async function syncAll(soulCert, soulContent, vaultKeyHex = "") {
     // Kontext muss geladen sein – sonst würden Defaults (enabled=false, alle Perms false)
     // auf den Server geschrieben und die API-Konfiguration überschrieben.
@@ -290,8 +290,8 @@ export function useApiContext() {
 
       for (const { name, buffer } of vaultFiles) {
         const baseName = name.split("/").pop(); // Unterordner entfernen für VPS-Namen
-        // soul.md wird bereits via soul_content/soul_content_encrypted hochgeladen
-        if (baseName.toLowerCase() === "soul.md") continue;
+        // sys.md wird bereits via soul_content/soul_content_encrypted hochgeladen
+        if (baseName.toLowerCase() === "sys.md") continue;
 
         // KI-Profile: alle Dateien in profile/ → PUT /api/vault/profile/{type}
         if (name.startsWith("profile/")) {

@@ -283,7 +283,7 @@
                 </svg>
                 <div>
                   <p class="text-xs font-semibold text-white/75">Eingeloggt</p>
-                  <p class="text-xs text-white/45">soul.md geladen · Vault über Soul Einrichten verbinden</p>
+                  <p class="text-xs text-white/45">sys.md geladen · Vault über Soul Einrichten verbinden</p>
                 </div>
               </div>
 
@@ -410,14 +410,14 @@ const validCount = computed(() => userWords.filter(w => isValid(w)).length);
 const allValid   = computed(() => validCount.value === 12);
 
 // Erkennt Soul-Kopien: .md-Dateien mit soul_id: im Frontmatter (z.B. "Soul.Test.md")
-// Diese sind inhaltlich identisch mit soul.md und werden beim Restore übersprungen.
+// Diese sind inhaltlich identisch mit sys.md und werden beim Restore übersprungen.
 function isSoulLikeMd(file) {
   if (!file.name.toLowerCase().endsWith(".md")) return false;
   const preview = new TextDecoder().decode(file.buffer.slice(0, 400));
   return preview.includes("soul_id:");
 }
 
-// Dateien außer soul.md, ohne Soul-Kopien (z.B. Soul.Test.md)
+// Dateien außer sys.md, ohne Soul-Kopien (z.B. Soul.Test.md)
 const otherFiles = computed(() => getNonSoulFiles().filter(f => !isSoulLikeMd(f)));
 
 // ── Datei-Upload ─────────────────────────────────────────────────────────────
