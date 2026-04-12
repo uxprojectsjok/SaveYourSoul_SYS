@@ -851,7 +851,7 @@ const authH  = computed(() => ({ Authorization: `Bearer ${props.soulCert}` }));
 
 // ── Cert-Rotation ───────────────────────────────────────────────────────────
 
-const { rotateCert } = useSoul();
+const { rotateCert, soulContent: composableSoulContent } = useSoul();
 const rotateBusy = ref(false);
 
 async function handleRotateCert() {
@@ -864,11 +864,12 @@ async function handleRotateCert() {
       return;
     }
 
-    // Physische Datei im Vault-Ordner mit neuem Cert überschreiben
-    if (vaultConnected.value && props.soulContent) {
-      const fileName  = localSoulFileName.value;
-      const encoder   = new TextEncoder();
-      await writeFile(fileName, encoder.encode(props.soulContent));
+    // Physische Datei im Vault-Ordner überschreiben — composableSoulContent.value
+    // statt props.soulContent nutzen: props kann durch Vue-Render-Batching noch
+    // den alten Wert haben während die Singleton-Ref bereits aktuell ist.
+    if (vaultConnected.value && composableSoulContent.value) {
+      const fileName = localSoulFileName.value;
+      await writeFile(fileName, new TextEncoder().encode(composableSoulContent.value));
     }
 
     showSuccess(`Cert rotiert ✓  (Version ${result.cert_version})`);
