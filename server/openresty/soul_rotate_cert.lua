@@ -30,19 +30,21 @@ local new_cert     = hmac.cert_for_soul(master_key, soul_id, new_version)
 -- sys.md wird NICHT direkt modifiziert: sie kann AES-verschlüsselt sein.
 -- Der Frontend-Client pusht die aktualisierte sys.md nach der Rotation via PUT /api/context.
 
--- cert_version auch in api_context.json speichern (plaintext, für Auth lesbar)
-local cjson     = require("cjson.safe")
-local ctx_path  = "/var/lib/sys/souls/" .. soul_id .. "/api_context.json"
+-- cert_version in api_context.json persistieren (immer plaintext, für Auth lesbar)
+local cjson    = require("cjson.safe")
+local ctx_path = "/var/lib/sys/souls/" .. soul_id .. "/api_context.json"
+local ctx      = {}
 local cf = io.open(ctx_path, "r")
 if cf then
   local raw = cf:read("*a"); cf:close()
-  local ok, ctx = pcall(cjson.decode, raw)
-  if ok and type(ctx) == "table" then
-    ctx.cert_version = new_version
-    local wc = io.open(ctx_path, "w")
-    if wc then wc:write(cjson.encode(ctx)); wc:close() end
-  end
+  local ok, parsed = pcall(cjson.decode, raw)
+  if ok and type(parsed) == "table" then ctx = parsed end
 end
+ctx.cert_version = new_version
+-- Verzeichnis anlegen falls noch nicht vorhanden
+os.execute("mkdir -p /var/lib/sys/souls/" .. soul_id)
+local wc = io.open(ctx_path, "w")
+if wc then wc:write(cjson.encode(ctx)); wc:close() end
 
 ngx.log(ngx.INFO, "[soul_rotate_cert] soul_id=", soul_id,
   " version ", old_version, " → ", new_version)
