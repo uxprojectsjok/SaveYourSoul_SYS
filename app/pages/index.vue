@@ -1221,7 +1221,7 @@
                     <p>Verbindung steht. 👋</p>
                     <p>Ich bin ein KI-Assistent — und mit deiner Soul verbunden kenne ich heute mehr als nur deinen Namen: 48 Jahre, Entwickler und Content Creator aus Marburg, slowenische Wurzeln, Liebe zum Balkan-Feeling, Espresso und kroatische Sommer.</p>
                     <p>Deine Soul hat 8 Growth-Einträge und ist auf der Blockchain verankert.</p>
-                    <p class="text-white/30 text-[10px] mt-1 italic">KI-generierte Antwort auf Basis deiner Soul.md</p>
+                    <p class="text-white/30 text-[10px] mt-1 italic">KI-generierte Antwort auf Basis deiner sys\.md</p>
                   </div>
                 </div>
               </div>
@@ -1240,7 +1240,7 @@
                   Deine KI kennt dich wirklich —<br />nicht nur deinen Namen.
                 </h3>
                 <p class="mt-2 text-sm text-[var(--sys-fg-muted)] leading-relaxed">
-                  Mit einem MCP-Tool lädt jeder KI-Assistent deine Soul.md: Name, Familie, Interessen, Musik, Reisen — alles aus deiner eigenen Datei, die ausschliesslich dir gehört.
+                  Mit einem MCP-Tool lädt jeder KI-Assistent deine sys\.md: Name, Familie, Interessen, Musik, Reisen — alles aus deiner eigenen Datei, die ausschliesslich dir gehört.
                 </p>
               </div>
               <div class="space-y-2">
@@ -2026,7 +2026,7 @@ const legalLinks = [
 // ── Landing Page Daten ─────────────────────────────────────────────────────
 
 const demoSoulFacts = [
-  'Soul.md liegt verschlüsselt in deinem eigenen Vault',
+  'sys\.md liegt verschlüsselt in deinem eigenen Vault',
   'MCP-Token autorisiert den KI-Assistenten nur für freigegebene Scopes',
   'Kein Daten-Upload an KI-Anbieter — nur dein Token wird übertragen',
 ];
@@ -2044,7 +2044,7 @@ const demoNetworkFacts = [
 ];
 
 const demoCalendarFacts = [
-  'Kalender-Einträge liegen in der eigenen Soul.md',
+  'Kalender-Einträge liegen in der eigenen sys\.md',
   'Externe Kalender (Google etc.) optional einbindbar',
   'KI fragt — schreibt nur auf explizite Anweisung',
 ];
@@ -2097,7 +2097,7 @@ const landingFeatures = [
     iconBgLight: "rgba(192,68,0,0.12)",
     points: [
       "HMAC-SHA256 Signatur",
-      "Soul.md Open Format",
+      "sys\.md Open Format",
       "Soul Kalender (Vault-Sync + API-Freigabe)",
       "Wächst mit jeder Session",
       "Blockchain-Anker (optional)",
@@ -2196,7 +2196,7 @@ const landingSteps = [
 const landingTechStack = [
   {
     icon: Code,
-    title: "Soul.md Format",
+    title: "sys\.md Format",
     tag: "OPEN FORMAT",
     desc: "Markdown-Datei mit YAML-Frontmatter. Lesbar für Menschen, strukturiert auswertbar für Software – offen dokumentiert.",
   },
@@ -2251,7 +2251,7 @@ const landingRoadmap = [
     color: "#4ade80",
     title: "Core · Deployed",
     items: [
-      "Soul Protocol (Soul.md, HMAC-Signatur)",
+      "Soul Protocol (sys\.md, HMAC-Signatur)",
       "Memory Vault (AES-256, BIP39 + Passkey)",
       "Stimme, Gesicht & Bewegung erfassen",
       "KI-Interface mit Soul-Anreicherung",
@@ -2302,7 +2302,7 @@ const ecosystemPhases = [
     lucideIcon: Key,
     img: "/ecosystem/phase1-soul.png",
     items: [
-      "Soul.md + Memory Vault",
+      "sys\.md + Memory Vault",
       "Stimme, Gesicht, Bewegung",
       "KI-Interface & Anreicherung",
       "Soul Kalender (Vault-Sync)",
