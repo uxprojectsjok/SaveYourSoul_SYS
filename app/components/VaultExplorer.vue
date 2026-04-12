@@ -859,11 +859,19 @@ async function handleRotateCert() {
   rotateBusy.value = true;
   try {
     const result = await rotateCert();
-    if (result) {
-      showSuccess(`Cert rotiert ✓  (Version ${result.cert_version})`);
-    } else {
+    if (!result) {
       showError("Cert-Rotation fehlgeschlagen");
+      return;
     }
+
+    // Physische Datei im Vault-Ordner mit neuem Cert überschreiben
+    if (vaultConnected.value && props.soulContent) {
+      const fileName  = localSoulFileName.value;
+      const encoder   = new TextEncoder();
+      await writeFile(fileName, encoder.encode(props.soulContent));
+    }
+
+    showSuccess(`Cert rotiert ✓  (Version ${result.cert_version})`);
   } finally {
     rotateBusy.value = false;
   }
