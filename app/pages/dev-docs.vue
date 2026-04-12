@@ -283,8 +283,12 @@ Authorization: Bearer {soul_id}.{cert}
           </div>
 
           <DocHeading level="2">soul_cert — Owner Authentication</DocHeading>
-          <DocCode>cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[0:32]</DocCode>
-          <p class="doc-p">Output is 32 lowercase hex characters (16 bytes). The cert is <strong>stateless</strong> — no database lookup, no expiry, same value for a given soul_id + master key pair. Changing <code class="doc-code">SOUL_MASTER_KEY</code> invalidates all certs simultaneously.</p>
+          <DocCode># cert_version = 0 (default, backwards compatible)
+cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[0:32]
+
+# cert_version ≥ 1 (after rotation)
+cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id + ":" + cert_version).hex()[0:32]</DocCode>
+          <p class="doc-p">Output is 32 lowercase hex characters. The cert is <strong>stateless</strong> — no database lookup, no expiry. <code class="doc-code">cert_version</code> is stored in sys.md frontmatter (default: 0). Calling <code class="doc-code">POST /api/soul-rotate-cert</code> increments the version and invalidates the previous cert immediately — without changing <code class="doc-code">SOUL_MASTER_KEY</code> or <code class="doc-code">soul_id</code>.</p>
           <DocCode>Authorization: Bearer 7f3a2b1c-4d5e-6f7a-8b9c-0d1e2f3a4b5c.a3f8b2c1d4e5f6a7b8c9d0e1f2a3b4c5</DocCode>
 
           <DocHeading level="2">Service-Token — Scoped External Access</DocHeading>
@@ -597,6 +601,7 @@ const plain = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, cipherte
 OpenResty (nginx + LuaJIT)
     ├── /                    → static files (.output/public/)
     ├── /api/soul-cert       → soul_cert.lua          (no auth)
+    ├── /api/soul-rotate-cert → soul_rotate_cert.lua  (soul_cert auth)
     ├── /api/soul-sign-sess  → soul_sign_session.lua  (no auth)
     ├── /api/fetch-bundle    → fetch_bundle.lua        (no auth)
     ├── /api/validate        → soul_auth.lua → 200
@@ -670,6 +675,7 @@ env WAVESPEED_KEY;</DocCode>
                 <tr><td class="text-[var(--sys-fg-dim)]">Vite dev server</td><td class="text-[var(--sys-fg-dim)]">Static files only</td></tr>
                 <tr><td><code class="doc-code">server/api/*.js</code></td><td><code class="doc-code">server/openresty/*.lua</code></td></tr>
                 <tr><td class="text-xs text-[var(--sys-fg-dim)]">soul-cert.post.js</td><td class="text-xs text-[var(--sys-fg-dim)]">soul_cert.lua</td></tr>
+                <tr><td class="text-xs text-[var(--sys-fg-dim)]">soul-rotate-cert.post.js</td><td class="text-xs text-[var(--sys-fg-dim)]">soul_rotate_cert.lua</td></tr>
                 <tr><td class="text-xs text-[var(--sys-fg-dim)]">chat.post.js</td><td class="text-xs text-[var(--sys-fg-dim)]">Anthropic proxy</td></tr>
                 <tr><td class="text-xs text-[var(--sys-fg-dim)]">soul-sign-session.post.js</td><td class="text-xs text-[var(--sys-fg-dim)]">soul_sign_session.lua</td></tr>
               </tbody>
@@ -798,6 +804,7 @@ const frontmatterFields = [
   { field: 'last_session', type: 'ISO 8601 date', req: 'MUST', desc: 'Date of most recent session.' },
   { field: 'version', type: 'integer', req: 'MUST', desc: 'Schema version. Currently 1.' },
   { field: 'soul_cert', type: '32 hex chars', req: 'MUST', desc: 'HMAC auth token. See Auth Model.' },
+  { field: 'cert_version', type: 'integer', req: 'MAY', desc: 'Cert rotation counter. Default 0 (legacy formula). Incremented by /api/soul-rotate-cert.' },
   { field: 'vault_hash', type: 'SHA-256 hex', req: 'MAY', desc: 'Hash of the last synced vault state.' },
   { field: 'soul_growth_chain', type: 'array', req: 'MAY', desc: 'Chronological chain of session hashes.' },
   { field: 'soul_chain_anchor', type: 'string|null', req: 'MAY', desc: 'Blockchain tx hash for on-chain anchoring.' },
@@ -855,7 +862,8 @@ const mcpTools = [
 ]
 
 const endpoints = [
-  { method: 'POST', path: '/api/soul-cert', auth: 'none', desc: 'Derive soul_cert for a soul_id' },
+  { method: 'POST', path: '/api/soul-cert', auth: 'none', desc: 'Derive soul_cert for a soul_id (optional cert_version in body)' },
+  { method: 'POST', path: '/api/soul-rotate-cert', auth: 'soul_cert', desc: 'Rotate cert — increments cert_version in sys.md, old cert immediately invalid' },
   { method: 'POST', path: '/api/soul-sign-session', auth: 'none', desc: 'Sign a growth chain entry' },
   { method: 'GET', path: '/api/validate', auth: 'soul_cert', desc: 'Validate cert (200 or 401)' },
   { method: 'GET', path: '/api/context', auth: 'soul_cert', desc: 'Read API context + permissions' },
@@ -922,6 +930,7 @@ const luaScripts = [
   { file: 'soul_auth.lua', phase: 'access', purpose: 'soul_cert validation (stub)' },
   { file: 'vault_auth.lua', phase: 'access', purpose: 'soul_cert + service_token validation (stub)' },
   { file: 'soul_cert.lua', phase: 'content', purpose: 'cert derivation endpoint (stub)' },
+  { file: 'soul_rotate_cert.lua', phase: 'content', purpose: 'cert rotation — increments cert_version in sys.md' },
   { file: 'soul_sign_session.lua', phase: 'content', purpose: 'growth chain signing (stub)' },
   { file: 'soul_token_jwt.lua', phase: 'content', purpose: 'JWT issuance (stub)' },
   { file: 'hmac_helper.lua', phase: 'module', purpose: 'HMAC utility (stub)' },

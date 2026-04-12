@@ -1037,13 +1037,15 @@ SOUL_MASTER_KEY=$(openssl rand -hex 32)   # HMAC-Root-Key für soul_cert-Ableitu
 API_SIGNING_KEY=$(openssl rand -hex 32)   # Service-Token-Signierung</DocCode>
 
             <DocHeading level="3">3. soul_cert — das Authentifizierungsprotokoll</DocHeading>
-            <p class="doc-p">Jeder Soul-Inhaber hat ein HMAC-SHA256-Zertifikat, das deterministisch aus <code class="doc-code">SOUL_MASTER_KEY</code> und <code class="doc-code">soul_id</code> abgeleitet wird. Keine Datenbank, kein Session-Store.</p>
-            <DocCode lang="text">cert     = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[:32]
-bearer   = soul_id + "." + cert
+            <p class="doc-p">Jeder Soul-Inhaber hat ein HMAC-SHA256-Zertifikat, das aus <code class="doc-code">SOUL_MASTER_KEY</code>, <code class="doc-code">soul_id</code> und einer optionalen <code class="doc-code">cert_version</code> abgeleitet wird. Keine Datenbank, kein Session-Store.</p>
+            <DocCode lang="text"># cert_version = 0 (Standard, rückwärtskompatibel)
+cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[:32]
 
-# Validierung (Lua, in access_by_lua_file)
-expected = hmac_sha256(master_key, soul_id):sub(1, 32)
-valid    = (cert == expected)  -- constant-time compare</DocCode>
+# cert_version ≥ 1 (nach Rotation)
+cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id + ":" + cert_version).hex()[:32]
+
+bearer = soul_id + "." + cert</DocCode>
+            <p class="doc-p"><strong>Cert-Rotation:</strong> <code class="doc-code">POST /api/soul-rotate-cert</code> inkrementiert <code class="doc-code">cert_version</code> in der sys.md und gibt einen neuen Cert zurück. Der alte Cert ist sofort ungültig — <code class="doc-code">SOUL_MASTER_KEY</code> und <code class="doc-code">soul_id</code> bleiben unverändert.</p>
 
             <DocHeading level="3">4. Dateistruktur auf dem VPS</DocHeading>
             <DocCode lang="text">/var/lib/sys/souls/{soul_id}/
@@ -1453,7 +1455,7 @@ const refImplLayers = [
 ]
 
 const refImplRequirements = [
-  { id: 'R-01', text: 'soul_cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[:32] — deterministisch, keine Datenbank' },
+  { id: 'R-01', text: 'soul_cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id [+ ":" + cert_version]).hex()[:32] — stateless, keine Datenbank; cert_version = 0 nutzt altes Format (rückwärtskompatibel)' },
   { id: 'R-02', text: 'Verschlüsselte Dateien: Magic "SYS\\x01" (4 Bytes) + 16-Byte-IV + AES-256-CBC-Ciphertext' },
   { id: 'R-03', text: 'sys.md: Markdown mit YAML-Frontmatter (soul_id, name, version, maturity, Timestamps) + ## Sektionen' },
   { id: 'R-04', text: 'api_context.json: permissions-Objekt, vault_key_hex (hex), synced_files + active_files Index' },
