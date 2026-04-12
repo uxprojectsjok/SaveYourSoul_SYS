@@ -34,8 +34,9 @@ local function check_soul_cert(token)
   if master_key == "" then
     ngx.ctx.soul_id = soul_id
   else
-    local hex = hmac.sign(master_key, soul_id)
-    if cert ~= hex:sub(1, 32) then
+    local cert_version = hmac.read_cert_version(soul_id)
+    local expected     = hmac.cert_for_soul(master_key, soul_id, cert_version)
+    if cert ~= expected then
       ngx.log(ngx.WARN, "[vault_auth] Ungültiges Cert soul_id=", soul_id)
       return nil
     end

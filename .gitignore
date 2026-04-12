@@ -51,7 +51,3 @@ test/*.soul
 # Internal operational docs
 docs/claude_chat.md
 docs/SYS_HANDOFF.md
-
-# Persönliche Identity-Datei – nie in Prod commiten
-docs/sys.md
-docs/soul.md

@@ -6,7 +6,7 @@
 //
 // ⚠  Owner's implementation — not included in this distribution.
 //    Production: handled by server/openresty/soul_auth.lua
-//    Contact: contact@uxprojects-jok.com
+//    Contact: jan-oliver.karo@uxprojects-jok.com
 
 export function validateSoulToken(_authHeader) {
   // Owner's implementation — returns true in dev mode (no SOUL_MASTER_KEY set).

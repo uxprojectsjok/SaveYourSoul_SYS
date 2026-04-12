@@ -207,11 +207,11 @@ soul_cert is a Bearer token — TLS is the transport security.
 {
   "synced_files": {
     "profiles": ["expertise"],
-    "audio": ["voice_SOUL_ID_2026-04-08.webm"],
+    "audio": ["voice_2c81aa74_2026-04-08.webm"],
     "context": ["soul_hash.txt"]
   },
   "active_files": {
-    "audio": "voice_SOUL_ID_2026-04-08.webm",
+    "audio": "voice_2c81aa74_2026-04-08.webm",
     "context": "soul_hash.txt"
   },
   "cipher_mode": "ciphered",

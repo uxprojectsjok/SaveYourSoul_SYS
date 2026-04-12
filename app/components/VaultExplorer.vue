@@ -67,6 +67,20 @@
             <div class="flex items-center gap-2 px-3 min-h-[44px]">
               <span class="w-1.5 h-1.5 rounded-full shrink-0 bg-[#22c55e]/60"/>
               <span class="text-sm text-white/70 flex-1 font-mono">{{ localSoulFileName }}</span>
+              <!-- Cert rotieren -->
+              <button
+                @click="handleRotateCert"
+                :disabled="rotateBusy"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-[#f97316] hover:bg-white/8 transition shrink-0 disabled:opacity-30"
+                title="Soul-Cert rotieren (altes Cert sofort ungültig)"
+                aria-label="Soul-Cert rotieren"
+              >
+                <svg v-if="rotateBusy" class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 3a9 9 0 1 0 9 9"/></svg>
+                <svg v-else class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/>
+                </svg>
+              </button>
+              <!-- sys.md herunterladen -->
               <button
                 @click="downloadSoulLocal"
                 class="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/8 transition shrink-0"
@@ -834,6 +848,26 @@ let   playerBlobUrl = "";
 
 const soulId = computed(() => props.soulCert?.split(".")?.[0] ?? "");
 const authH  = computed(() => ({ Authorization: `Bearer ${props.soulCert}` }));
+
+// ── Cert-Rotation ───────────────────────────────────────────────────────────
+
+const { rotateCert } = useSoul();
+const rotateBusy = ref(false);
+
+async function handleRotateCert() {
+  if (rotateBusy.value) return;
+  rotateBusy.value = true;
+  try {
+    const result = await rotateCert();
+    if (result) {
+      showSuccess(`Cert rotiert ✓  (Version ${result.cert_version})`);
+    } else {
+      showError("Cert-Rotation fehlgeschlagen");
+    }
+  } finally {
+    rotateBusy.value = false;
+  }
+}
 
 // ── Datei-Filter für Archiv-Anzeige ────────────────────────────────────────
 

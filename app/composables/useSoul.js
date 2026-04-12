@@ -196,6 +196,43 @@ ${idea ? idea : "*Noch nicht beschrieben.*"}
     save();
   }
 
+  // Rotiert den soul_cert: inkrementiert cert_version auf dem Server,
+  // schreibt neuen Cert in sys.md (lokal + sessionStorage).
+  // Alter Cert ist danach sofort ungültig.
+  async function rotateCert() {
+    if (!isClient || !soulContent.value || !soulCert.value) return null;
+    const idMatch = soulContent.value.match(/soul_id:\s*(.+)/);
+    const soulId  = idMatch?.[1]?.trim();
+    if (!soulId) return null;
+
+    let res;
+    try {
+      res = await fetch("/api/soul-rotate-cert", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${soulId}.${soulCert.value}` },
+      });
+    } catch {
+      return null;
+    }
+    if (!res.ok) return null;
+
+    const { cert, cert_version } = await res.json();
+    if (!cert) return null;
+
+    // sys.md lokal aktualisieren
+    let updated = soulContent.value.replace(/^(soul_cert:\s*).+$/m, `$1${cert}`);
+    if (/^cert_version:\s*\d+/m.test(updated)) {
+      updated = updated.replace(/^(cert_version:\s*)\d+/m, `$1${cert_version}`);
+    } else {
+      updated = updated.replace(/^(soul_cert:\s*[^\n]+\n)/m, `$1cert_version: ${cert_version}\n`);
+    }
+
+    soulContent.value = updated;
+    soulCert.value    = cert;
+    save();
+    return { cert, cert_version };
+  }
+
   function updateContent(newContent) {
     soulContent.value = updateLastSession(newContent);
     save();
@@ -575,6 +612,7 @@ Mögliche section-Werte (exakt so schreiben):
     createNew,
     importFromText,
     refreshCert,
+    rotateCert,
     updateContent,
     enrichFromSession,
     updateVaultInSoul,
