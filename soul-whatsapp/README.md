@@ -81,4 +81,4 @@ Vault sperren = alle Service-Token bekommen `403 vault_locked`.
 
 ## Deployed auf
 
-`YOUR_SERVICE-dev.twil.io` · Service SID: `ZSxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+Nach dem Deploy zeigt `twilio serverless:deploy` die zugewiesene URL und Service SID an.
