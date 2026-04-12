@@ -11,7 +11,7 @@ export function useClaude() {
    * Sendet eine Chat-Nachricht an die Claude API via OpenResty-Proxy
    * @param {Object} opts
    * @param {Array} opts.messages - Array von { role, content } Objekten
-   * @param {string} opts.soulContent - Inhalt der Soul.md als System-Prompt-Kontext
+   * @param {string} opts.soulContent - Inhalt der sys.md als System-Prompt-Kontext
    * @param {string} opts.soulCert - Soul-Cert für Bearer-Token-Auth
    * @param {Function} [opts.onDelta] - Callback für jedes Streaming-Delta
    * @returns {Promise<string|null>} - Vollständiger Response-Text oder null bei Fehler

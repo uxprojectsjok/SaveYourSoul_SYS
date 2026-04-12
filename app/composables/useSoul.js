@@ -42,7 +42,7 @@ export function useSoul() {
     }
   }
 
-  // ── Soul.md Template ────────────────────────────────────────────────────
+  // ── sys.md Template ────────────────────────────────────────────────────
 
   function buildDefaultSoul(id, cert, name, idea) {
     const now = new Date().toISOString().split("T")[0];
@@ -148,7 +148,7 @@ ${idea ? idea : "*Noch nicht beschrieben.*"}
     return cert;
   }
 
-  // Importiert eine hochgeladene Soul.md. Der Cert wird unverändert aus der Datei
+  // Importiert eine hochgeladene sys.md. Der Cert wird unverändert aus der Datei
   // übernommen – kein Server-Refresh. Stimmt er nicht mit HMAC überein, liefert
   // die API 401 und das Cert-Fehler-Modal wird angezeigt.
   function importFromText(markdown) {
@@ -478,7 +478,7 @@ Mögliche section-Werte (exakt so schreiben):
   // ── Vault-Manifest ───────────────────────────────────────────────────────
 
   /**
-   * Trägt die Vault-Dateiliste in den ## Vault Abschnitt der Soul.md ein.
+   * Trägt die Vault-Dateiliste in den ## Vault Abschnitt der sys.md ein.
    * Wird aufgerufen nachdem der Vault-Ordner gescannt wurde.
    * @param {{ profile?: string|null, textFiles?: string[], imageFiles?: string[] }} manifest
    */

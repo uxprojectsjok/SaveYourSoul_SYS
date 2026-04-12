@@ -12,7 +12,7 @@
     >
       <span class="text-sm font-semibold transition-colors duration-200"
         :class="dragActive ? 'text-white/90' : 'text-white/75'">
-        Soul.md laden
+        sys.md laden
       </span>
 
       <svg
@@ -62,7 +62,7 @@ async function readFile(file) {
     const { valid, error } = validateSoul(text);
 
     if (!valid) {
-      errorMsg.value = error || "Keine gültige Soul.md Datei.";
+      errorMsg.value = error || "Keine gültige sys.md Datei.";
       return;
     }
 
