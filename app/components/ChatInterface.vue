@@ -180,6 +180,22 @@
                   />
                 </template>
               </div>
+
+              <!-- Vault-Audio Player -->
+              <div v-if="msg.vaultAudio?.length" class="mt-3 space-y-1.5">
+                <div v-for="a in msg.vaultAudio" :key="a.name" class="flex flex-col gap-0.5">
+                  <span class="text-[10px] text-white/35 font-mono truncate max-w-[260px]">{{ a.name }}</span>
+                  <audio controls :src="a.url" class="h-9 max-w-[280px] rounded" style="accent-color:var(--sys-orange)" />
+                </div>
+              </div>
+
+              <!-- Vault-Video Player -->
+              <div v-if="msg.vaultVideo?.length" class="mt-3 space-y-2">
+                <div v-for="v in msg.vaultVideo" :key="v.name" class="flex flex-col gap-0.5">
+                  <span class="text-[10px] text-white/35 font-mono truncate max-w-[320px]">{{ v.name }}</span>
+                  <video controls :src="v.url" class="max-w-[320px] rounded border border-[var(--sys-border)]" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1142,8 +1158,9 @@ async function scanForVaultImages() {
   const last = messages.value[messages.value.length - 1];
   if (!last || last.role !== "assistant") return;
   const text = last.text ?? "";
-  // Früher Ausstieg – kein Fetch wenn keine Vault-Bild-Referenz
-  if (!text.includes("[vault-img:") && !text.includes("[public-vault-img:")) return;
+  // Früher Ausstieg – kein Fetch wenn keine Vault-Medien-Referenz
+  if (!text.includes("[vault-img:") && !text.includes("[public-vault-img:") &&
+      !text.includes("[public-vault-audio:") && !text.includes("[public-vault-video:")) return;
   const vaultImages = [];
 
   // ── Eigene Vault-Bilder: [vault-img: dateiname] ───────────────────────────
@@ -1211,6 +1228,42 @@ async function scanForVaultImages() {
   }
 
   if (vaultImages.length) setLastMessageMeta("vaultImages", vaultImages);
+
+  // ── Public Vault Audio: [public-vault-audio: soul_id/dateiname] ───────────
+  if (text.includes("[public-vault-audio:")) {
+    const vaultAudio = [];
+    const audioTagPattern = /\[public-vault-audio:\s*([^/\]]+)\/([^\]]+)\]/gi;
+    for (const m of [...text.matchAll(audioTagPattern)]) {
+      const sid      = m[1].trim();
+      const filename = m[2].trim();
+      const entry    = publicImageManifest.value[sid];
+      if (!entry?.audio?.length) continue;
+      if (!/^[a-zA-Z0-9_-]{4,128}$/.test(sid) || !/^[a-zA-Z0-9._-]{1,120}$/.test(filename)) continue;
+      const canonical = entry.audio.find(f => f === filename || f.replace(/\.[^.]+$/, '') === filename.replace(/\.[^.]+$/, ''));
+      if (!canonical) continue;
+      const url = await fetchPublicVaultImage(props.soulCert, sid, canonical);
+      if (url) { vaultImageBlobUrls.push(url); vaultAudio.push({ name: canonical, url }); }
+    }
+    if (vaultAudio.length) setLastMessageMeta("vaultAudio", vaultAudio);
+  }
+
+  // ── Public Vault Video: [public-vault-video: soul_id/dateiname] ───────────
+  if (text.includes("[public-vault-video:")) {
+    const vaultVideo = [];
+    const videoTagPattern = /\[public-vault-video:\s*([^/\]]+)\/([^\]]+)\]/gi;
+    for (const m of [...text.matchAll(videoTagPattern)]) {
+      const sid      = m[1].trim();
+      const filename = m[2].trim();
+      const entry    = publicImageManifest.value[sid];
+      if (!entry?.video?.length) continue;
+      if (!/^[a-zA-Z0-9_-]{4,128}$/.test(sid) || !/^[a-zA-Z0-9._-]{1,120}$/.test(filename)) continue;
+      const canonical = entry.video.find(f => f === filename || f.replace(/\.[^.]+$/, '') === filename.replace(/\.[^.]+$/, ''));
+      if (!canonical) continue;
+      const url = await fetchPublicVaultImage(props.soulCert, sid, canonical);
+      if (url) { vaultImageBlobUrls.push(url); vaultVideo.push({ name: canonical, url }); }
+    }
+    if (vaultVideo.length) setLastMessageMeta("vaultVideo", vaultVideo);
+  }
 }
 
 // ── Kamera-Pipeline: Capture → Gemini Vision → WaveSpeed ─────────────────
@@ -1608,8 +1661,8 @@ async function fetchNetworkContext() {
         for (const c of data.connections) {
           if (c.available && c.soul_content) {
             const content = c.soul_content.trim();
-            // Verschlüsselte Inhalte überspringen – SYSCRYPT01-Magie-Bytes oder Binary-Daten
-            if (content.startsWith('SYSCRYPT01') || content.startsWith('SYS\x00')) continue;
+            // Verschlüsselte Inhalte überspringen – Magic-Bytes SYS\x01 (AES-CBC)
+            if (content.startsWith('SYS\x01') || content.startsWith('SYSCRYPT01')) continue;
             parts.push(`### ${c.alias} (${c.soul_id.slice(0, 8)}…)\n${content}`);
           }
         }
@@ -1628,21 +1681,40 @@ async function fetchNetworkContext() {
     if (publicVaultContext) parts.push(publicVaultContext);
     publicImageManifest.value = imageManifest;
 
-    // Bild-Hinweis für die KI: welche Bilder aus Public Vaults verfügbar sind
-    const imgHints = [];
+    // Medien-Hinweis für die KI: Bilder, Audio, Video und Dokumente aus Public Vaults
+    const mediaHints = [];
     for (const [soul_id, entry] of Object.entries(imageManifest)) {
       const lines = [];
       if (entry.files.length) {
         const examples = entry.files.slice(0, 3).map(f => `[public-vault-img: ${soul_id}/${f}]`).join(" oder ");
-        lines.push(`  Anzeigbar: ${entry.files.join(", ")} → z.B.: ${examples}`);
+        lines.push(`  Bilder (anzeigbar): ${entry.files.join(", ")} → z.B.: ${examples}`);
       }
       if ((entry.cipheredFiles ?? []).length) {
-        lines.push(`  Verschlüsselt (nicht anzeigbar): ${entry.cipheredFiles.join(", ")} – diese Dateien sind im Public Vault verschlüsselt und können nicht gerendert werden. Teile dem User mit, dass das Bild verschlüsselt ist.`);
+        lines.push(`  Bilder (verschlüsselt, nicht anzeigbar): ${entry.cipheredFiles.join(", ")}`);
       }
-      imgHints.push(`${entry.alias} (ID: ${soul_id})\n${lines.join("\n")}`);
+      if ((entry.audio ?? []).length) {
+        const ex = entry.audio.slice(0, 2).map(f => `[public-vault-audio: ${soul_id}/${f}]`).join(" oder ");
+        lines.push(`  Audio: ${entry.audio.join(", ")} → z.B.: ${ex}`);
+      }
+      if ((entry.video ?? []).length) {
+        const ex = entry.video.slice(0, 2).map(f => `[public-vault-video: ${soul_id}/${f}]`).join(" oder ");
+        lines.push(`  Video: ${entry.video.join(", ")} → z.B.: ${ex}`);
+      }
+      if ((entry.documents ?? []).length) {
+        lines.push(`  Dokumente (PDF, zum Download): ${entry.documents.join(", ")}`);
+      }
+      if (lines.length) mediaHints.push(`${entry.alias} (ID: ${soul_id})\n${lines.join("\n")}`);
     }
-    if (imgHints.length) {
-      parts.push(`## Bilder aus verbundenen Public Vaults\nWenn nach einem anzeigbaren Bild gefragt wird, schreibe EXAKT: [public-vault-img: SOUL_ID/DATEINAME]\nVerfügbare Bilder:\n${imgHints.join("\n")}`);
+    if (mediaHints.length) {
+      parts.push(
+        `## Medien aus verbundenen Public Vaults\n` +
+        `Verfügbare Tags:\n` +
+        `  Bild zeigen:  [public-vault-img: SOUL_ID/DATEINAME]\n` +
+        `  Audio zeigen: [public-vault-audio: SOUL_ID/DATEINAME]\n` +
+        `  Video zeigen: [public-vault-video: SOUL_ID/DATEINAME]\n` +
+        `Schreibe den Tag EXAKT so im Fließtext.\n\n` +
+        mediaHints.join("\n\n")
+      );
     }
   } catch { /* nicht kritisch */ }
 

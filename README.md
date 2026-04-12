@@ -107,7 +107,7 @@ _What are they still looking for?_
 ...
 ```
 
-Full specification: [docs/spec/soul-md.md](docs/spec/soul-md.md)
+Full specification: [docs/spec/sys_md.md](docs/spec/sys_md.md)
 
 ---
 

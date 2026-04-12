@@ -80,8 +80,10 @@ if not ok then
 end
 
 -- DELETE und OPTIONS sind immer erlaubt (eigenes Datei-Management, kein ext. API-Zugriff)
+-- Soul-Cert (Owner, via_webhook=false/nil) bypassed den enabled-Check immer —
+-- nur externe Dienste (service token, via_webhook=true) werden durch enabled geblockt.
 local method = ngx.req.get_method()
-if method ~= "DELETE" and method ~= "OPTIONS" and not ctx.enabled then
+if method ~= "DELETE" and method ~= "OPTIONS" and not ctx.enabled and ngx.ctx.via_webhook then
   ngx.status = 403
   ngx.header["Content-Type"] = "application/json"
   ngx.say('{"error":"API access not enabled"}')
@@ -213,9 +215,10 @@ local MIME_MAP = {
   -- Bilder
   jpg  = "image/jpeg",  jpeg = "image/jpeg", png  = "image/png",
   webp = "image/webp",  gif  = "image/gif",  avif = "image/avif",
-  -- Text
+  -- Text / Dokument
   md   = "text/plain; charset=utf-8",
-  txt  = "text/plain; charset=utf-8"
+  txt  = "text/plain; charset=utf-8",
+  pdf  = "application/pdf"
 }
 
 -- ── DELETE /api/vault/{type}/{filename} ────────────────────────────────────

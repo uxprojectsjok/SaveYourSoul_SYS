@@ -76,10 +76,7 @@ Alle Dateien dieses Verzeichnisses sind die **Quell-Kopie** der Live-Lua-Scripts
 
 | Datei | Beschreibung |
 |---|---|
-| `sys.uxprojects-jok.com.nginx` | Aktive vhost-Konfiguration (Live-Stand) |
-| `vhost.conf.template` | Template für neue vhost-Setups |
-| `vhost_backup` | Älterer vhost-Stand als Referenz |
-| `old_vps_sys.uxprojects-jok.com` | Konfiguration der vorherigen VPS-Instanz |
+| `vhost.conf.template` | Template für neue vhost-Setups — `YOUR_DOMAIN` ersetzen und nach `/etc/openresty/sites-available/` kopieren |
 
 ---
 
@@ -92,4 +89,4 @@ Alle Dateien dieses Verzeichnisses sind die **Quell-Kopie** der Live-Lua-Scripts
 
 ---
 
-*Zuletzt synchronisiert: 2026-04-11*
+*Zuletzt synchronisiert: 2026-04-12*

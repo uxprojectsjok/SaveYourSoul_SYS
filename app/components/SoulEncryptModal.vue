@@ -288,33 +288,34 @@ async function handleEncrypt() {
     // 1. Lokale Vault-Dateien (falls verbunden)
     const localFiles = vaultConnected.value ? await readAllVaultFiles() : []
 
-    // 2. VPS-Dateien holen wenn synced_files vorhanden + soul-Token verfügbar
-    const hasVpsFiles = soulToken.value && (
-      (syncedFiles.value.audio?.length  ?? 0) +
-      (syncedFiles.value.video?.length  ?? 0) +
-      (syncedFiles.value.images?.length ?? 0) +
-      (syncedFiles.value.context?.length ?? 0)
-    ) > 0
+    // 2. VPS-Dateien holen – nur Dateien die lokal noch nicht vorhanden sind.
+    //    Basisnamen der lokalen Dateien als Skip-Set übergeben → kein unnötiger
+    //    Download großer Video-/Audio-Dateien die der lokale Vault bereits enthält.
+    const localBaseNames = new Set(localFiles.map(f => f.name.split('/').pop()))
+    const totalSynced = (syncedFiles.value.audio?.length  ?? 0) +
+                        (syncedFiles.value.video?.length  ?? 0) +
+                        (syncedFiles.value.images?.length ?? 0) +
+                        (syncedFiles.value.context?.length ?? 0)
+    const vpsOnlyCount = ['audio', 'video', 'images', 'context'].reduce((sum, cat) =>
+      sum + (syncedFiles.value[cat] || []).filter(n => !localBaseNames.has(n.split('/').pop())).length, 0)
+
+    const hasVpsFiles = soulToken.value && vpsOnlyCount > 0
 
     let vpsFiles = []
     vpsWarning.value = ''
     if (hasVpsFiles) {
       isFetchingVps.value = true
-      vpsFiles = await fetchVpsVaultFiles(soulToken.value)
+      vpsFiles = await fetchVpsVaultFiles(soulToken.value, localBaseNames)
       isFetchingVps.value = false
-      const expected = (syncedFiles.value.audio?.length ?? 0) +
-                       (syncedFiles.value.video?.length ?? 0) +
-                       (syncedFiles.value.images?.length ?? 0) +
-                       (syncedFiles.value.context?.length ?? 0)
-      const skipped = expected - vpsFiles.length
+      const skipped = vpsOnlyCount - vpsFiles.length
       if (skipped > 0) {
-        vpsWarning.value = `${skipped} VPS-Datei(en) konnten nicht entschlüsselt werden (Vault-Session abgelaufen). Nur lokale Dateien wurden eingebunden.`
+        vpsWarning.value = `${skipped} VPS-Datei(en) konnten nicht geladen werden (Vault-Session abgelaufen oder Timeout). Nur lokale Dateien wurden eingebunden.`
       }
     }
 
     // 3. Mergen: lokale Dateien haben Vorrang bei gleichem Basisnamen
-    const localBaseNames = new Set(localFiles.map(f => f.name.split('/').pop()))
-    const extraVpsFiles  = vpsFiles.filter(f => !localBaseNames.has(f.name.split('/').pop()))
+    // localBaseNames wurde oben bereits deklariert (VPS-Skip-Optimierung)
+    const extraVpsFiles = vpsFiles.filter(f => !localBaseNames.has(f.name.split('/').pop()))
     const allFiles       = [...localFiles, ...extraVpsFiles]
 
     const name  = soulMeta.value?.name || 'soul'

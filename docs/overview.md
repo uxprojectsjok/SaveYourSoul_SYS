@@ -115,4 +115,4 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for self-hosting requirements.
 ---
 
 *Specification version: 1.0-draft · Apache License 2.0*
-*Full spec: [spec/soul-md.md](spec/soul-md.md) · [spec/auth.md](spec/auth.md) · [spec/mcp-tools.md](spec/mcp-tools.md)*
+*Full spec: [spec/sys_md.md](spec/sys_md.md) · [spec/auth.md](spec/auth.md) · [spec/mcp-tools.md](spec/mcp-tools.md)*

@@ -59,8 +59,10 @@ local function validate_soul_cert(token)
   -- Sicherheitsprüfung: nur alphanumerisch + Bindestrich
   if not sid:match("^[a-zA-Z0-9%-]+$") or #sid > 64 then return nil end
   if master_key == "" then return sid end
-  local hex = hmac.sign(master_key, sid)
-  if cert ~= hex:sub(1, 32) then return nil end
+  -- cert_version-aware: liest Version aus api_context.json (identisch zu vault_auth.lua)
+  local ver      = hmac.read_cert_version(sid)
+  local expected = hmac.cert_for_soul(master_key, sid, ver)
+  if cert ~= expected then return nil end
   return sid
 end
 
@@ -111,7 +113,7 @@ local function file_type_of(name)
   if ext == "mp4" or ext == "mov" or ext == "avi" or ext == "mkv" then return "video" end
   if ext == "jpg" or ext == "jpeg" or ext == "png" or ext == "webp" or
      ext == "gif" or ext == "avif" then return "images" end
-  if ext == "md" or ext == "txt" then return "context_files" end
+  if ext == "md" or ext == "txt" or ext == "pdf" then return "context_files" end
   return "other"
 end
 
@@ -122,6 +124,7 @@ local MIME = {
   opus="audio/ogg", flac="audio/flac",
   mp4="video/mp4", mov="video/quicktime", avi="video/x-msvideo",
   md="text/markdown; charset=utf-8", txt="text/plain; charset=utf-8",
+  pdf="application/pdf",
 }
 
 local function safe_filename(s)

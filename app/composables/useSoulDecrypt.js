@@ -63,13 +63,9 @@ async function decryptFile(cryptoKey, { iv: ivB64, data: dataB64 }) {
 
 // ── Composable ────────────────────────────────────────────────────────────────
 
-const ARWEAVE_GATEWAY = "https://arweave.net";
-const TX_STORAGE_KEY  = "sys.arweave_tx_last";
-
 export function useSoulDecrypt() {
   const bundle         = ref(null);   // Geparste Bundle-JSON
   const isDecrypting   = ref(false);
-  const isFetching     = ref(false);  // Dauerspeicher-Fetch läuft
   const decryptError   = ref(null);
   const decryptedFiles = ref([]);     // [{ name: string, buffer: Uint8Array }]
 
@@ -218,6 +214,7 @@ export function useSoulDecrypt() {
       gif:  "image/gif",
       md:   "text/plain",
       txt:  "text/plain",
+      pdf:  "application/pdf",
       json: "application/json",
     };
     return map[ext] ?? "application/octet-stream";
@@ -247,81 +244,6 @@ export function useSoulDecrypt() {
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   }
 
-  /**
-   * Fetcht ein .soul-Bundle von einer beliebigen öffentlichen URL.
-   * Akzeptiert HTTPS-URLs (Google Drive, IPFS, S3, GitHub Raw, …)
-   * sowie Arweave TX-IDs (43 Zeichen → wird zu arweave.net-URL aufgelöst).
-   * Der Fetch läuft server-seitig über /api/fetch-bundle (kein CORS-Problem).
-   * @param {string} input – HTTPS-URL oder Arweave TX-ID
-   * @returns {Promise<boolean>}
-   */
-  async function loadBundleFromUrl(input) {
-    const clean = (input ?? "").trim();
-    if (!clean) {
-      decryptError.value = "Bitte URL eingeben.";
-      return false;
-    }
-
-    // Auto-detect: 43 alphanumerische Zeichen → Arweave TX-ID
-    let targetUrl = clean;
-    if (/^[a-zA-Z0-9_-]{43}$/.test(clean)) {
-      targetUrl = `${ARWEAVE_GATEWAY}/${clean}`;
-    } else if (!clean.startsWith("https://")) {
-      decryptError.value = "Nur HTTPS-URLs werden unterstützt.";
-      return false;
-    }
-
-    isFetching.value     = true;
-    decryptError.value   = null;
-    bundle.value         = null;
-    decryptedFiles.value = [];
-
-    try {
-      // Server-seitiger Proxy – umgeht CORS (z.B. Google Drive, Dropbox)
-      const res = await fetch("/api/fetch-bundle", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ url: targetUrl }),
-        signal:  AbortSignal.timeout(25_000),
-      });
-
-      const parsed = await res.json().catch(() => {
-        throw new Error("Ungültige Serverantwort.");
-      });
-
-      if (!res.ok) {
-        throw new Error(parsed.message ?? `Fehler vom Server (${res.status}).`);
-      }
-
-      if (
-        !parsed.schema?.startsWith("saveyoursoul/") ||
-        !Array.isArray(parsed.files) ||
-        !parsed.kdf_params
-      ) {
-        throw new Error("Keine gültige .soul-Datei an dieser URL.");
-      }
-
-      bundle.value = parsed;
-
-      // Für nächste Sitzung merken
-      try { localStorage.setItem(TX_STORAGE_KEY, clean); } catch { /* ignorieren */ }
-
-      return true;
-    } catch (e) {
-      decryptError.value = e.name === "TimeoutError"
-        ? "Quelle nicht erreichbar (Timeout 25 s)."
-        : (e.message ?? "Laden fehlgeschlagen.");
-      return false;
-    } finally {
-      isFetching.value = false;
-    }
-  }
-
-  /** Zuletzt verwendete TX-ID aus localStorage lesen */
-  function getLastTx() {
-    try { return localStorage.getItem(TX_STORAGE_KEY) ?? ""; } catch { return ""; }
-  }
-
   /** Reset für erneuten Versuch */
   function reset() {
     bundle.value         = null;
@@ -332,12 +254,9 @@ export function useSoulDecrypt() {
   return {
     bundle,
     isDecrypting,
-    isFetching,
     decryptError,
     decryptedFiles,
     loadBundle,
-    loadBundleFromUrl,
-    getLastTx,
     decrypt,
     decryptWithKey,
     getSoulMd,

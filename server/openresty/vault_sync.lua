@@ -76,7 +76,7 @@ local ALLOWED_EXT = {
   audio   = { mp3=true, wav=true, ogg=true, webm=true, m4a=true, opus=true, flac=true, aac=true },
   video   = { mp4=true, mov=true, avi=true, mkv=true, webm=true },
   image   = { jpg=true, jpeg=true, png=true, webp=true, gif=true, avif=true },
-  context = { md=true, txt=true }
+  context = { md=true, txt=true, pdf=true }
 }
 
 -- Magic-Bytes (erste Bytes) pro Typ – genügt ein Treffer
@@ -108,7 +108,7 @@ local MAX_SIZE = {
   audio   = 50 * 1024 * 1024,   -- 50 MB
   video   = 100 * 1024 * 1024,  -- 100 MB
   image   = 10 * 1024 * 1024,   -- 10 MB
-  context = 512 * 1024           -- 512 KB
+  context = 10 * 1024 * 1024     -- 10 MB (PDF-Unterstützung)
 }
 
 local function ext_of(name)
@@ -366,7 +366,18 @@ for _, n in ipairs(arr) do
   if n == registered_name then found = true; break end
 end
 if not found then table.insert(arr, registered_name) end
-ctx.synced_files[synced_key] = arr
+ctx.synced_files[synced_key] = #arr > 0 and arr or cjson.empty_array
+
+-- Normalisieren: cjson decoded [] als leere Lua-Table {} → muss als [] (empty_array) bleiben
+-- sonst schreibt cjson beim nächsten Speichern "{}" statt "[]" für leere Kategorien
+for _, k in ipairs({"audio", "video", "images", "context"}) do
+  if k ~= synced_key then
+    local v = ctx.synced_files[k]
+    if v == nil or (type(v) == "table" and #v == 0) then
+      ctx.synced_files[k] = cjson.empty_array
+    end
+  end
+end
 
 -- active_files: nur setzen wenn noch kein Wert (User-Wahl bleibt erhalten)
 if not ctx.active_files then ctx.active_files = {} end

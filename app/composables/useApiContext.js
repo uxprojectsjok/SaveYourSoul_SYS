@@ -10,6 +10,9 @@ import { validateSoul } from "#shared/utils/soulParser.js";
 
 const loaded           = ref(false);
 const lastCert         = ref("");       // Soul-Cert des zuletzt geladenen Kontexts — Wechsel triggert Reset
+// Wird auf true gesetzt wenn der Server 401 zurückgibt (Vault gelöscht / Cert ungültig).
+// index.vue beobachtet diesen Wert und löst switchSoul() aus.
+const sessionExpired   = ref(false);
 const enabled          = ref(false);
 const cipherMode       = ref("ciphered"); // "open" | "ciphered" — zuletzt auf VPS gespeicherter Modus
 const permissions      = ref({
@@ -84,16 +87,37 @@ export function useApiContext() {
         headers: { Authorization: `Bearer ${soulCert}` }
       });
       if (!res.ok) {
-        // VPS hat keine Daten (frischer Start / gelöscht) → lokale Dateien trotzdem anzeigen
+        // VPS hat keine Daten oder Vault gelöscht → Server-State leeren, nur lokale Dateien zeigen
+        syncedFiles.value = { audio: [], video: [], images: [], context: [], profiles: [] };
+        activeFiles.value = { audio: "", video: [], images: "", context: "" };
         await scanVault();
         loaded.value = true;
+        // "auth_failed" signalisiert dem Aufrufer einen möglichen cert_version-Konflikt
+        // (z.B. Server-Vault manuell gelöscht → api_context.json weg → cert_version fällt auf 0)
+        if (res.status === 401) {
+          // Nur ausloggen wenn der Vault zuvor erfolgreich verbunden war (sys.vault_ok gesetzt).
+          // Verhindert falschen Logout bei verschlüsseltem Vault-Import ohne Server-Vault.
+          const soulId = soulCert.split(".")[0];
+          const hadVault = typeof window !== "undefined" &&
+            sessionStorage.getItem("sys.vault_ok") === soulId;
+          if (hadVault) sessionExpired.value = true;
+          return "auth_failed";
+        }
         return;
       }
       const data = await res.json();
       enabled.value         = data.enabled            ?? false;
       cipherMode.value      = data.cipher_mode        ?? "ciphered";
       permissions.value     = { soul: false, calendar: false, audio: false, video: false, images: false, context_files: false, ...data.permissions };
-      syncedFiles.value  = { audio: [], video: [], images: [], context: [], profiles: [], ...data.synced_files };
+      // Normalisieren: Server kann leere Arrays als {} (cjson empty-object) senden
+      const sf = data.synced_files || {};
+      syncedFiles.value = {
+        audio:    Array.isArray(sf.audio)    ? sf.audio    : [],
+        video:    Array.isArray(sf.video)    ? sf.video    : [],
+        images:   Array.isArray(sf.images)   ? sf.images   : [],
+        context:  Array.isArray(sf.context)  ? sf.context  : [],
+        profiles: Array.isArray(sf.profiles) ? sf.profiles : [],
+      };
       const af = data.active_files || {};
       activeFiles.value  = {
         audio:   af.audio   ?? "",
@@ -102,6 +126,8 @@ export function useApiContext() {
         context: af.context ?? ""
       };
       loaded.value       = true;
+      // Vault war erfolgreich verbunden — merken für Logout-Erkennung
+      try { sessionStorage.setItem("sys.vault_ok", soulCert.split(".")[0]); } catch {}
       await scanVault();
     } catch (e) { console.error("[useApiContext] loadContext:", e); }
   }
@@ -239,7 +265,7 @@ export function useApiContext() {
     if (/\.(mp3|wav|ogg|m4a|opus|flac|aac)$/.test(lower))  return "audio";
     if (/\.(mp4|mov|avi|mkv)$/.test(lower))                 return "video";
     if (/\.(jpe?g|png|webp|gif|avif)$/.test(lower))         return "image";
-    if (/\.(md|txt)$/.test(lower))                          return "context";
+    if (/\.(md|txt|pdf)$/.test(lower))                       return "context";
 
     // Ordner-Fallback
     if (folder === "motion_samples" || folder === "video_samples" || folder === "videos") return "video";
@@ -267,6 +293,7 @@ export function useApiContext() {
     }
 
     let errors = 0;
+    const failedFiles = [];
     try {
       // Soul-Inhalt hochladen — immer verschlüsselt
       if (soulContent) {
@@ -317,10 +344,16 @@ export function useApiContext() {
         const type = fileTypeFromPath(name); // voller Pfad inkl. Ordner
         if (!type) continue;
         const res = await syncFile(soulCert, type, baseName, buffer, vaultKeyHex);
-        if (!res.ok) errors++;
+        if (!res.ok) {
+          errors++;
+          failedFiles.push({ name: baseName, reason: res.error || `HTTP-Fehler` });
+        }
       }
 
-      if (errors > 0) syncError.value = `${errors} Datei(en) konnten nicht hochgeladen werden.`;
+      if (errors > 0) {
+        const details = failedFiles.map(f => `${f.name}: ${f.reason}`).join(" · ");
+        syncError.value = `${errors} Datei(en) konnten nicht hochgeladen werden. ${details}`;
+      }
 
       cipherMode.value = "ciphered";
 
@@ -440,6 +473,9 @@ export function useApiContext() {
    * Lädt alle public_files aus dem lokalen Vault und lädt sie auf den VPS hoch.
    * cipher: "open" → klar, "ciphered" → AES-CBC mit vaultKeyHex.
    */
+  // Typ-zu-Endpoint-Map für Server-Vault-Fallback
+  const TYPE_ENDPOINT = { audio: "audio", image: "images", video: "video", context: "context" };
+
   async function syncPublicFiles(soulCert, vaultKeyHex = "") {
     publicSyncing.value   = true;
     publicSyncError.value = null;
@@ -450,8 +486,26 @@ export function useApiContext() {
         const name   = typeof pf === "string" ? pf : pf.name;
         const cipher = typeof pf === "object" ? (pf.cipher || "open") : "open";
         const vf = vaultFiles.find(f => f.name.split("/").pop() === name);
-        if (!vf) continue;
-        let ab = vf.buffer;
+        let ab;
+        if (vf) {
+          ab = vf.buffer;
+        } else {
+          // Fallback: Datei vom Server-Vault laden (kein lokaler Vault vorhanden)
+          const fType    = fileTypeFromPath(name);
+          const endpoint = fType ? TYPE_ENDPOINT[fType] : null;
+          if (!endpoint) continue;
+          // Nur fetchen wenn Datei tatsächlich im Server-Vault gelistet ist
+          const serverKey = endpoint;  // images, audio, video, context
+          const serverList = syncedFiles.value[serverKey] || [];
+          if (!serverList.includes(name)) continue;
+          try {
+            const r = await fetch(`/api/vault/${endpoint}/${encodeURIComponent(name)}`, {
+              headers: { Authorization: `Bearer ${soulCert}` }
+            });
+            if (!r.ok) { errors++; continue; }
+            ab = await r.arrayBuffer();
+          } catch { errors++; continue; }
+        }
         if (cipher === "ciphered" && vaultKeyHex) {
           ab = await encryptData(vaultKeyHex, ab);
         }
@@ -529,7 +583,13 @@ export function useApiContext() {
    * @param {string} soulToken – soul_id.cert
    * @returns {Promise<Array<{ name: string, buffer: ArrayBuffer }>>}
    */
-  async function fetchVpsVaultFiles(soulToken) {
+  /**
+   * Fetcht Vault-Dateien vom VPS die noch nicht lokal vorhanden sind.
+   * @param {string}  soulToken  – soul_id.cert
+   * @param {Set}     skipNames  – Basisnamen (z.B. "voice.webm") die lokal schon existieren
+   * @param {number}  timeoutMs  – Timeout pro Datei in ms (default 25 s)
+   */
+  async function fetchVpsVaultFiles(soulToken, skipNames = new Set(), timeoutMs = 25_000) {
     const results = []
     const sf      = syncedFiles.value
     const cats    = ['audio', 'video', 'images', 'context']
@@ -537,10 +597,17 @@ export function useApiContext() {
     for (const cat of cats) {
       const names = Array.isArray(sf[cat]) ? sf[cat] : []
       for (const name of names) {
+        // Datei lokal bereits vorhanden → überspringen (kein unnötiger Download)
+        const baseName = name.split('/').pop()
+        if (skipNames.has(baseName)) continue
         try {
-          const res = await fetch(`/api/vault/${cat}/${encodeURIComponent(name)}`, {
-            headers: { Authorization: `Bearer ${soulToken}` }
+          const ctrl  = new AbortController()
+          const timer = setTimeout(() => ctrl.abort(), timeoutMs)
+          const res   = await fetch(`/api/vault/${cat}/${encodeURIComponent(name)}`, {
+            headers: { Authorization: `Bearer ${soulToken}` },
+            signal:  ctrl.signal
           })
+          clearTimeout(timer)
           if (!res.ok) continue
           const buffer = await res.arrayBuffer()
           if (buffer.byteLength < 4) continue
@@ -549,7 +616,7 @@ export function useApiContext() {
           const head = new Uint8Array(buffer, 0, 4)
           if (head[0] === 0x53 && head[1] === 0x59 && head[2] === 0x53 && head[3] === 0x01) continue
           results.push({ name, buffer })
-        } catch { /* weiter */ }
+        } catch { /* Timeout oder Netzwerkfehler → weiter */ }
       }
     }
 
@@ -557,9 +624,13 @@ export function useApiContext() {
     const profileTypes = Array.isArray(sf.profiles) ? sf.profiles : []
     for (const ptype of profileTypes) {
       try {
-        const res = await fetch(`/api/vault/profile/${encodeURIComponent(ptype)}`, {
-          headers: { Authorization: `Bearer ${soulToken}` }
+        const ctrl  = new AbortController()
+        const timer = setTimeout(() => ctrl.abort(), timeoutMs)
+        const res   = await fetch(`/api/vault/profile/${encodeURIComponent(ptype)}`, {
+          headers: { Authorization: `Bearer ${soulToken}` },
+          signal:  ctrl.signal
         })
+        clearTimeout(timer)
         if (!res.ok) continue
         const buffer = await res.arrayBuffer()
         if (buffer.byteLength < 2) continue
@@ -582,11 +653,13 @@ export function useApiContext() {
     lastCert.value       = "";
     publicShare.value       = { enabled: false, public_files: [], api_grants: [], soul_grants: [] };
     publicShareLoaded.value = false;
+    // vault_ok löschen — nach Logout soll kein Vault mehr als "bekannt" gelten
+    try { sessionStorage.removeItem("sys.vault_ok"); } catch {}
   }
 
   return {
     // State
-    loaded, enabled, cipherMode, permissions, syncedFiles, activeFiles, localFiles, isSyncing, syncError, saveError,
+    loaded, enabled, cipherMode, permissions, syncedFiles, activeFiles, localFiles, isSyncing, syncError, saveError, sessionExpired,
     // Public Vault State
     publicShare, publicShareLoaded, publicSyncing, publicSyncError,
     // Computed

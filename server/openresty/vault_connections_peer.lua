@@ -62,7 +62,7 @@ local function file_type_of(name)
   if ext == "mp4" or ext == "mov" or ext == "avi" or ext == "mkv" then return "video" end
   if ext == "jpg" or ext == "jpeg" or ext == "png" or ext == "webp" or
      ext == "gif" or ext == "avif" then return "images" end
-  if ext == "md" or ext == "txt" then return "context_files" end
+  if ext == "md" or ext == "txt" or ext == "pdf" then return "context_files" end
   return "other"
 end
 
@@ -172,9 +172,12 @@ if req_file then
   end
   local content = fh:read("*a"); fh:close()
 
-  -- Text inline, Binär nur Metadaten
-  if ftype == "context_files" then
+  -- Text inline; PDF als base64; andere Binärdateien nur Metadaten
+  local cf_ext = (fname:match("%.([^%.]+)$") or ""):lower()
+  if ftype == "context_files" and (cf_ext == "md" or cf_ext == "txt") then
     ngx.say(cjson.encode({ ok = true, name = fname, soul_id = target_id, content = content }))
+  elseif ftype == "context_files" and cf_ext == "pdf" then
+    ngx.say(cjson.encode({ ok = true, name = fname, soul_id = target_id, encoding = "base64", content_b64 = ngx.encode_base64(content) }))
   else
     ngx.say(cjson.encode({ ok = true, name = fname, soul_id = target_id, type = ftype, size = #content, note = "Binärdatei – nicht inline verfügbar" }))
   end
@@ -190,7 +193,7 @@ if has_scope("soul") then
   local sf = io.open(soul_path, "r")
   if sf then
     local raw = sf:read("*a"); sf:close()
-    if raw:sub(1, 4) ~= "SYS\0" then  -- nicht verschlüsselt
+    if raw:sub(1, 4) ~= "SYS\x01" then  -- nicht verschlüsselt (Magic: SYS + 0x01)
       soul_content = raw:sub(1, 32768)
     end
   end
@@ -229,11 +232,17 @@ for _, e in ipairs(pub_config.public_files) do
         table.insert(files, { name = fname, type = ftype, cipher = cipher })
 
         -- Kontext-Dateien direkt inline lesen (max 64 KB)
+        -- Text (md/txt): UTF-8 direkt; PDF: base64-kodiert
         if ftype == "context_files" and cipher ~= "ciphered" then
-          local rfh = io.open(fpath, "r")
+          local cf_ext2 = (fname:match("%.([^%.]+)$") or ""):lower()
+          local rfh = io.open(fpath, "rb")
           if rfh then
             local content = rfh:read("*a"); rfh:close()
-            table.insert(context_files, { name = fname, content = content:sub(1, 65536) })
+            if cf_ext2 == "pdf" then
+              table.insert(context_files, { name = fname, encoding = "base64", content_b64 = ngx.encode_base64(content:sub(1, 65536)) })
+            else
+              table.insert(context_files, { name = fname, content = content:sub(1, 65536) })
+            end
           end
         end
       end

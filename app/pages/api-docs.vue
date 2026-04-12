@@ -409,6 +409,10 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
                ═══════════════════════════════════════ -->
           <section :id="'soul-network'" class="doc-section mb-16 scroll-mt-20">
             <DocHeading level="1" badge="Peer-to-Peer">Soul Network</DocHeading>
+            <div class="doc-warning-box mb-4 flex items-start gap-2.5">
+              <svg class="w-4 h-4 shrink-0 mt-0.5 text-[var(--sys-amber)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+              <p class="text-xs text-[var(--sys-fg-dim)] leading-relaxed"><strong class="text-[var(--sys-amber)]">In aktiver Entwicklung.</strong> Das Soul Network befindet sich im Aufbau — Funktionen, API-Endpunkte und das Freigabe-Modell können sich kurzfristig ändern. Die aktuelle Dokumentation spiegelt den Stand des letzten Tests wider.</p>
+            </div>
             <p class="doc-lead">Das Soul Network ermöglicht es, Souls direkt miteinander zu verbinden. KI-Agenten können den Soul-Kontext verbundener Personen in ihre Antworten einbeziehen.</p>
 
             <DocHeading level="2">Das Konzept</DocHeading>
@@ -449,9 +453,9 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
             <p class="doc-p">Klicke in der Verbindungsliste auf <strong>„Trennen"</strong>. Die andere Person erhält beim nächsten Öffnen des Soul Networks eine Benachrichtigung, dass du die Verbindung getrennt hast. Sie kann diese mit „Ok" quittieren.</p>
             <p class="doc-p">Beide Seiten können jederzeit trennen — unabhängig voneinander. Die Verbindung ist vollständig aufgehoben, sobald eine Seite trennt.</p>
 
-            <DocHeading :id="'soul-network-vault'" level="2">Vault-Dateien im Netzwerk teilen</DocHeading>
-            <p class="doc-p"><strong>sys.md wird immer geteilt</strong> — sobald eine gegenseitige Verbindung besteht, können verbundene Souls deinen Soul-Kontext über den <code class="doc-code">/network</code>-Endpunkt lesen. Kein Public Vault nötig.</p>
-            <p class="doc-p">Für Vault-Dateien (Audio, Bilder, Kontext-Dokumente) sind drei zusätzliche Schritte erforderlich:</p>
+            <DocHeading :id="'soul-network-vault'" level="2">Inhalte im Netzwerk teilen</DocHeading>
+            <p class="doc-p">Permission-Scopes und Dateifreigabe sind <strong>zwei getrennte Ebenen</strong>. Ein Scope allein reicht nicht — jede Datei muss zusätzlich explizit im Bereich <strong>„Netzwerk-Freigaben"</strong> freigegeben werden. Granulare Kontrolle: du entscheidest pro Datei was sichtbar ist.</p>
+            <p class="doc-p">Unterstützte Formate: Audio (MP3, WAV, OGG, M4A, OPUS, FLAC, AAC, WebM), Video (MP4, MOV, AVI, MKV, WebM), Bilder (JPG, PNG, WebP, GIF, AVIF), Kontext-Dokumente (PDF, MD, TXT).</p>
 
             <div class="doc-steps mb-6">
               <div class="doc-step">
@@ -464,8 +468,8 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
               <div class="doc-step">
                 <div class="doc-step-num">2</div>
                 <div>
-                  <p class="text-sm font-semibold mb-0.5">Dateien in Public Vault hochladen</p>
-                  <p class="text-sm text-[var(--sys-fg-dim)]">Im Bereich <strong>„Dateien"</strong> → Kategorie wählen (Audio, Bilder, Kontext) → Datei aus dem lokalen Vault auswählen → Option <strong>„In Public Vault hochladen"</strong> aktivieren. Nur so hochgeladene Dateien werden für verbundene Souls sichtbar.</p>
+                  <p class="text-sm font-semibold mb-0.5">Dateien freigeben</p>
+                  <p class="text-sm text-[var(--sys-fg-dim)]">Im Bereich <strong>„Netzwerk-Freigaben"</strong> → <strong>„Datei hinzufügen"</strong> → Datei aus dem Server-Vault wählen. Die Datei wird sofort in den Public Vault hochgeladen und ist danach für verbundene Souls sichtbar. Entfernen per Mülleimer-Icon jederzeit möglich.</p>
                 </div>
               </div>
               <div class="doc-step">
@@ -478,24 +482,24 @@ Authorization: Bearer &lt;dein-service-token&gt;</DocCode>
             </div>
 
             <div class="doc-warning-box my-4">
-              <p class="text-xs font-semibold text-[var(--sys-amber)] mb-1">Wichtig: Public Vault ist ein separates Verzeichnis</p>
-              <p class="text-xs text-[var(--sys-fg-dim)] leading-relaxed">Nur Dateien, die im Bereich „Dateien" explizit in den Public Vault hochgeladen wurden, sind für verbundene Souls sichtbar. <code class="doc-code">vault_public/files/</code> ist ein separates Verzeichnis vom privaten Vault. Dateien im privaten Vault (<code class="doc-code">vault/</code>) sind niemals direkt für andere zugänglich.</p>
+              <p class="text-xs font-semibold text-[var(--sys-amber)] mb-1">Public Vault ist ein separates Verzeichnis</p>
+              <p class="text-xs text-[var(--sys-fg-dim)] leading-relaxed">Nur Dateien die explizit freigegeben wurden landen in <code class="doc-code">vault_public/files/</code>. Dateien im privaten Vault (<code class="doc-code">vault/</code>) sind niemals direkt für andere zugänglich. Verschlüsselte Dateien können nicht freigegeben werden — Dateien im Public Vault sind immer im Klartext gespeichert.</p>
             </div>
 
             <div class="doc-info-box my-4">
               <p class="text-xs font-semibold text-[var(--sys-accent)] mb-2">Zusammenfassung: Was wird wie geteilt?</p>
               <div class="space-y-2">
                 <div class="flex gap-3 text-xs">
-                  <span class="font-mono text-[var(--sys-accent)] w-28 flex-none pt-0.5">sys.md</span>
-                  <span class="text-[var(--sys-fg-dim)]">Immer geteilt bei gegenseitiger Verbindung. Kein Upload in Public Vault nötig.</span>
+                  <span class="font-mono text-[var(--sys-accent)] w-36 flex-none pt-0.5">Audio / Video</span>
+                  <span class="text-[var(--sys-fg-dim)]">Explizit in Netzwerk-Freigaben freigeben. KI kann Dateien als <code>[public-vault-audio:]</code> / <code>[public-vault-video:]</code> im Chat einbetten.</span>
                 </div>
                 <div class="flex gap-3 text-xs">
-                  <span class="font-mono text-[var(--sys-accent)] w-28 flex-none pt-0.5">Audio / Bilder</span>
-                  <span class="text-[var(--sys-fg-dim)]">Nur sichtbar wenn explizit in Public Vault hochgeladen (Bereich „Dateien") UND Vault-Zugang offen.</span>
+                  <span class="font-mono text-[var(--sys-accent)] w-36 flex-none pt-0.5">Bilder</span>
+                  <span class="text-[var(--sys-fg-dim)]">Explizit in Netzwerk-Freigaben freigeben. KI bettet Bilder als <code>[public-vault-img:]</code> ein.</span>
                 </div>
                 <div class="flex gap-3 text-xs">
-                  <span class="font-mono text-[var(--sys-accent)] w-28 flex-none pt-0.5">Kontext-Dateien</span>
-                  <span class="text-[var(--sys-fg-dim)]">Nur sichtbar wenn explizit in Public Vault hochgeladen (Bereich „Dateien") UND Vault-Zugang offen.</span>
+                  <span class="font-mono text-[var(--sys-accent)] w-36 flex-none pt-0.5">PDF / MD / TXT</span>
+                  <span class="text-[var(--sys-fg-dim)]">Explizit freigeben. Wird als Kontext-Datei inline an verbundene KI-Agenten übergeben.</span>
                 </div>
               </div>
             </div>
@@ -1480,8 +1484,8 @@ const faqItems = ref([
   { q: 'Die Transaktion beim Verankern kam nie zum Ende — was ist passiert?', a: 'Auf Mobile unterbricht der App-Switch (Browser → Wallet-App → Browser zurück) oft die WalletConnect-Verbindung. SYS schreibt den TX-Hash aber sofort in sys.md, sobald die Transaktion gesendet wurde — noch bevor die Bestätigung ankommt. Danach wartet SYS bis zu 60s via WalletConnect, dann nochmal bis zu 4 Min. über den öffentlichen Polygon-RPC. Wenn das Modal die Meldung „Transaktion gesendet, Bestätigung ausstehend" zeigt, ist die TX trotzdem unterwegs — den Explorer-Link öffnen um den Status zu prüfen.', open: false },
   { q: 'Welche Wallet kann ich zum Verankern verwenden?', a: 'Jede EIP-1193-kompatible Wallet via WalletConnect v2: MetaMask (Desktop + Mobile), Rainbow, Coinbase Wallet, Trust Wallet u.v.m. Auf Desktop funktioniert auch die MetaMask-Browser-Extension direkt. Die Wallet muss auf Polygon Mainnet konfiguriert sein — SYS wechselt automatisch und fügt das Netz hinzu falls nötig.', open: false },
   { q: 'Warum sehen verbundene Souls meine Dateien nicht?', a: 'sys.md wird immer automatisch geteilt — dafür ist kein zusätzlicher Schritt nötig. Vault-Dateien (Audio, Bilder, Kontext) sind jedoch nur sichtbar, wenn sie explizit in den Public Vault hochgeladen wurden. Das geht im Bereich „Dateien" → Kategorie wählen → Datei auswählen → „In Public Vault hochladen" aktivieren. Außerdem muss der Vault-Zugang offen sein (Kachel „Vault-Zugang"). Ohne diesen Schritt bleiben Dateien im privaten Vault und sind für niemanden außer dir erreichbar.', open: false },
-  { q: 'Muss ich für Soul Network etwas in der App konfigurieren?', a: 'Für das Teilen von sys.md: Nein. Sobald eine gegenseitige Verbindung besteht, wird der soul_grant automatisch angelegt und vault_public.enabled gesetzt — kein manuelles Konfigurieren nötig. Für das Teilen von Vault-Dateien (Audio, Bilder, Kontext): Ja — diese müssen im Bereich „Dateien" separat in den Public Vault hochgeladen werden. Das ist ein bewusster Schritt, damit keine Dateien unbeabsichtigt geteilt werden.', open: false },
-  { q: 'Was teilt sys.md vs. vault_public?', a: 'sys.md ist deine Identitätsdatei — sie wird bei gegenseitiger Verbindung automatisch über den /network-Endpunkt geteilt. Kein Upload in den Public Vault nötig. vault_public ist ein separates Verzeichnis für Vault-Dateien (Audio, Bilder, Kontext-Dokumente), die du explizit für verbundene Souls freigeben möchtest. Beide Mechanismen greifen ineinander: sys.md liefert den Textkontext, vault_public liefert die Mediendateien. Ein KI-Agent kann damit nicht nur über dich lesen, sondern auch deine Stimme hören oder deine Bilder sehen — aber nur wenn du das explizit eingerichtet hast.', open: false },
+  { q: 'Muss ich für Soul Network etwas in der App konfigurieren?', a: 'Ja — für alle Inhalte. Sobald eine gegenseitige Verbindung besteht, wird der soul_grant automatisch angelegt und vault_public.enabled gesetzt. Danach: im Bereich „Netzwerk-Freigaben" gewünschte Dateien hinzufügen (Audio, Bilder, Video, PDF/MD/TXT). Jede hinzugefügte Datei wird sofort hochgeladen. Permission-Scope und Dateifreigabe sind zwei getrennte Ebenen — beides muss aktiv sein, damit ein Inhalt sichtbar ist.', open: false },
+  { q: 'Welche Dateiformate kann ich im Netzwerk teilen?', a: 'Audio: MP3, WAV, OGG, M4A, OPUS, FLAC, AAC, WebM. Video: MP4, MOV, AVI, MKV, WebM. Bilder: JPG, PNG, WebP, GIF, AVIF. Kontext-Dokumente: PDF, Markdown (.md), Textdateien (.txt). Alle Dateien im Public Vault werden im Klartext gespeichert — verschlüsselte Dateien können nicht freigegeben werden. Ein KI-Agent kann Audio mit [public-vault-audio:], Video mit [public-vault-video:] und Bilder mit [public-vault-img:] direkt im Chat einbetten.', open: false },
   { q: 'Was bedeutet „Server-Soul ist mit einem anderen Schlüssel verschlüsselt"?', a: 'Die sys.md auf dem Server wurde mit einem anderen Vault-Schlüssel verschlüsselt als dem aktuell aktiven — zum Beispiel weil der Vault zuletzt von einem anderen Gerät oder mit anderen Schlüsselwörtern geöffnet wurde. Lösung: Vault öffnen (Kachel „Vault-Zugang" → Entsperren) → dann Vault synchronisieren (Kachel „Vault-Explorer" → Sync). Danach klappt der Soul-Abgleich.', open: false },
   { q: 'Was passiert beim Soul-Sync wenn beide Seiten denselben Stand haben?', a: 'Nichts — das Sync-Panel erscheint nicht. Es wird nur angezeigt wenn der Inhalt der server-seitigen sys.md vom lokal gespeicherten Stand abweicht. Der Vergleich läuft beim Session-Start automatisch im Hintergrund.', open: false },
   { q: 'Kann der Soul-Sync Änderungen automatisch zusammenführen (Merge)?', a: 'Nein. Es gibt keine automatische Zusammenführung. Immer gewinnt eine Seite vollständig — entweder Server oder Lokal. Wenn du Inhalte aus beiden Versionen behalten möchtest, musst du die sys.md-Datei vorher manuell sichern und die gewünschten Sektionen per Text-Editor zusammenführen.', open: false },

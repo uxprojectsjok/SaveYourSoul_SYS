@@ -116,13 +116,12 @@ end
 if ngx.req.get_method() == "GET" then
   local ctx = read_context()
   local safe = {
-    enabled           = ctx.enabled           or false,
-    cipher_mode       = ctx.cipher_mode       or "ciphered",
-    external_soul_url = ctx.external_soul_url or "",
-    has_token         = (ctx.webhook_token or "") ~= "",
-    permissions       = ctx.permissions       or {},
-    synced_files      = filter_existing_synced_files(ctx.synced_files),
-    active_files      = ctx.active_files      or {}
+    enabled      = ctx.enabled      or false,
+    cipher_mode  = ctx.cipher_mode  or "ciphered",
+    has_token    = (ctx.webhook_token or "") ~= "",
+    permissions  = ctx.permissions  or {},
+    synced_files = filter_existing_synced_files(ctx.synced_files),
+    active_files = ctx.active_files or {}
   }
   ngx.header["Content-Type"]  = "application/json"
   ngx.header["Cache-Control"] = "no-store"
@@ -166,12 +165,11 @@ if ngx.ctx.via_webhook then
     ngx.say('{"error":"soul permission required for service token"}')
     return
   end
-  incoming.enabled           = nil
-  incoming.cipher_mode       = nil
-  incoming.permissions       = nil
-  incoming.webhook_token     = nil
-  incoming.active_files      = nil
-  incoming.external_soul_url = nil
+  incoming.enabled       = nil
+  incoming.cipher_mode   = nil
+  incoming.permissions   = nil
+  incoming.webhook_token = nil
+  incoming.active_files  = nil
 end
 
 ensure_dirs()
@@ -188,13 +186,6 @@ end
 if incoming.enabled     ~= nil then ctx.enabled     = incoming.enabled end
 if incoming.cipher_mode ~= nil then ctx.cipher_mode = incoming.cipher_mode end
 if incoming.permissions ~= nil then ctx.permissions = incoming.permissions end
-
--- external_soul_url: nur HTTPS, max. 2048 Zeichen
-if type(incoming.external_soul_url) == "string" and #incoming.external_soul_url <= 2048 then
-  if incoming.external_soul_url == "" or incoming.external_soul_url:match("^https://") then
-    ctx.external_soul_url = incoming.external_soul_url
-  end
-end
 
 -- webhook_token: max. 256 Zeichen
 if type(incoming.webhook_token) == "string" and incoming.webhook_token ~= ""

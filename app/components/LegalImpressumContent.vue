@@ -11,7 +11,6 @@
       <div class="text-base leading-relaxed space-y-0.5">
         <p class="font-medium text-[var(--sys-fg)]">UX-Projects – Jan-Oliver Karo</p>
         <p>Vertreten durch: Jan-Oliver Karo</p>
-        <p>Wäldchesborn 57</p>
         <p>35043 Marburg</p>
         <p>Deutschland</p>
       </div>
@@ -44,7 +43,6 @@
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Verantwortlich für den Inhalt gemäß § 18 Abs. 2 MStV</h2>
       <div class="text-base leading-relaxed space-y-0.5">
         <p>Jan-Oliver Karo</p>
-        <p>Wäldchesborn 57</p>
         <p>35043 Marburg</p>
         <p>Deutschland</p>
       </div>

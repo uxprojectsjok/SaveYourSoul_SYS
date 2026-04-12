@@ -203,7 +203,7 @@ if method == "GET" and uri == "/api/vault/connections/network" then
     local f = io.open(soul_path, "r")
     if f then
       local content = f:read("*a"); f:close()
-      if content:sub(1, 4) == "SYS\0" then
+      if content:sub(1, 4) == "SYS\x01" then
         -- Vault ist verschlüsselt – Verbindung bleibt aktiv, Inhalt nicht lesbar
         -- Prüfe ob Vault-Session aktiv ist (Owner hat Vault entsperrt)
         local sessions   = ngx.shared.sessions

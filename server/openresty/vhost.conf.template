@@ -13,12 +13,13 @@
 #   ln -s /etc/openresty/sites-available/YOUR_DOMAIN /etc/openresty/sites-enabled/
 #   openresty -s reload
 
-limit_req_zone $binary_remote_addr zone=chat_api:10m rate=2r/s;
-limit_req_zone $binary_remote_addr zone=chat:10m    rate=10r/s;
-limit_req_zone $binary_remote_addr zone=api:10m     rate=20r/s;
-limit_req_zone $binary_remote_addr zone=auth:10m    rate=5r/s;
-limit_req_zone $binary_remote_addr zone=mcp:10m     rate=30r/s;
-limit_req_zone $binary_remote_addr zone=oauth:10m   rate=10r/s;
+limit_req_zone $binary_remote_addr zone=chat_api:10m     rate=2r/s;
+limit_req_zone $binary_remote_addr zone=chat:10m         rate=10r/s;
+limit_req_zone $binary_remote_addr zone=api:10m          rate=20r/s;
+limit_req_zone $binary_remote_addr zone=auth:10m         rate=5r/s;
+limit_req_zone $binary_remote_addr zone=mcp:10m          rate=30r/s;
+limit_req_zone $binary_remote_addr zone=oauth:10m        rate=10r/s;
+limit_req_zone $binary_remote_addr zone=vault_upload:10m rate=5r/s;
 
 ############################
 # HTTP → HTTPS
@@ -268,7 +269,7 @@ server {
 
   # ── Vault-Sync: Dateien hochladen (POST) ─────────────────────────────────────
   location = /api/vault/sync {
-    limit_req zone=chat burst=5 nodelay;
+    limit_req zone=vault_upload burst=10 nodelay;
     client_max_body_size 150M;
     client_body_timeout 120s;
     client_body_buffer_size 10M;

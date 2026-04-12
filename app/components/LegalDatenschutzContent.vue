@@ -26,7 +26,6 @@
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">1. Verantwortlicher</h2>
       <div class="text-base leading-relaxed space-y-0.5">
         <p class="font-medium text-[var(--sys-fg)]">UX-Projects – Jan-Oliver Karo</p>
-        <p>Wäldchesborn 57</p>
         <p>35043 Marburg</p>
         <p>Deutschland</p>
         <p class="mt-2">E-Mail: <a href="mailto:info@uxprojects-jok.com" class="text-[var(--sys-violet)] hover:underline underline-offset-2">info@uxprojects-jok.com</a></p>

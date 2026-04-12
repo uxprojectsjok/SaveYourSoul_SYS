@@ -132,8 +132,8 @@ function loadPlausible() {
 
   const script = document.createElement("script");
   script.defer = true;
-  script.setAttribute("data-domain", "YOUR_DOMAIN");
-  script.src = "https://analytics.YOUR_DOMAIN/js/script.js"; // Replace with your Plausible instance
+  script.setAttribute("data-domain", "uxprojects-jok.com");
+  script.src = "https://analytics.uxprojects-jok.com/js/script.js";
   script.id = "plausible-script";
   document.head.appendChild(script);
 }

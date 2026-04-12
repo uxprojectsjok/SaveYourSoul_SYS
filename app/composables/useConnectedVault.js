@@ -16,11 +16,27 @@ async function fetchOneSoulVault(soulCert, soul_id, alias) {
     const manifest = await mRes.json()
     if (!Array.isArray(manifest.files) || !manifest.files.length) return null
 
-    const result = { soul_id, alias, textContent: '', imageFiles: [], cipheredImageFiles: [], audioFiles: [] }
+    const result = {
+      soul_id,
+      alias,
+      textContent:       '',
+      imageFiles:        [],
+      cipheredImageFiles:[],
+      audioFiles:        [],
+      videoFiles:        [],
+      documentFiles:     [],   // PDF und andere Dokumente (binary, kein Inline-Text)
+    }
 
     await Promise.all(manifest.files.map(async (file) => {
       if (file.type === 'context_files') {
-        if (file.cipher === 'ciphered') return // kein Schlüssel → überspringen
+        if (file.cipher === 'ciphered') return
+        const ext = (file.name.split('.').pop() || '').toLowerCase()
+        if (ext === 'pdf') {
+          // PDF ist binär – nicht als UTF-8-Text fetchen, nur als Datei registrieren
+          result.documentFiles.push(file.name)
+          return
+        }
+        // Textdatei (md / txt) inline laden
         const fRes = await fetch(`/api/vault/public/${soul_id}/${file.name}`, {
           headers: { Authorization: `Bearer ${soulCert}` }
         })
@@ -30,12 +46,14 @@ async function fetchOneSoulVault(soulCert, soul_id, alias) {
         }
       } else if (file.type === 'images') {
         if (file.cipher === 'ciphered') {
-          result.cipheredImageFiles.push(file.name) // vorhanden aber verschlüsselt
+          result.cipheredImageFiles.push(file.name)
         } else {
           result.imageFiles.push(file.name)
         }
       } else if (file.type === 'audio') {
         if (file.cipher !== 'ciphered') result.audioFiles.push(file.name)
+      } else if (file.type === 'video') {
+        if (file.cipher !== 'ciphered') result.videoFiles.push(file.name)
       }
     }))
 
@@ -49,7 +67,9 @@ async function fetchOneSoulVault(soulCert, soul_id, alias) {
  * @param {string} soulCert       - Eigenes Soul-Cert (Bearer-Auth)
  * @param {Array}  connections    - Array von { soul_id, alias } aus useVaultConnections
  * @returns {{ publicVaultContext: string|null, imageManifest: Object }}
- *   imageManifest: { [soul_id]: { alias, files: string[] } }
+ *   imageManifest: {
+ *     [soul_id]: { alias, files, cipheredFiles, audio, video, documents }
+ *   }
  */
 export async function fetchAllPublicVaults(soulCert, connections) {
   if (!soulCert || !Array.isArray(connections) || !connections.length) {
@@ -68,11 +88,16 @@ export async function fetchAllPublicVaults(soulCert, connections) {
     if (r.textContent) {
       contextParts.push(`### ${r.alias} – Geteilte Kontextdateien\n${r.textContent.trim()}`)
     }
-    if (r.imageFiles.length || r.cipheredImageFiles.length) {
+    const hasMedia = r.imageFiles.length || r.cipheredImageFiles.length ||
+                     r.audioFiles.length || r.videoFiles.length || r.documentFiles.length
+    if (hasMedia) {
       imageManifest[r.soul_id] = {
         alias:         r.alias,
-        files:         r.imageFiles,
-        cipheredFiles: r.cipheredImageFiles
+        files:         r.imageFiles,         // Bilder (für Rückwärtskompatibilität)
+        cipheredFiles: r.cipheredImageFiles,
+        audio:         r.audioFiles,
+        video:         r.videoFiles,
+        documents:     r.documentFiles,
       }
     }
   }
@@ -84,7 +109,8 @@ export async function fetchAllPublicVaults(soulCert, connections) {
 }
 
 /**
- * Lädt ein einzelnes Bild aus dem Public Vault (für Chat-Anzeige).
+ * Lädt eine einzelne Datei aus dem Public Vault (Blob-URL).
+ * Funktioniert für Bilder, Audio, Video – jeder Dateityp.
  * @returns {Promise<string|null>} Blob-URL oder null
  */
 export async function fetchPublicVaultImage(soulCert, soul_id, filename) {

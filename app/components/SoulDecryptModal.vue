@@ -38,150 +38,61 @@
             ></div>
           </div>
 
-          <!-- ── Schritt 1: Quelle wählen (Datei / Dauerspeicher) ─────── -->
+          <!-- ── Schritt 1: .soul-Datei wählen ──────────────────────── -->
           <template v-if="step === 1">
             <p class="text-xs tracking-[0.22em] text-white/38 uppercase mb-1">Schritt 1 / 3</p>
             <h2 class="text-base font-bold text-[var(--sys-fg)] mb-3">Vault importieren</h2>
 
-            <!-- Mode Toggle: Datei / Dauerspeicher -->
-            <div class="flex gap-1 p-1 rounded-xl bg-[var(--sys-bg)] border border-[var(--sys-border)] mb-5">
-              <button
-                @click="mode = 'file'; clearBundle()"
-                class="flex-1 h-8 rounded-lg text-xs font-semibold transition-all"
-                :class="mode === 'file'
-                  ? 'bg-[var(--sys-bg-surface)] text-[var(--sys-fg)] border border-[var(--sys-border)]'
-                  : 'text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg-muted)]'"
-              >
-                Datei
-              </button>
-              <button
-                @click="mode = 'arweave'; clearBundle()"
-                class="flex-1 h-8 rounded-lg text-xs font-semibold transition-all"
-                :class="mode === 'arweave'
-                  ? 'bg-[rgba(255,255,255,0.08)] text-white border border-white/20'
-                  : 'text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg-muted)]'"
-              >
-                URL / Cloud
+            <p class="text-xs text-[var(--sys-fg-muted)] leading-relaxed mb-5">
+              Wähle deine verschlüsselte <code class="text-white/60">.soul</code>-Datei aus.
+            </p>
+
+            <label
+              class="flex flex-col items-center justify-center gap-3 w-full rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 py-8 mb-5"
+              :class="bundleFile
+                ? 'border-white/30 bg-[rgba(255,255,255,0.04)]'
+                : 'border-[var(--sys-border)] bg-[var(--sys-bg)] hover:border-white/25 hover:bg-[rgba(255,255,255,0.03)]'"
+              @dragover.prevent
+              @drop.prevent="handleDrop"
+            >
+              <template v-if="bundleFile">
+                <div class="w-10 h-10 rounded-full bg-[rgba(255,255,255,0.06)] border border-white/20 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                  </svg>
+                </div>
+                <div class="text-center">
+                  <p class="text-sm font-semibold text-[var(--sys-fg)]">{{ bundleFile.name }}</p>
+                  <p v-if="bundle" class="text-xs text-[var(--sys-fg-dim)] mt-0.5">
+                    {{ bundle.files?.length }} Datei(en) · {{ bundle.created }}
+                  </p>
+                </div>
+                <button type="button" @click.prevent="clearBundle" class="text-xs text-[var(--sys-fg-dim)] hover:text-red-400 transition-colors underline underline-offset-2">
+                  Andere wählen
+                </button>
+              </template>
+              <template v-else>
+                <div class="w-10 h-10 rounded-full bg-[var(--sys-bg-surface)] border border-[var(--sys-border)] flex items-center justify-center">
+                  <svg class="w-5 h-5 text-[var(--sys-fg-dim)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/>
+                  </svg>
+                </div>
+                <div class="text-center">
+                  <p class="text-sm text-[var(--sys-fg-muted)]">Datei hier ablegen</p>
+                  <p class="text-xs text-[var(--sys-fg-dim)] mt-0.5">oder klicken zum Auswählen</p>
+                </div>
+              </template>
+              <input ref="fileInputEl" type="file" accept=".soul,application/json" class="hidden" @change="handleFileSelect" />
+            </label>
+
+            <p v-if="loadError" class="text-xs text-red-400 mb-4 text-center">{{ loadError }}</p>
+
+            <div class="shad-separator mb-4"></div>
+            <div class="flex gap-3">
+              <button @click="step = 2" :disabled="!bundle" class="flex-1 h-12 rounded-xl border border-white/20 bg-[rgba(255,255,255,0.08)] text-sm font-semibold text-white/85 disabled:opacity-30 disabled:cursor-not-allowed hover:not-disabled:bg-[rgba(255,255,255,0.14)] active:not-disabled:scale-[0.98] transition-all">
+                Weiter →
               </button>
             </div>
-
-            <!-- ── DATEI-MODUS ───────────────────────────────────────── -->
-            <template v-if="mode === 'file'">
-              <p class="text-xs text-[var(--sys-fg-muted)] leading-relaxed mb-5">
-                Wähle deine verschlüsselte <code class="text-white/60">.soul</code>-Datei aus.
-              </p>
-
-              <label
-                class="flex flex-col items-center justify-center gap-3 w-full rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 py-8 mb-5"
-                :class="bundleFile
-                  ? 'border-white/30 bg-[rgba(255,255,255,0.04)]'
-                  : 'border-[var(--sys-border)] bg-[var(--sys-bg)] hover:border-white/25 hover:bg-[rgba(255,255,255,0.03)]'"
-                @dragover.prevent
-                @drop.prevent="handleDrop"
-              >
-                <template v-if="bundleFile">
-                  <div class="w-10 h-10 rounded-full bg-[rgba(255,255,255,0.06)] border border-white/20 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                    </svg>
-                  </div>
-                  <div class="text-center">
-                    <p class="text-sm font-semibold text-[var(--sys-fg)]">{{ bundleFile.name }}</p>
-                    <p v-if="bundle" class="text-xs text-[var(--sys-fg-dim)] mt-0.5">
-                      {{ bundle.files?.length }} Datei(en) · {{ bundle.created }}
-                    </p>
-                  </div>
-                  <button type="button" @click.prevent="clearBundle" class="text-xs text-[var(--sys-fg-dim)] hover:text-red-400 transition-colors underline underline-offset-2">
-                    Andere wählen
-                  </button>
-                </template>
-                <template v-else>
-                  <div class="w-10 h-10 rounded-full bg-[var(--sys-bg-surface)] border border-[var(--sys-border)] flex items-center justify-center">
-                    <svg class="w-5 h-5 text-[var(--sys-fg-dim)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/>
-                    </svg>
-                  </div>
-                  <div class="text-center">
-                    <p class="text-sm text-[var(--sys-fg-muted)]">Datei hier ablegen</p>
-                    <p class="text-xs text-[var(--sys-fg-dim)] mt-0.5">oder klicken zum Auswählen</p>
-                  </div>
-                </template>
-                <input ref="fileInputEl" type="file" accept=".soul,application/json" class="hidden" @change="handleFileSelect" />
-              </label>
-
-              <p v-if="loadError" class="text-xs text-red-400 mb-4 text-center">{{ loadError }}</p>
-
-              <div class="shad-separator mb-4"></div>
-              <div class="flex gap-3">
-                <button @click="step = 2" :disabled="!bundle" class="flex-1 h-12 rounded-xl border border-white/20 bg-[rgba(255,255,255,0.08)] text-sm font-semibold text-white/85 disabled:opacity-30 disabled:cursor-not-allowed hover:not-disabled:bg-[rgba(255,255,255,0.14)] active:not-disabled:scale-[0.98] transition-all">
-                  Weiter →
-                </button>
-              </div>
-            </template>
-
-            <!-- ── URL / CLOUD-MODUS ────────────────────────────────── -->
-            <template v-else>
-              <p class="text-xs text-[var(--sys-fg-muted)] leading-relaxed mb-5">
-                Öffentliche URL deiner verschlüsselten <code class="text-white/60">.soul</code>-Datei —
-                Google Drive, ArDrive, IPFS, S3, GitHub Raw, Dropbox, …
-              </p>
-
-              <!-- URL-Eingabe -->
-              <div class="mb-4">
-                <label class="text-xs tracking-[0.18em] text-[var(--sys-fg-dim)] uppercase block mb-1.5">
-                  URL
-                </label>
-                <input
-                  v-model="txInput"
-                  @keydown.enter="handleArweaveFetch"
-                  placeholder="https://… oder Arweave TX-ID (43 Zeichen)"
-                  spellcheck="false"
-                  autocomplete="off"
-                  type="url"
-                  class="w-full h-11 px-3 rounded-xl bg-[var(--sys-bg)] border border-[var(--sys-border)] text-sm font-mono text-[var(--sys-fg)] placeholder:text-[var(--sys-fg-dim)]/40 focus:border-white/30 focus:outline-none transition"
-                />
-                <p class="text-xs text-[var(--sys-fg-dim)] mt-1.5 opacity-70">
-                  Wird für den nächsten Login gespeichert. Google Drive: „Freigeben → Jeder mit dem Link" → <code>uc?export=download&id=…</code>
-                </p>
-              </div>
-
-              <!-- Fetch-Fehler -->
-              <p v-if="loadError" class="text-xs text-red-400 mb-3 text-center">{{ loadError }}</p>
-
-              <!-- Bundle geladen -->
-              <div v-if="bundle" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.04)] border border-white/15 mb-4">
-                <svg class="w-4 h-4 flex-none text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                </svg>
-                <div>
-                  <p class="text-xs font-semibold text-white/75">Bundle geladen</p>
-                  <p class="text-xs text-white/45">{{ bundle.files?.length }} Datei(en) · {{ bundle.created }}</p>
-                </div>
-              </div>
-
-              <div class="flex gap-3">
-                <!-- Noch kein Bundle: laden -->
-                <button
-                  v-if="!bundle"
-                  @click="handleArweaveFetch"
-                  :disabled="isFetching || !txInput.trim()"
-                  class="flex-1 h-12 rounded-xl border border-white/20 bg-[rgba(255,255,255,0.08)] text-sm font-semibold text-white/85 disabled:opacity-30 disabled:cursor-not-allowed hover:not-disabled:bg-[rgba(255,255,255,0.14)] active:not-disabled:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                >
-                  <svg v-if="isFetching" class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z"/>
-                  </svg>
-                  <svg v-else class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.338-2.32 5.25 5.25 0 0 1 1.17 10.095H6.75Z"/>
-                  </svg>
-                  {{ isFetching ? 'Laden…' : 'Bundle laden' }}
-                </button>
-                <!-- Bundle geladen: weiter -->
-                <button v-else @click="step = 2" class="flex-1 h-12 rounded-xl border border-white/20 bg-[rgba(255,255,255,0.08)] text-sm font-semibold text-white/85 hover:bg-[rgba(255,255,255,0.14)] active:scale-[0.98] transition-all">
-                  Weiter →
-                </button>
-              </div>
-            </template>
           </template>
 
           <!-- ── Schritt 2: 12 Wörter eingeben ─────────────────────────── -->
@@ -283,38 +194,42 @@
                 </svg>
                 <div>
                   <p class="text-xs font-semibold text-white/75">Eingeloggt</p>
-                  <p class="text-xs text-white/45">sys.md geladen · Vault über Soul Einrichten verbinden</p>
+                  <p class="text-xs text-white/45">sys.md geladen · Cloud-Vault bereit</p>
                 </div>
               </div>
 
-              <!-- Bundle-Dateien herunterladen (Fallback, nur wenn .soul Vault-Dateien enthielt) -->
-              <details v-if="otherFiles.length" class="group">
-                <summary class="text-xs tracking-[0.14em] text-[var(--sys-fg-dim)] uppercase cursor-pointer hover:text-[var(--sys-fg-muted)] transition-colors select-none">
-                  {{ otherFiles.length }} Vault-Datei(en) im Bundle herunterladen
-                </summary>
-                <div class="space-y-1.5 mt-2">
-                  <div
-                    v-for="file in otherFiles"
-                    :key="file.name"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[var(--sys-bg)] border border-[var(--sys-border)]"
-                  >
-                    <span class="text-sm flex-none leading-none">{{ fileEmoji(file.name) }}</span>
-                    <div class="flex-1 min-w-0">
-                      <p class="text-xs font-mono text-[var(--sys-fg)] truncate">{{ file.name }}</p>
-                      <p class="text-xs text-[var(--sys-fg-dim)]">{{ formatSize(file.buffer.byteLength) }}</p>
-                    </div>
-                    <button
-                      @click="downloadFile(file)"
-                      :aria-label="`${file.name} herunterladen`"
-                      class="flex-none h-11 w-11 flex items-center justify-center rounded-lg border border-[var(--sys-border)] hover:border-[rgba(255,255,255,0.2)] hover:bg-[var(--sys-bg-surface)] text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg)] transition"
-                    >
-                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                      </svg>
-                    </button>
-                  </div>
+              <!-- Lokaler Vault verbinden -->
+              <div class="rounded-xl border border-[var(--sys-border)] bg-[var(--sys-bg)] px-4 py-3">
+                <p class="text-xs font-semibold text-[var(--sys-fg)] mb-0.5">Lokaler Vault</p>
+                <p class="text-xs text-[var(--sys-fg-dim)] leading-relaxed mb-3">
+                  Wähle einen lokalen Ordner um{{ otherFiles.length ? ` ${otherFiles.length} Vault-Datei(en) zu speichern und` : '' }} das Dashboard zu verknüpfen.
+                </p>
+
+                <!-- Verbunden -->
+                <div v-if="localVaultStatus === 'done'" class="flex items-center gap-2 text-emerald-400/80">
+                  <svg class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                  </svg>
+                  <span class="text-xs font-semibold">Lokaler Vault verbunden</span>
                 </div>
-              </details>
+
+                <!-- Verbinden / Retry -->
+                <button
+                  v-else
+                  @click="connectLocalVault"
+                  :disabled="localVaultStatus === 'connecting'"
+                  class="w-full h-10 rounded-lg border border-[var(--sys-border)] text-xs font-semibold text-[var(--sys-fg-muted)] hover:text-[var(--sys-fg)] hover:border-white/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                >
+                  <svg v-if="localVaultStatus === 'connecting'" class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                  <svg v-else class="w-3.5 h-3.5 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/>
+                  </svg>
+                  {{ localVaultStatus === 'connecting' ? 'Ordner wird verbunden…' : localVaultStatus === 'error' ? 'Erneut versuchen' : 'Lokalen Ordner wählen' }}
+                </button>
+              </div>
 
               <!-- Zum Dashboard -->
               <button
@@ -355,24 +270,21 @@ import { useApiContext } from "~/composables/useApiContext.js";
 import SoulUpload from "~/components/SoulUpload.vue";
 
 const props = defineProps({
-  isOpen:      Boolean,
-  initialMode: { type: String, default: "file" }, // "file" | "arweave"
+  isOpen: Boolean,
 });
 const emit  = defineEmits(["close", "uploaded", "openFaq"]);
 
 const router = useRouter();
-const { importFromText, refreshCert } = useSoul();
-const { clearVault } = useVault();
-const { resetContext } = useApiContext();
+const { importFromText, resetCertToV0, isLoginInProgress, soulToken, soulMeta, soulContent } = useSoul();
+const { clearVault, connectVault, writeFile, writeSoulMd, scanVault } = useVault();
+const { resetContext, saveContext } = useApiContext();
 const {
-  bundle, isDecrypting, isFetching, decryptError,
-  loadBundle, loadBundleFromUrl, getLastTx, decrypt,
-  getSoulMd, getNonSoulFiles, downloadFile, formatSize, reset,
+  bundle, isDecrypting, decryptError,
+  loadBundle, decrypt,
+  getSoulMd, getNonSoulFiles, reset,
 } = useSoulDecrypt();
 
-const step        = ref(1);
-const mode        = ref("file");  // "file" | "arweave"
-const txInput     = ref("");      // Dauerspeicher TX-ID Eingabe
+const step             = ref(1);
 const bundleFile       = ref(null);
 const loadError        = ref(null);
 const fileInputEl      = ref(null);
@@ -457,9 +369,64 @@ async function finishDecrypt(ok) {
     if (soulMd) {
       clearVault();
       resetContext();
+      // Flag setzen damit der cert-Watcher in VaultExplorer keinen Logout auslöst
+      // während refreshCert den Cert noch aktualisiert
+      isLoginInProgress.value = true;
       importFromText(soulMd);
-      await refreshCert();
+
+      // resetCertToV0 löst den cert_version-Konflikt:
+      // Wenn api_context.json fehlt, erwartet der Server version=0.
+      // Decrypted soul kann aber version=N haben → 401 auf alle Folge-Requests.
+      // resetCertToV0 erkennt dies, holt einen v0-Cert, rotiert auf v1 und
+      // schreibt cert_version=1 in api_context.json — damit ist der Token gültig.
+      await resetCertToV0();
+
+      // Permissions & enabled in api_context.json initialisieren
+      const token = soulToken.value;
+      if (token && token !== "anonymous") {
+        await saveContext(token, {
+          enabled: false,
+          permissions: {
+            soul: true, calendar: false, audio: false,
+            video: false, images: false, context_files: false
+          }
+        });
+      }
+
+      isLoginInProgress.value = false;
     }
+  }
+}
+
+// ── Lokaler Vault nach Decrypt ────────────────────────────────────────────────
+// "idle" | "connecting" | "done" | "error"
+const localVaultStatus = ref("idle");
+
+async function connectLocalVault() {
+  const id = soulMeta.value?.id;
+  if (!id) return;
+  localVaultStatus.value = "connecting";
+  const connected = await connectVault(id);
+  if (connected) {
+    // Soul-Datei in den lokalen Ordner schreiben — Dateiname = Soul-Name (z.B. jan.md)
+    if (soulContent.value) {
+      const safeName = (soulMeta.value?.name ?? "sys")
+        .toLowerCase()
+        .replace(/[^a-z0-9äöüß_\-]/g, "_")
+        .replace(/_{2,}/g, "_")
+        .replace(/^_|_$/g, "") || "sys";
+      await writeSoulMd(soulContent.value, safeName);
+    }
+    // Weitere Vault-Dateien aus dem Bundle schreiben (Audio, Bilder, Videos, …)
+    for (const file of otherFiles.value) {
+      await writeFile(file.name, file.buffer);
+    }
+    // Vault neu scannen nachdem alle Dateien geschrieben wurden —
+    // connectVault() hat scanVault() vor dem Schreiben aufgerufen, daher kein soul in allFiles
+    await scanVault();
+    localVaultStatus.value = "done";
+  } else {
+    localVaultStatus.value = "error";
   }
 }
 
@@ -498,11 +465,10 @@ function fileEmoji(name) {
 
 watch(() => props.isOpen, (val) => {
   if (val) {
-    step.value       = 1;
-    mode.value       = props.initialMode ?? "file";
-    txInput.value    = getLastTx();
-    bundleFile.value = null;
-    loadError.value  = null;
+    step.value             = 1;
+    bundleFile.value       = null;
+    loadError.value        = null;
+    localVaultStatus.value = "idle";
     for (let i = 0; i < 12; i++) userWords[i] = "";
     reset();
     document.body.style.overflow = "hidden";
@@ -510,18 +476,6 @@ watch(() => props.isOpen, (val) => {
     document.body.style.overflow = "";
   }
 });
-
-async function handleArweaveFetch() {
-  loadError.value = null;
-  const ok = await loadBundleFromUrl(txInput.value);
-  if (ok) {
-    loadError.value = null;
-    step.value = 2;
-  } else {
-    // decryptError (Composable) → loadError (Template) synchronisieren
-    loadError.value = decryptError.value || 'Laden fehlgeschlagen.';
-  }
-}
 
 function handleClose() {
   if (isDecrypting.value) return;

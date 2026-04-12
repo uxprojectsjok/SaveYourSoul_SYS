@@ -150,7 +150,7 @@ See [spec/mcp-tools.md](spec/mcp-tools.md) for the full tool catalog.
 
 | Goal | Read |
 |---|---|
-| Understand the sys.md format | [spec/soul-md.md](spec/soul-md.md) |
+| Understand the sys.md format | [spec/sys_md.md](spec/sys_md.md) |
 | Set up external service access | [api/endpoints.md](api/endpoints.md) |
 | Self-host a SYS instance | [PRODUCTION_SETUP.md](PRODUCTION_SETUP.md) |
 | Connect an AI agent via MCP | [spec/mcp-tools.md](spec/mcp-tools.md) |

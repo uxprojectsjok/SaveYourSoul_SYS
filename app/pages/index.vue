@@ -117,6 +117,11 @@
                 <span class="text-sm text-white/70">{{ soulMeta.lastSession }}</span>
               </div>
 
+              <div v-if="soulCert" class="flex items-center justify-between min-h-[36px]">
+                <span class="text-sm text-white/80">Cert <span class="text-white/40">v{{ certVersion }}</span></span>
+                <span class="font-mono text-xs text-white/50 select-all tracking-wide">{{ soulCert.slice(0, 8) }}…{{ soulCert.slice(-5) }}</span>
+              </div>
+
               <div v-if="sessionCount > 0 || hasAnchor" class="flex items-center justify-between min-h-[36px]">
                 <span class="text-sm text-white/80">Chain</span>
                 <div class="flex items-center gap-2 text-sm text-white/70">
@@ -1219,7 +1224,7 @@
                   <div class="max-w-[90%] px-3 py-2.5 rounded-xl text-xs text-white/80 leading-relaxed space-y-1.5"
                     style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08)">
                     <p>Verbindung steht. 👋</p>
-                    <p>Ich bin ein KI-Assistent — und mit deiner Soul verbunden kenne ich heute mehr als nur deinen Namen: 48 Jahre, Entwickler und Content Creator aus Marburg, slowenische Wurzeln, Liebe zum Balkan-Feeling, Espresso und kroatische Sommer.</p>
+                    <p>Ich bin ein KI-Assistent — und mit deiner Soul verbunden kenne ich heute mehr als nur deinen Namen: Entwickler und Gründer, Fokus auf KI-Produkte, Leidenschaft für Design und Code.</p>
                     <p>Deine Soul hat 8 Growth-Einträge und ist auf der Blockchain verankert.</p>
                     <p class="text-white/30 text-[10px] mt-1 italic">KI-generierte Antwort auf Basis deiner sys\.md</p>
                   </div>
@@ -1806,6 +1811,35 @@
       Alle gespeicherten Seelen-Daten werden unwiderruflich gelöscht.
     </Modal>
 
+    <!-- ── VAULT GELÖSCHT / SESSION ABGELAUFEN ─────────── -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="vaultDeletedModalOpen"
+          class="fixed inset-0 z-[400] bg-black/75 backdrop-blur-md flex items-center justify-center p-4"
+          role="dialog" aria-modal="true" aria-labelledby="vault-deleted-title"
+        >
+          <div class="relative w-full max-w-sm bg-[var(--sys-bg-elevated)] border border-[var(--sys-border)] rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-5 pt-5 pb-3">
+              <h2 id="vault-deleted-title" class="text-sm font-semibold text-[var(--sys-fg)]">Vault vom Server entfernt</h2>
+            </div>
+            <div class="px-5 pb-5 space-y-4">
+              <p class="text-sm text-white/60 leading-relaxed">
+                Der Cloud-Vault wurde gelöscht. Deine Session ist nicht mehr gültig.<br>
+                <span class="text-white/40">Bitte logge dich erneut mit deiner Soul-Datei ein.</span>
+              </p>
+              <button
+                class="sys-btn-filled w-full h-10 rounded-xl text-sm font-semibold"
+                @click="confirmVaultDeleted"
+              >
+                Ausloggen
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <ModalImpressum
       :is-open="activeModal === 'impressum'"
       @close="activeModal = null"
@@ -1904,9 +1938,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useColorScheme } from "~/composables/useColorScheme.js";
+import { updateFrontmatterField } from "#shared/utils/soulParser.js";
 import { useSoul } from "~/composables/useSoul.js";
 import { useVault } from "~/composables/useVault.js";
 import { useChainAnchor } from "~/composables/useChainAnchor.js";
@@ -1954,6 +1989,7 @@ const { isDark } = useColorScheme();
 const {
   hasSoul,
   soulContent,
+  soulCert,
   soulMeta,
   soulToken,
   load,
@@ -1962,6 +1998,8 @@ const {
   clear,
   updateVaultInSoul,
   exportAsBlob,
+  resetCertToV0,
+  isLoginInProgress,
 } = useSoul();
 const { sessionCount, hasAnchor } = useChainAnchor();
 const {
@@ -1978,6 +2016,7 @@ const {
   writeProfileImage,
   setProfileLocal,
   clearVault,
+  writeSoulMd,
 } = useVault();
 
 const soulVaultFile = computed(() => {
@@ -1989,7 +2028,11 @@ const soulVaultFile = computed(() => {
   return f?.name ?? null;
 });
 
-const { loadContext: loadApiContext, saveContext, resetContext, syncedFiles, localFiles } = useApiContext();
+const certVersion = computed(() =>
+  parseInt(soulContent.value.match(/cert_version:\s*(\d+)/)?.[1] ?? "0", 10)
+);
+
+const { loadContext: loadApiContext, saveContext, resetContext, syncedFiles, localFiles, sessionExpired } = useApiContext();
 function onVaultUnlocked() {
   if (soulToken.value) loadApiContext(soulToken.value);
 }
@@ -2501,11 +2544,11 @@ const landingFAQ = [
   },
   {
     q: "Was ist das Soul Network?",
-    a: "Das Soul Network ermöglicht es, Souls direkt peer-to-peer miteinander zu verbinden. Du gibst deine Soul-ID an Personen weiter, denen du vertraust. Sobald beide Seiten verbunden haben (gegenseitig / mutual), wird automatisch ein soul_grant angelegt — kein manuelles Konfigurieren nötig. KI-Agenten können dann den freigegebenen Kontext verbundener Souls in ihre Antworten einbeziehen. sys.md wird immer automatisch geteilt; Vault-Dateien (Audio, Bilder, Kontext) müssen separat im Bereich Dateien in den Public Vault hochgeladen werden.",
+    html: `<p class="text-xs text-[var(--sys-amber)]/80 bg-[var(--sys-amber)]/5 border border-[var(--sys-amber)]/20 rounded-lg px-3 py-2 mb-3">⚠ In aktiver Entwicklung — Funktionen und Freigabe-Modell können sich kurzfristig ändern.</p><p class="font-content text-base text-[var(--sys-fg-muted)] leading-relaxed">Das Soul Network ermöglicht es, Souls direkt peer-to-peer miteinander zu verbinden. Du gibst deine Soul-ID an Personen weiter, denen du vertraust. Sobald beide Seiten verbunden haben (gegenseitig / mutual), wird automatisch ein soul_grant angelegt — kein manuelles Konfigurieren nötig. KI-Agenten können dann den freigegebenen Kontext verbundener Souls in ihre Antworten einbeziehen. Alle Inhalte — Audio, Bilder, Video, Dokumente (PDF, MD, TXT) — müssen explizit im Bereich Netzwerk-Freigaben freigegeben werden. Nur was du freigibst, ist sichtbar.</p>`,
   },
   {
     q: "Was muss ich für das Soul Network einrichten?",
-    a: "Drei Schritte: (1) Verbindung aufbauen — Soul-ID austauschen und im Soul Network eingeben. Der soul_grant wird automatisch angelegt. (2) Dateien hochladen — nur für Vault-Dateien (Audio, Bilder, Kontext): Im Bereich Dateien die gewünschten Dateien mit der Option In Public Vault hochladen hochladen. sys.md wird automatisch geteilt und braucht keinen separaten Upload. (3) Vault-Zugang offen halten — die Kachel Vault-Zugang muss aktiv sein, damit verbundene Souls auf Dateien zugreifen können.",
+    a: "Drei Schritte: (1) Verbindung aufbauen — Soul-ID austauschen und im Soul Network eingeben. Der soul_grant wird automatisch angelegt. (2) Inhalte freigeben — im Bereich Netzwerk-Freigaben gewünschte Dateien hinzufügen: Audio, Bilder, Video, Kontext-Dokumente (PDF, MD, TXT). Jede Datei die du hinzufügst wird sofort in den Public Vault hochgeladen. Granulare Kontrolle: Permission-Scopes und Dateifreigabe sind zwei getrennte Ebenen — beides muss aktiv sein. (3) Vault-Zugang offen halten — die Kachel Vault-Zugang muss aktiv sein, damit verbundene Souls auf Inhalte zugreifen können.",
   },
   {
     q: "Wie sicher ist die Vault-ID als Zugangskontrolle?",
@@ -2522,6 +2565,25 @@ const landingFAQ = [
 onMounted(async () => {
   load();
   if (hasSoul.value && soulMeta.value?.id) {
+    // Server-Vault-Check: wenn der Cert abgelehnt wird (Vault gelöscht / cert_version-Konflikt)
+    // → sofort ausloggen. VaultExplorer ist nur bei offenem Datei-Panel gemountet und kann
+    // diese Erkennung sonst nicht liefern.
+    if (soulToken.value && soulToken.value !== "anonymous") {
+      try {
+        const probe = await fetch("/api/context", {
+          headers: { Authorization: `Bearer ${soulToken.value}` }
+        });
+        if (probe.status === 401) {
+          const vaultWasOk = sessionStorage.getItem("sys.vault_ok") === soulMeta.value?.id;
+          if (vaultWasOk) {
+            vaultDeletedModalOpen.value = true;
+            return; // Vault war vorhanden, jetzt weg → ausloggen
+          }
+          // Kein vault_ok → Vault war noch nie eingerichtet, normal weiter
+        }
+      } catch { /* Server nicht erreichbar — offline, weitermachen */ }
+    }
+
     const restored = await restoreVault(soulMeta.value.id);
     if (restored) {
       updateVaultInSoul(fileManifest.value);
@@ -2531,6 +2593,30 @@ onMounted(async () => {
   } else {
     loadProfileLocal();
   }
+});
+
+// Heartbeat: prüft alle 15 Sekunden ob der Server-Vault noch existiert.
+// Erkennt Vault-Löschung unmittelbar in laufender Session — ohne Page-Reload.
+let _heartbeatTimer = null;
+async function _vaultHeartbeat() {
+  if (!hasSoul.value || !soulToken.value || soulToken.value === "anonymous") return;
+  if (isLoginInProgress.value || vaultDeletedModalOpen.value) return;
+  if (document.visibilityState === "hidden") return;
+  try {
+    const res = await fetch("/api/context", {
+      headers: { Authorization: `Bearer ${soulToken.value}` }
+    });
+    if (res.status === 401) {
+      const vaultWasOk = sessionStorage.getItem("sys.vault_ok") === soulMeta.value?.id;
+      if (vaultWasOk) sessionExpired.value = true;
+    }
+  } catch { /* offline — ignorieren */ }
+}
+onMounted(() => {
+  _heartbeatTimer = setInterval(_vaultHeartbeat, 15_000);
+});
+onUnmounted(() => {
+  clearInterval(_heartbeatTimer);
 });
 
 // Soul-Wechsel im selben Tab (ohne Page-Reload): Vault-State der alten Soul sauber löschen.
@@ -2597,33 +2683,53 @@ function switchSoul() {
   navMenuOpen.value = false;
 }
 
+// Globale 401-Erkennung: loadContext (useApiContext) setzt sessionExpired wenn der Server
+// den Cert ablehnt. Passiert in jeder laufenden Session — unabhängig davon welches Panel
+// gerade offen ist. Während des Login-Flows (isLoginInProgress) wird der Logout unterdrückt.
+const vaultDeletedModalOpen = ref(false);
+watch(sessionExpired, (expired) => {
+  if (!expired) return;
+  sessionExpired.value = false;
+  if (!isLoginInProgress.value) {
+    vaultDeletedModalOpen.value = true;
+  }
+});
+function confirmVaultDeleted() {
+  vaultDeletedModalOpen.value = false;
+  switchSoul();
+}
+
 async function handleSoulUploaded(content) {
   loginError.value = "";
 
   // Soul-Cert serverseitig verifizieren (HMAC-Check gegen SOUL_MASTER_KEY)
-  const soulIdMatch = content.match(/soul_id:\s*(.+)/);
-  const certMatch = content.match(/soul_cert:\s*([a-f0-9]{20,})/i);
+  const soulIdMatch    = content.match(/soul_id:\s*(.+)/);
+  const certMatch      = content.match(/soul_cert:\s*([a-f0-9]{20,})/i);
+  // cert_version aus der Datei lesen — Pflicht für korrekte HMAC-Verifikation nach Rotation.
+  // Ohne cert_version würde /api/soul-cert die Version-0-Cert zurückgeben und den
+  // rotierten Cert überschreiben, was nach dem nächsten Login zu 401 führt.
+  const certVersionMatch = content.match(/cert_version:\s*(\d+)/);
+  const certVersion      = certVersionMatch ? parseInt(certVersionMatch[1], 10) : 0;
 
   if (soulIdMatch) {
+    const soulId = soulIdMatch[1].trim();
     try {
       const res = await fetch("/api/soul-cert", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ soul_id: soulIdMatch[1].trim() }),
+        body: JSON.stringify({ soul_id: soulId, cert_version: certVersion }),
       });
       if (res.ok) {
         const { cert } = await res.json();
-        // Cert immer auf den aktuellen Server-Cert aktualisieren.
-        // Souls, die mit Fallback-Cert erstellt wurden (Server offline), haben sonst
-        // einen ungültigen Cert und könnten nie mehr importiert werden.
+        // Cert aktualisieren nur wenn Datei keinen oder einen ungültigen Cert hat.
+        // Nach Rotation stimmt cert_version > 0 exakt mit dem Datei-Cert überein.
         if (cert && certMatch && cert !== certMatch[1].trim()) {
-          content = content.replace(/^(soul_cert:\s*).+$/m, `$1${cert}`);
+          content = updateFrontmatterField(content, "soul_cert", cert);
         } else if (cert && !certMatch) {
-          // Kein soul_cert vorhanden → einfügen
           content = content.replace(/^(soul_id:.+)$/m, `$1\nsoul_cert: ${cert}`);
         }
       }
-      // Server nicht erreichbar → fail-open (API-Calls prüfen dann per 401)
+      // Server nicht erreichbar → fail-open
     } catch {
       /* offline – weiter */
     }
@@ -2631,7 +2737,15 @@ async function handleSoulUploaded(content) {
 
   clearVault();
   resetContext();
+  // Flag setzen BEVOR importFromText — verhindert dass der cert-Watcher in VaultExplorer
+  // logout-required emittiert während resetCertToV0 den Cert noch repariert.
+  isLoginInProgress.value = true;
   importFromText(content);
+  // Cert-Validierung nach Import: erkennt cert_version-Konflikt wenn Server-Vault
+  // manuell gelöscht wurde (api_context.json fehlt → cert_version fällt auf 0).
+  // Muss nach importFromText laufen, damit soulContent.value aktuell ist.
+  await resetCertToV0();
+  isLoginInProgress.value = false;
   loginSheetOpen.value = false;
 }
 

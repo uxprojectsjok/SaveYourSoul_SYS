@@ -7,12 +7,18 @@ const SOUL_KEY = "sys.soul";
 const CERT_KEY = "sys.soul_cert";
 
 // Singleton-State (Modul-Scope, nicht Component-Scope)
-const soulContent   = ref("");
-const soulCert      = ref("");
-const isLoaded      = ref(false);
-const syncStatus    = ref(null); // null | 'checking' | 'in_sync' | 'differs'
-const serverContent = ref("");
-const syncError     = ref("");   // Fehlermeldung beim letzten fetchFromServer()
+const soulContent          = ref("");
+const soulCert             = ref("");
+const isLoaded             = ref(false);
+const syncStatus           = ref(null); // null | 'checking' | 'in_sync' | 'differs'
+const serverContent        = ref("");
+const syncError            = ref("");   // Fehlermeldung beim letzten fetchFromServer()
+// Wird von resetCertToV0 auf true gesetzt wenn der Cert repariert wurde aber
+// der Vault noch nicht verbunden war — VaultExplorer schreibt die Datei beim Connect.
+const pendingSoulFileWrite = ref(false);
+// Gesetzt während handleSoulUploaded läuft — verhindert dass der cert-Watcher in
+// VaultExplorer logout-required emittiert während resetCertToV0 den Cert noch repariert.
+const isLoginInProgress = ref(false);
 
 export function useSoul() {
   const isClient = typeof window !== "undefined";
@@ -164,18 +170,22 @@ ${idea ? idea : "*Noch nicht beschrieben.*"}
   // Holt ein frisches HMAC-Cert vom Server für die aktuell geladene Soul.
   // Nötig nach importFromText() wenn der gespeicherte Cert veraltet/lokal ist.
   // Schlägt still fehl (kein Server / offline) – alter Cert bleibt erhalten.
+  // cert_version wird aus dem aktuellen Inhalt gelesen — verhindert, dass ein
+  // rotierter Cert (cert_version > 0) durch den Version-0-Cert überschrieben wird.
   async function refreshCert() {
     if (!isClient || !soulContent.value) return;
-    const idMatch = soulContent.value.match(/soul_id:\s*(.+)/);
-    const soulId  = idMatch?.[1]?.trim();
+    const idMatch          = soulContent.value.match(/soul_id:\s*(.+)/);
+    const soulId           = idMatch?.[1]?.trim();
     if (!soulId) return;
+    const certVersionMatch = soulContent.value.match(/cert_version:\s*(\d+)/);
+    const certVersion      = certVersionMatch ? parseInt(certVersionMatch[1], 10) : 0;
 
     let cert;
     try {
       const res = await fetch("/api/soul-cert", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ soul_id: soulId })
+        body: JSON.stringify({ soul_id: soulId, cert_version: certVersion })
       });
       if (res.ok) {
         const data = await res.json();
@@ -187,11 +197,8 @@ ${idea ? idea : "*Noch nicht beschrieben.*"}
 
     if (!cert) return;
 
-    // Cert in sys.md-Inhalt ersetzen (Frontmatter-Zeile)
-    soulContent.value = soulContent.value.replace(
-      /^(soul_cert:\s*).+$/m,
-      `$1${cert}`
-    );
+    // Cert in sys.md-Inhalt ersetzen — updateFrontmatterField ist robuster als Regex
+    soulContent.value = updateFrontmatterField(soulContent.value, "soul_cert", cert);
     soulCert.value = cert;
     save();
   }
@@ -219,13 +226,10 @@ ${idea ? idea : "*Noch nicht beschrieben.*"}
     const { cert, cert_version } = await res.json();
     if (!cert) return null;
 
-    // sys.md lokal aktualisieren
-    let updated = soulContent.value.replace(/^(soul_cert:\s*).+$/m, `$1${cert}`);
-    if (/^cert_version:\s*\d+/m.test(updated)) {
-      updated = updated.replace(/^(cert_version:\s*)\d+/m, `$1${cert_version}`);
-    } else {
-      updated = updated.replace(/^(soul_cert:\s*[^\n]+\n)/m, `$1cert_version: ${cert_version}\n`);
-    }
+    // sys.md lokal aktualisieren — updateFrontmatterField ist robuster als Regex
+    // (arbeitet nur im Frontmatter-Block, kommt mit CRLF/Whitespace-Varianten klar)
+    let updated = updateFrontmatterField(soulContent.value, "soul_cert", cert);
+    updated     = updateFrontmatterField(updated, "cert_version", cert_version);
 
     soulContent.value = updated;
     soulCert.value    = cert;
@@ -625,5 +629,86 @@ Mögliche section-Werte (exakt so schreiben):
     acceptServerVersion,
     pushToServer,
     dismissSync,
+    resetCertToV0,
+    pendingSoulFileWrite,
+    isLoginInProgress,
   };
+}
+
+// Erkennt cert_version-Konflikt nach manuellem Server-Vault-Löschen und setzt den Cert
+// automatisch auf Version 0 zurück, wenn der Server kein api_context.json mehr hat.
+// Gibt true zurück wenn der Cert erfolgreich zurückgesetzt wurde.
+async function resetCertToV0() {
+  const isClient = typeof window !== "undefined";
+  if (!isClient || !soulContent.value) return false;
+  const idMatch   = soulContent.value.match(/soul_id:\s*(.+)/);
+  const soulId    = idMatch?.[1]?.trim();
+  if (!soulId) return false;
+  const cvMatch   = soulContent.value.match(/cert_version:\s*(\d+)/);
+  const cv        = cvMatch ? parseInt(cvMatch[1], 10) : 0;
+  if (cv === 0) return false; // Bereits v0 — kein Handlungsbedarf
+
+  const certMatch  = soulContent.value.match(/soul_cert:\s*([a-f0-9]{20,})/i);
+  const currentCert = certMatch?.[1]?.trim();
+  if (!currentCert) return false;
+
+  try {
+    // Erst prüfen ob der aktuelle Cert noch gültig ist.
+    // Ist er gültig → sofort zurückkehren ohne weitere Anfragen (kein spurious 401).
+    // Nur wenn der aktuelle Cert 401 liefert → Fallback auf v0.
+    const currentProbe = await fetch("/api/context", {
+      headers: { Authorization: `Bearer ${soulId}.${currentCert}` }
+    });
+    if (currentProbe.status !== 401) return false; // Cert ist OK — nichts zu tun
+
+    // Aktueller Cert wird abgelehnt → versuche cert_version=0 (Server-Vault gelöscht?)
+    const r0 = await fetch("/api/soul-cert", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ soul_id: soulId, cert_version: 0 }),
+    });
+    if (!r0.ok) return false;
+    const { cert: cert0 } = await r0.json();
+    if (!cert0) return false;
+
+    // V0-Cert verifizieren — nur wenn er auth-seitig akzeptiert wird einsetzen
+    const probe0 = await fetch("/api/context", {
+      headers: { Authorization: `Bearer ${soulId}.${cert0}` }
+    });
+    if (probe0.status === 401) return false;
+
+    // Kurz auf v0 setzen damit sofort authentifiziert werden kann
+    let updated = updateFrontmatterField(soulContent.value, "soul_cert",    cert0);
+    updated     = updateFrontmatterField(updated,           "cert_version", 0);
+    soulContent.value = updated;
+    soulCert.value    = cert0;
+
+    // Sofort rotieren — verhindert dass der alte (ggf. bekannte) v0-Cert dauerhaft
+    // sichtbar ist. Nach Rotation hat der User einen frischen Cert auf cert_version=1.
+    try {
+      const rotRes = await fetch("/api/soul-rotate-cert", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${soulId}.${cert0}` },
+      });
+      if (rotRes.ok) {
+        const { cert: newCert, cert_version: newVersion } = await rotRes.json();
+        if (newCert) {
+          updated = updateFrontmatterField(updated, "soul_cert",    newCert);
+          updated = updateFrontmatterField(updated, "cert_version", newVersion);
+          soulContent.value = updated;
+          soulCert.value    = newCert;
+        }
+      }
+    } catch { /* Rotation optional — v0 ist schlechter aber funktional */ }
+
+    try {
+      sessionStorage.setItem("sys.soul",      soulContent.value);
+      sessionStorage.setItem("sys.soul_cert", soulCert.value);
+    } catch { /* */ }
+    // Signal für VaultExplorer: physische Datei muss nach Vault-Connect geschrieben werden
+    pendingSoulFileWrite.value = true;
+    return true;
+  } catch {
+    return false;
+  }
 }
