@@ -40,7 +40,7 @@ if not ok or type(body) ~= "table" then
 end
 
 local text     = body.text or ""
-local voice_id = body.voiceId or "YOUR_ELEVENLABS_VOICE_ID"
+local voice_id = body.voiceId or os.getenv("ELEVENLABS_VOICE_ID") or ""
 
 if text == "" then
   ngx.status = 400
