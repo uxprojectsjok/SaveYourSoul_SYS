@@ -322,7 +322,7 @@ export function useVault() {
   }
 
   /** Schreibt Soul-Inhalt als .md in den Vault-Ordner */
-  async function writeSoulMd(content, safeName = "soul") {
+  async function writeSoulMd(content, safeName = "sys") {
     if (memoryMode.value) return writeFile(`${safeName}.md`, content);
     if (!dirHandle.value) return false;
     try {

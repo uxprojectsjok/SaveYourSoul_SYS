@@ -7,11 +7,35 @@
 
 ## 1. Overview
 
-A sys.md is a plain UTF-8 Markdown file. It consists of a YAML frontmatter
-block followed by a Markdown body structured by `## Section` headings.
+A SYS identity file is a plain UTF-8 Markdown file. It consists of a YAML
+frontmatter block followed by a Markdown body structured by `## Section`
+headings.
 
 The frontmatter is machine-readable and carries protocol metadata.
 The body is human-readable and AI-consumable identity content.
+
+---
+
+## 1.1 File Naming
+
+**The filename is not part of the protocol.** The SYS client detects the
+identity file by content, not by name: it scans all `.md` files in the vault
+root and identifies the one with valid YAML frontmatter containing `soul_id`
+and `soul_cert`.
+
+**Allowed naming conventions:**
+
+| Filename | When to use |
+|---|---|
+| `sys.md` | Default — short, unambiguous, matches the project name |
+| `jan.md` | Personal — your first name or any identifier that feels right |
+| `identity.md` | Descriptive — useful in multi-user or organizational contexts |
+| `<any-name>.md` | Any valid filename works, as long as there is only one `.md` file with valid SYS frontmatter in the vault root |
+
+**Rules:**
+- Only one `.md` file with valid SYS frontmatter per vault (multiple `.md` files are allowed but only the first valid one is loaded)
+- The name on the VPS is always `sys.md` (server-side fixed, independent of local naming)
+- Renaming a local file does not affect server-side storage or sync behavior
 
 ---
 
