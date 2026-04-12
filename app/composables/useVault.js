@@ -208,13 +208,21 @@ export function useVault() {
           }
 
           // Kontext-Textdateien (.md, .txt) – root + context/
+          // .md-Dateien im Root: per Inhalt prüfen ob Identity-Datei (SYS-Frontmatter)
           if (lower.endsWith(".md") || lower.endsWith(".txt")) {
             try {
               const f    = await entry.getFile();
               const text = await f.text();
               if (text.trim()) {
-                texts.push({ name: path, text });
-                files.push({ name: path, kind: "text" });
+                // Identity-Datei erkennen: muss soul_id und soul_cert im Frontmatter haben
+                const isSoulFile = !prefix && lower.endsWith(".md")
+                  && /^---[\s\S]*?soul_id:\s*\S+[\s\S]*?soul_cert:\s*[a-f0-9]{20,}[\s\S]*?---/m.test(text);
+                if (isSoulFile) {
+                  files.push({ name: path, kind: "soul", soulName: name });
+                } else {
+                  texts.push({ name: path, text });
+                  files.push({ name: path, kind: "text" });
+                }
               }
             } catch { /* */ }
             continue;
