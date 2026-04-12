@@ -19,7 +19,7 @@ export default defineNuxtConfig({
       // Docs öffentlich zugänglich? false = nur eingeloggte User
       docsPublic: process.env.DOCS_PUBLIC === "true",
       walletConnectProjectId:
-        process.env.WALLETCONNECT_PROJECT_ID || "<your key>,
+        process.env.WALLETCONNECT_PROJECT_ID || "1b52b7ec48a6898db3c2a28a6c531918",
     },
   },
 

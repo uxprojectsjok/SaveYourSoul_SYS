@@ -59,7 +59,7 @@
         </button>
 
         <!-- Identity-Datei als eigene Gruppe (beliebiger *.md Name) -->
-        <div v-if="soulContent">
+        <div v-if="soulContent && (!vaultConnected || memoryMode || allFiles.some(f => f.kind === 'soul'))">
           <div class="flex items-center gap-2 px-1 pt-1 pb-1">
             <p class="text-[10px] font-medium text-white/30 uppercase tracking-widest flex-1">Soul · 1</p>
           </div>
