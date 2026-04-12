@@ -12,6 +12,12 @@ The core unit is the **sys.md** — a plain Markdown file with YAML frontmatter
 that encodes a personal identity profile, grows with each interaction,
 and serves as persistent context for AI systems.
 
+**sys.md is a file about the user — not about the AI.**
+It encodes who you are (values, expertise, relationships, session history)
+so that AI systems can represent you authentically. This is structurally
+different from AI agent personality or system-prompt files: those define how
+an agent behaves; sys.md defines what the agent knows about *you*.
+
 ```
 sys.md  →  sessionStorage (browser)       never leaves without user action
          →  VPS (AES-256-CBC, optional)     user-initiated

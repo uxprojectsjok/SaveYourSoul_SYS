@@ -4,6 +4,8 @@
 
 SYS defines a portable, user-controlled identity layer for AI systems. The core unit is the **sys.md** — a Markdown file with YAML frontmatter that encodes a personal identity profile. It lives in the user's browser, grows with each session, and serves as authentic context for AI systems.
 
+> **sys.md is a file about the user — not about the AI.** It encodes who you are (values, expertise, relationships, session history) so that AI systems can represent you authentically. This is the inverse of AI agent personality files: instead of defining how an agent speaks, sys.md defines what the agent knows about *you*.
+
 This repository contains the protocol specification and a reference implementation. The reference implementation is invite-only and serves as an example implementation only. It is not intended as a deployable product. Any compatible implementation can be built independently.
 
 > Think of it like email: the protocol is open, the reference implementation is one example of many possible servers.
