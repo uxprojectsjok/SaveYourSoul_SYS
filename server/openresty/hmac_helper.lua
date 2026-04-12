@@ -39,16 +39,19 @@ function M.cert_for_soul(master_key, soul_id, cert_version)
   return M.sign(master_key, msg):sub(1, 32)
 end
 
--- Liest cert_version aus sys.md der Soul (default 0 = altes Format).
+-- Liest cert_version aus api_context.json (immer plaintext, nie verschlüsselt).
+-- sys.md kann AES-verschlüsselt sein und ist daher nicht zuverlässig lesbar.
 function M.read_cert_version(soul_id)
-  -- soul_id darf keine Pfad-Sonderzeichen enthalten
   if not soul_id:match("^[a-zA-Z0-9%-]+$") then return 0 end
-  local path = "/var/lib/sys/souls/" .. soul_id .. "/sys.md"
+  local path = "/var/lib/sys/souls/" .. soul_id .. "/api_context.json"
   local f = io.open(path, "r")
   if not f then return 0 end
-  local content = f:read("*a"); f:close()
-  local v = content:match("cert_version:%s*(%d+)")
-  return tonumber(v) or 0
+  local raw = f:read("*a"); f:close()
+  local ok, data = pcall(require("cjson.safe").decode, raw)
+  if ok and type(data) == "table" and type(data.cert_version) == "number" then
+    return data.cert_version
+  end
+  return 0
 end
 
 return M

@@ -59,10 +59,23 @@ if not wf then
 end
 wf:write(content); wf:close()
 
+-- cert_version auch in api_context.json speichern (plaintext, für Auth lesbar)
+local cjson     = require("cjson.safe")
+local ctx_path  = "/var/lib/sys/souls/" .. soul_id .. "/api_context.json"
+local cf = io.open(ctx_path, "r")
+if cf then
+  local raw = cf:read("*a"); cf:close()
+  local ok, ctx = pcall(cjson.decode, raw)
+  if ok and type(ctx) == "table" then
+    ctx.cert_version = new_version
+    local wc = io.open(ctx_path, "w")
+    if wc then wc:write(cjson.encode(ctx)); wc:close() end
+  end
+end
+
 ngx.log(ngx.INFO, "[soul_rotate_cert] soul_id=", soul_id,
   " version ", old_version, " → ", new_version)
 
-local cjson = require("cjson.safe")
 ngx.header["Content-Type"] = "application/json"
 ngx.header["Cache-Control"] = "no-store"
 ngx.say(cjson.encode({
