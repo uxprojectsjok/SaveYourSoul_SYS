@@ -56,6 +56,7 @@ Implementierung.md
 # Claude Code local settings
 .claude/
 browser-extension/.claude/
+CLAUDE.md
 dist
 
 # VPS-specific nginx/vhost configs (contain real domain, cert paths, internal IPs)
