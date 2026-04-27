@@ -30,7 +30,7 @@ function findLoginContainers() {
 
 function injectSoulLogin() {
   // Nicht auf SYS-eigenen Seiten injizieren
-  if (location.hostname.includes('sys.uxprojects-jok.com')) return
+  if (location.hostname.includes('YOUR_DOMAIN')) return
   findLoginContainers().forEach(form => {
     if (form.querySelector('.sys-soul-login-btn')) return
 
@@ -49,10 +49,11 @@ function injectSoulLogin() {
       e.preventDefault()
       const response = await chrome.runtime.sendMessage({ type: 'GET_SOUL_IDENTITY' })
       if (!response?.identity) return
-      const { email, name } = response.identity
-      form.querySelectorAll('input[type="email"],input[name*="email"],input[name*="mail"],input[name*="user"]')
+      const { soul_id } = response.identity
+      if (!soul_id) return
+      form.querySelectorAll('input[type="email"],input[type="text"],input[name*="email"],input[name*="mail"],input[name*="user"],input[name*="id"]')
         .forEach(input => {
-          input.value = email || name || ''
+          input.value = soul_id
           input.dispatchEvent(new Event('input', { bubbles: true }))
           input.dispatchEvent(new Event('change', { bubbles: true }))
         })
@@ -98,7 +99,7 @@ if (document.readyState === 'complete') {
 
 function findSoulCertInputs() {
   const isClaude = location.hostname.includes('claude.ai')
-  const isOAuth  = location.hostname.includes('sys.uxprojects-jok.com') && location.pathname.startsWith('/oauth')
+  const isOAuth  = location.hostname.includes('YOUR_DOMAIN') && location.pathname.startsWith('/oauth')
 
   if (!isClaude && !isOAuth) return []
 
@@ -137,7 +138,7 @@ async function injectSoulCertFill() {
   const cert = data.soul_cert
   if (!cert) return
 
-  const isOAuth = location.hostname.includes('sys.uxprojects-jok.com') && location.pathname.startsWith('/oauth')
+  const isOAuth = location.hostname.includes('YOUR_DOMAIN') && location.pathname.startsWith('/oauth')
 
   inputs.forEach(input => {
     input.dataset.sysCertInjected = '1'
@@ -189,8 +190,8 @@ if (location.hostname.includes('claude.ai')) {
   injectSoulCertFill()
 }
 
-// sys.uxprojects-jok.com/oauth: direkt beim Laden
-if (location.hostname.includes('sys.uxprojects-jok.com') && location.pathname.startsWith('/oauth')) {
+// YOUR_DOMAIN/oauth: direkt beim Laden
+if (location.hostname.includes('YOUR_DOMAIN') && location.pathname.startsWith('/oauth')) {
   if (document.readyState === 'complete') {
     injectSoulCertFill()
   } else {
