@@ -336,7 +336,7 @@
           </header>
           <ul class="timeline">
             <li class="active"><span class="phase">Alpha · Done ✓</span><span class="date">2026</span><h4>Core · Deployed</h4><div class="chips"><span>Soul Protocol</span><span>Memory Vault</span><span>AES-256 · Passkey</span><span>MCP Server</span><span>Soul API</span><span>Polygon Anchor</span><span>Browser Extension</span><span>PWA Mobile</span></div></li>
-            <li class="active"><span class="phase">Beta · Live</span><span class="date">2026</span><h4>Erweiterte Identität</h4><div class="chips"><span>Soul Network</span><span>Mehrere Soul-Versionen</span><span>Erweiterte API-Docs</span><span>Offenes Protokoll</span><span>Agent Marketplace</span><span>POL Amortisierung</span><span>IPFS-Registrierung (Pinata)</span></div></li>
+            <li class="active"><span class="phase">Beta · Live</span><span class="date">2026</span><h4>Erweiterte Identität</h4><div class="chips"><span>Soul Network</span><span>Mehrere Soul-Versionen</span><span>Erweiterte API-Docs</span><span>Offenes Protokoll</span><span>Agent Marketplace</span><span>POL Amortisierung</span><span>IPFS-Registrierung (Pinata)</span><span>Key-Management Admin-UI</span><span>Cert-Rotation · Auto-Renewal</span><span>API-Key Hierarchie (Soul → Master → Env)</span></div></li>
             <li><span class="phase">Vision</span><span class="date">Langfristig</span><h4>Offenes Ökosystem · ERC-8004</h4><div class="chips"><span>Soul als ERC-8004 Teilnehmer</span><span>Agenten-Identität als Zugangsbedingung</span><span>Bidirektionale Reputation on-chain</span><span>Trustless Token-Ausgabe</span><span>Interoperable Identitäten</span><span>Robotik-Integration</span><span>Community-Governance</span></div></li>
           </ul>
         </section>
@@ -583,7 +583,7 @@ onUnmounted(() => {
 const landingFaq = ref([
   {
     q: 'Was muss ich als erstes einrichten?',
-    a: 'Schritt 1 — Soul erstellen: Einloggen oder eine neue Soul anlegen. Dein Profil (sys.md) wird lokal in deinem Vault gespeichert — nur du hast Zugriff.\n\nSchritt 2 — Soul hochladen: Im Session-Bereich → API-Kontext → Berechtigungen setzen → sys.md auf den Server hochladen. Damit ist die Soul erreichbar.\n\nSchritt 3 — KI verbinden: In Claude Desktop oder claude.ai den Verbindungs-Endpunkt eintragen. Ein Login-Fenster erscheint automatisch.\n\nSchritt 4 — /soul_guide aufrufen: Einmal im KI-Chat eingeben — die KI liest dein Profil und führt sich ab jetzt selbst nach bedeutsamen Gesprächen.',
+    a: 'Schritt 1 — API-Key einrichten (VPS-Admin): Im Session-Bereich → "Setup" → Reiter "Mein API-Key" → Anthropic-Key eintragen und testen. Alternativ über "Server-Admin" einen globalen Fallback-Key hinterlegen.\n\nSchritt 2 — Soul erstellen: Einloggen oder eine neue Soul anlegen. Dein Profil (sys.md) wird lokal in deinem Vault gespeichert — nur du hast Zugriff.\n\nSchritt 3 — Soul hochladen: Im Session-Bereich → API-Kontext → Berechtigungen setzen → sys.md auf den Server hochladen. Damit ist die Soul erreichbar.\n\nSchritt 4 — KI verbinden: In Claude Desktop oder claude.ai den Verbindungs-Endpunkt eintragen. Ein Login-Fenster erscheint automatisch.\n\nSchritt 5 — /soul_guide aufrufen: Einmal im KI-Chat eingeben — die KI liest dein Profil und führt sich ab jetzt selbst nach bedeutsamen Gesprächen.',
     open: false,
   },
   {

@@ -249,11 +249,15 @@ Authorization: Bearer {soul_id}.{cert}
           <DocHeading level="1" badge="Spec">Authentication Model</DocHeading>
 
           <DocHeading level="2">Trust Model</DocHeading>
-          <DocCode>SOUL_MASTER_KEY  (secret, server-side only)
+          <DocCode>SOUL_MASTER_KEY  (systemd env → master.json runtime override)
     └── soul_cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id)[0:32]
             └── All owner API access validated against this cert
                     └── vault_key (AES-256) — encrypts content
                             └── service-token — scoped external access
+
+admin_token  (adm_ + 64hex, stored in master.json)
+    └── Authenticates POST /api/set-master only
+            └── Rotates soul_master_key, admin_token, global anthropic_key
 
 pol_access_token (48 hex chars)
     └── Issued by /api/soul/pay after on-chain POL TX verification
@@ -857,6 +861,10 @@ OpenResty (nginx + LuaJIT)
     ├── /api/vision          → soul_auth.lua → vision_analyze.lua
     ├── /api/tts             → soul_auth.lua → tts.lua
     ├── /api/wavespeed/*     → soul_auth.lua → wavespeed_*.lua
+    ├── /api/get-config      → soul_auth.lua → get_config.lua
+    ├── /api/set-config      → soul_auth.lua → set_config.lua
+    ├── /api/set-master      → set_master.lua (X-Admin-Token, no soul_auth)
+    ├── /api/test-key        → soul_auth.lua → test_key.lua (proxies api.anthropic.com)
     ├── /mcp                 → proxy → soul-mcp (Node.js :3098)
     └── /oauth/              → proxy → soul-mcp (Node.js :3098)</DocCode>
 
@@ -888,6 +896,7 @@ env SOUL_MASTER_KEY;
 env API_SIGNING_KEY;
 env ELEVENLABS_API_KEY;
 env WAVESPEED_KEY;</DocCode>
+          <p class="doc-p"><strong>Runtime overrides:</strong> <code class="doc-code">SOUL_MASTER_KEY</code> and <code class="doc-code">ANTHROPIC_API_KEY</code> can be overridden at runtime via <code class="doc-code">/var/lib/sys/config/master.json</code> without restarting nginx. <code class="doc-code">config_reader.lua</code> reads master.json on every request (cached 60s in ngx.shared.config_cache). The systemd env var is only the last-resort fallback.</p>
           <p class="doc-p">Additional variables for <code class="doc-code">soul-mcp/.env</code> (MCP Node.js process):</p>
           <DocCode lang="dotenv">BASE_URL=https://your-domain.com
 SYS_API_URL=https://your-domain.com
@@ -932,6 +941,79 @@ PINATA_JWT=                     # IPFS Pinning JWT — .env has priority; fallba
             </table>
           </div>
           <p class="doc-p">Both environments MUST exhibit identical behavior. Changes to a JS handler MUST be mirrored in the corresponding Lua script.</p>
+        </section>
+
+        <!-- ═══ KEY MANAGEMENT ═══ -->
+        <section id="key-management" class="doc-section mb-16 scroll-mt-20">
+          <DocHeading level="1" badge="Architecture">Key Management</DocHeading>
+          <p class="doc-lead">SYS separates per-soul API keys from the server-wide master key. All key material is stored on disk under <code class="doc-code">/var/lib/sys/config/master.json</code> — never baked into the build or transmitted to clients.</p>
+
+          <DocHeading level="2">Key Hierarchy</DocHeading>
+          <DocCode>Anthropic key resolution order (per request):
+1. /var/lib/sys/souls/{id}/config.json  →  anthropic_key   (soul-specific)
+2. /var/lib/sys/config/master.json      →  anthropic_key   (global fallback)
+3. systemd env                          →  ANTHROPIC_API_KEY (last resort)
+
+Response header: key_source = "soul" | "master" | "env"</DocCode>
+
+          <DocHeading level="2">master.json Schema</DocHeading>
+          <DocCode lang="json">{
+  "soul_master_key":      "sys_{64hex}",
+  "soul_master_key_prev": "sys_{64hex}",
+  "prev_valid_until":     "2026-04-28T14:37:00Z",
+  "prev_valid_until_ts":  1745844420,
+  "admin_token":          "adm_{64hex}",
+  "anthropic_key":        "sk-ant-..."
+}</DocCode>
+          <p class="doc-p"><code class="doc-code">config_reader.lua</code> is a shared module that reads both master.json and per-soul config.json, resolves the key_source hierarchy, and caches the result in <code class="doc-code">ngx.shared.config_cache</code> (10 MB, invalidated on write).</p>
+
+          <DocHeading level="2">soul_master_key Rotation</DocHeading>
+          <div class="doc-steps">
+            <div class="doc-step">
+              <div class="doc-step-num">1</div>
+              <div><p class="text-sm font-semibold mb-0.5">Generate new key in browser</p><p class="text-sm text-[var(--sys-fg-dim)]"><code class="doc-code">sys_</code> + 64 hex chars via <code class="doc-code">crypto.getRandomValues()</code>. Never server-generated.</p></div>
+            </div>
+            <div class="doc-step">
+              <div class="doc-step-num">2</div>
+              <div><p class="text-sm font-semibold mb-0.5">POST /api/set-master</p><p class="text-sm text-[var(--sys-fg-dim)]">Old key saved as <code class="doc-code">soul_master_key_prev</code> with <code class="doc-code">prev_valid_until = now + 15 min</code>. New key written atomically.</p></div>
+            </div>
+            <div class="doc-step">
+              <div class="doc-step-num">3</div>
+              <div><p class="text-sm font-semibold mb-0.5">All open sessions auto-renew</p><p class="text-sm text-[var(--sys-fg-dim)]"><code class="doc-code">refreshCert()</code> is called on every page load. The old cert (computed with prev key) is still accepted during the 15-minute grace period — giving all active browsers time to call <code class="doc-code">POST /api/soul-cert</code> and receive a new cert computed with the new key.</p></div>
+            </div>
+            <div class="doc-step">
+              <div class="doc-step-num">4</div>
+              <div><p class="text-sm font-semibold mb-0.5">Grace period expires</p><p class="text-sm text-[var(--sys-fg-dim)]">After 15 minutes, <code class="doc-code">soul_auth.lua</code> rejects certs derived from the old key. An attacker with the leaked key is locked out.</p></div>
+            </div>
+          </div>
+
+          <DocHeading level="2">Admin Token</DocHeading>
+          <p class="doc-p">The admin token is stored in <code class="doc-code">master.json</code> (not systemd env). It authenticates only <code class="doc-code">POST /api/set-master</code> — not soul endpoints. This separation allows the admin API to remain reachable even when all soul_certs are invalid (e.g. immediately after a master key rotation before grace period).</p>
+          <div class="doc-table-wrapper">
+            <table class="doc-table">
+              <thead><tr><th>Format</th><th>Example</th><th>Validated by</th></tr></thead>
+              <tbody>
+                <tr><td><code class="doc-code">adm_ + 64 hex</code></td><td class="text-xs text-[var(--sys-fg-dim)]">adm_a1b2c3...68chars</td><td class="text-[var(--sys-fg-dim)]">cfg.validate_admin_token() in set_master.lua</td></tr>
+                <tr><td><code class="doc-code">sys_ + 64 hex</code></td><td class="text-xs text-[var(--sys-fg-dim)]">sys_f1e2d3...68chars</td><td class="text-[var(--sys-fg-dim)]">soul_auth.lua HMAC derivation root</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <DocHeading level="2">config_reader.lua — Cache Invalidation</DocHeading>
+          <p class="doc-p">After any write to master.json or a soul's config.json, the cache must be cleared. All write endpoints call <code class="doc-code">cfg.invalidate_master_cache()</code> (set_master.lua, set_config.lua). The cache key is <code class="doc-code">"master"</code> in <code class="doc-code">ngx.shared.config_cache</code>. TTL is 60 seconds — a passive fallback in case of missed invalidation.</p>
+
+          <DocHeading level="2">Dev vs Production</DocHeading>
+          <div class="doc-table-wrapper">
+            <table class="doc-table">
+              <thead><tr><th>Endpoint</th><th>Nitro (dev)</th><th>OpenResty (prod)</th></tr></thead>
+              <tbody>
+                <tr><td><code class="doc-code">GET /api/get-config</code></td><td class="text-xs text-[var(--sys-fg-dim)]">get-config.get.js</td><td class="text-xs text-[var(--sys-fg-dim)]">get_config.lua</td></tr>
+                <tr><td><code class="doc-code">POST /api/set-config</code></td><td class="text-xs text-[var(--sys-fg-dim)]">set-config.post.js</td><td class="text-xs text-[var(--sys-fg-dim)]">set_config.lua</td></tr>
+                <tr><td><code class="doc-code">POST /api/set-master</code></td><td class="text-xs text-[var(--sys-fg-dim)]">set-master.post.js</td><td class="text-xs text-[var(--sys-fg-dim)]">set_master.lua</td></tr>
+                <tr><td><code class="doc-code">POST /api/test-key</code></td><td class="text-xs text-[var(--sys-fg-dim)]">test-key.post.js</td><td class="text-xs text-[var(--sys-fg-dim)]">test_key.lua (resolver 1.1.1.1)</td></tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <!-- Footer -->
@@ -1003,6 +1085,7 @@ const nav = [
       { id: 'encryption', title: 'Encryption' },
       { id: 'vault', title: 'Vault' },
       { id: 'openresty', title: 'OpenResty' },
+      { id: 'key-management', title: 'Key Management' },
     ]
   }
 ]
@@ -1050,6 +1133,9 @@ const concepts = [
   { term: 'vault', def: 'Local filesystem folder. Contains audio, images, video, context files.' },
   { term: 'soul_grant', def: 'Permission record created when two souls connect in the network.' },
   { term: 'amortization', def: 'Optional monetization layer. Soul owner enables pay-per-access mode — external agents pay POL to get a pol_access_token for MCP tool access.' },
+  { term: 'admin_token', def: 'adm_ + 64 hex chars. Stored in master.json. Authenticates admin-only endpoints (/api/set-master). Not a soul_cert — deliberately separate so the admin API remains reachable even after SOUL_MASTER_KEY rotation.' },
+  { term: 'soul_master_key', def: 'sys_ + 64 hex chars. Root key for soul_cert derivation (HMAC-SHA256). Stored in master.json. Can be rotated via /api/set-master; old key stays valid for 15-minute grace period.' },
+  { term: 'key_source', def: '"soul" | "master" | "env". Indicates which Anthropic key was used for a chat request. Priority: soul config.json → master.json fallback → systemd ANTHROPIC_API_KEY.' },
 ]
 
 const standards = [
@@ -1096,6 +1182,7 @@ const trustModel = [
   { id: 'External service', key: 'service-token (64 hex)', level: 'Scoped', scope: 'Permissions in api_context.json' },
   { id: 'Mnemonic caller', key: 'BIP39 12-word phrase', level: 'Scoped', scope: 'Same as service-token — key derived via PBKDF2' },
   { id: 'Server operator', key: 'SOUL_MASTER_KEY', level: 'Root', scope: 'Can derive any cert' },
+  { id: 'Server admin', key: 'admin_token (adm_ + 64hex)', level: 'Admin', scope: '/api/set-master — rotate master key, admin token, global Anthropic key. Stored in master.json (not systemd env).' },
 ]
 
 const oauthSteps = [
@@ -1181,6 +1268,11 @@ const endpoints = [
   { method: 'GET',  path: '/api/soul/paid-profile/{type}',   auth: 'pol_access_token', desc: 'Structured profile (face/voice/motion/expertise) for paying external agents.' },
   { method: 'GET',  path: '/api/soul/register-preview',      auth: 'soul_cert',        desc: 'Preview the ERC-8004 JSON blob that would be pinned — no write, no IPFS call.' },
   { method: 'GET',  path: '/internal/validate-pol-token',    auth: 'localhost only',   desc: 'Validates pol_access_token via pol_access shared dict. Returns {ok, soul_id, expires_at}. Called by soul-mcp to distinguish OAuth soul_cert from paid pol_access_token.' },
+  // Key Management
+  { method: 'GET',  path: '/api/get-config',  auth: 'soul_cert', desc: 'Read soul config — model, has_soul_key, key_source (soul/master/env), has_master_key. Never returns raw keys.' },
+  { method: 'POST', path: '/api/set-config',  auth: 'soul_cert', desc: 'Set per-soul anthropic_key and/or model in /var/lib/sys/souls/{id}/config.json. anthropic_key="" deletes the soul key.' },
+  { method: 'POST', path: '/api/set-master',  auth: 'X-Admin-Token', desc: 'Rotate soul_master_key, admin_token, and/or global anthropic_key in master.json. All fields optional. soul_master_key rotation stores old key as prev with 15-min grace period.' },
+  { method: 'POST', path: '/api/test-key',    auth: 'soul_cert', desc: 'Server-side Anthropic key validation proxy (CORS bypass). Calls /v1/messages with max_tokens:5. Returns {ok, status}.' },
 ]
 
 const rateLimits = [
@@ -1193,7 +1285,8 @@ const rateLimits = [
 ]
 
 const keyStorage = [
-  { key: 'SOUL_MASTER_KEY', where: 'systemd environment', who: 'Server process only' },
+  { key: 'SOUL_MASTER_KEY', where: 'systemd environment (bootstrap) / master.json (runtime)', who: 'Server process — read by soul_auth.lua + config_reader.lua' },
+  { key: 'admin_token', where: '/var/lib/sys/config/master.json', who: 'Server only — validates X-Admin-Token for /api/set-master' },
   { key: 'API_SIGNING_KEY', where: 'systemd environment', who: 'Server process only' },
   { key: 'vault_key (session)', where: 'OpenResty shared dict', who: 'Server process only, TTL-bound' },
   { key: 'vault_key_hex (persisted)', where: 'api_context.json on VPS', who: 'Server + authorized service-tokens' },
@@ -1267,6 +1360,12 @@ const luaScripts = [
   { file: 'vault_profile_analyze.lua', phase: 'content', purpose: 'POST /api/vault/profile/analyze — trigger analysis pipeline on a vault file (face/motion). Calls Claude Vision server-side.' },
   { file: 'external_vault.lua',    phase: 'content', purpose: 'Fetch and serve sys.md from external SYS URL — used by soul network for cross-server peer reads.' },
   { file: 'fetch_bundle.lua',      phase: 'content', purpose: 'POST /api/fetch-bundle — fetch encrypted AES-GCM bundle from external URL (no auth).' },
+  // Key Management
+  { file: 'get_config.lua',   phase: 'content', purpose: 'GET /api/get-config — read soul API config (model, key_source). soul_cert auth. Never exposes raw keys.' },
+  { file: 'set_config.lua',   phase: 'content', purpose: 'POST /api/set-config — write per-soul anthropic_key + model to config.json. soul_cert auth. Invalidates config reader cache.' },
+  { file: 'set_master.lua',   phase: 'content', purpose: 'POST /api/set-master — rotate soul_master_key (sys_ + 64hex), admin_token (adm_ + 64hex), and/or global anthropic_key in master.json. X-Admin-Token auth. Old master key stored as prev with 15-min grace TTL.' },
+  { file: 'test_key.lua',     phase: 'content', purpose: 'POST /api/test-key — server-side Anthropic API key validation. soul_cert auth. Calls api.anthropic.com (resolver 1.1.1.1). Returns {ok, status}.' },
+  { file: 'config_reader.lua', phase: 'module', purpose: 'Shared module: reads master.json + per-soul config.json, resolves key_source hierarchy (soul → master → env), caches result in ngx.shared.config_cache.' },
 ]
 
 // ── Inline Components ─────────────────────────────────────────────────────────

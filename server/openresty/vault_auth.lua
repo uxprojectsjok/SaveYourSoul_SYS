@@ -9,7 +9,7 @@
 
 local cjson      = require("cjson.safe")
 local hmac       = require("hmac_helper")
-local master_key = os.getenv("SOUL_MASTER_KEY") or ""
+local cfg        = require("config_reader")
 
 -- Hilfsfunktion: Session-JSON parsen (JSON oder altes plain-number Format)
 local function parse_session(val)
@@ -31,12 +31,27 @@ local function check_soul_cert(token)
   local cert    = token:sub(dot + 1)
   if soul_id == "" or cert == "" then return nil end
 
+  local master_key = cfg.get_master_key()
   if master_key == "" then
     ngx.ctx.soul_id = soul_id
   else
     local cert_version = hmac.read_cert_version(soul_id)
-    local expected     = hmac.cert_for_soul(master_key, soul_id, cert_version)
-    if cert ~= expected then
+    local matched      = false
+
+    if hmac.cert_for_soul(master_key, soul_id, cert_version) == cert then
+      matched = true
+    else
+      -- Grace-Period: vorherigen Key prüfen nach Rotation
+      local prev_key = cfg.get_master_key_prev()
+      if prev_key and prev_key ~= "" then
+        if hmac.cert_for_soul(prev_key, soul_id, cert_version) == cert then
+          matched = true
+          ngx.log(ngx.INFO, "[vault_auth] Grace-Period Cert akzeptiert soul_id=", soul_id)
+        end
+      end
+    end
+
+    if not matched then
       ngx.log(ngx.WARN, "[vault_auth] Ungültiges Cert soul_id=", soul_id)
       return nil
     end

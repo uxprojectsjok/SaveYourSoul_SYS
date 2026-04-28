@@ -200,12 +200,22 @@ ${idea ? idea : "*Noch nicht beschrieben.*"}
       return; // Server nicht erreichbar — alten Cert behalten
     }
 
-    if (!cert) return;
+    if (!cert) return false;
+
+    const certChanged = cert !== soulCert.value;
 
     // Cert in sys.md-Inhalt ersetzen — updateFrontmatterField ist robuster als Regex
     soulContent.value = updateFrontmatterField(soulContent.value, "soul_cert", cert);
     soulCert.value = cert;
     save();
+
+    // Bei Cert-Änderung (z.B. nach Master-Key-Rotation): Server-Kopie aktualisieren,
+    // damit User jederzeit eine frische sys.md mit gültigem Cert herunterladen kann.
+    if (certChanged) {
+      pushToServer().catch(() => {});
+    }
+
+    return certChanged; // true = Cert hat sich geändert → User auf Download hinweisen
   }
 
   // Rotiert den soul_cert: inkrementiert cert_version auf dem Server,

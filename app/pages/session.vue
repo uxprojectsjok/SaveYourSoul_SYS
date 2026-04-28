@@ -24,6 +24,7 @@
             {{ serverChecking ? '…' : 'Abgleich' }}
           </button>
           <button class="tool" @click="anchorModalOpen = true">Polygon</button>
+          <button class="tool" @click="settingsOpen = true" aria-label="Einstellungen">Setup</button>
           <button class="tool" :class="{ active: aiRole === 'soul' }" @click="aiRole = aiRole === 'soul' ? 'session' : 'soul'">
             Modus · {{ aiRole === 'soul' ? 'Soul' : 'Entwicklung' }}
           </button>
@@ -47,6 +48,13 @@
         <div v-if="serverVaultEncrypted" class="banner b-warn">
           <span>Soul am Server verschlüsselt · Vault mit Schlüsselwörtern entsperren</span>
           <button @click="serverVaultEncrypted = false" class="close">✕</button>
+        </div>
+      </Transition>
+      <Transition name="slide-up">
+        <div v-if="certRenewed" class="banner b-warn">
+          <span>Soul-Cert erneuert (Master-Key-Rotation) · sys.md lokal sichern</span>
+          <button @click="downloadSoulMd" class="tool" style="font-size:9px;padding:4px 10px;border:1px solid rgba(255,255,255,0.2);border-radius:4px;margin-left:8px;">Herunterladen</button>
+          <button @click="certRenewed = false" class="close">✕</button>
         </div>
       </Transition>
 
@@ -139,6 +147,7 @@
     </Modal>
 
     <SoulAnchorModal :is-open="anchorModalOpen" @close="anchorModalOpen = false" />
+    <SettingsModal :open="settingsOpen" @close="settingsOpen = false" @master-rotated="handleMasterRotated" />
     <ConfirmModal />
   </ClientOnly>
 </template>
@@ -162,6 +171,7 @@ import ChatInterface from '~/components/ChatInterface.vue'
 import LiveProfile from '~/components/LiveProfile.vue'
 import Modal from '~/components/ui/Modal.vue'
 import SoulAnchorModal from '~/components/SoulAnchorModal.vue'
+import SettingsModal from '~/components/SettingsModal.vue'
 import SoulViewer from '~/components/SoulViewer.vue'
 import ConfirmModal from '~/components/ConfirmModal.vue'
 
@@ -173,12 +183,34 @@ const { isSupported: vaultSupported, isConnected: vaultConnected, contextFiles, 
 const { vaultKey } = useVaultSession()
 
 const certValidating = ref(true)
+const certRenewed    = ref(false)
 const vaultScanning = ref(false)
 const vaultStatus = ref(null)
 const liveProfileVisible = ref(false)
 const serverChecking = ref(false)
 const mobileView = ref('chat')
 const anchorModalOpen = ref(false)
+const settingsOpen    = ref(false)
+
+async function handleMasterRotated() {
+  // Grace Period noch aktiv → Cert sofort erneuern, dann Download-Toast zeigen
+  const changed = await refreshCert()
+  if (changed) certRenewed.value = true
+  else certRenewed.value = true // immer zeigen nach expliziter Rotation
+  settingsOpen.value = false
+}
+
+function downloadSoulMd() {
+  if (!soulContent.value) return
+  const name = soulMeta.value?.id ? `${soulMeta.value.id}.md` : 'sys.md'
+  const blob = new Blob([soulContent.value], { type: 'text/markdown;charset=utf-8' })
+  const url  = URL.createObjectURL(blob)
+  const a    = document.createElement('a')
+  a.href = url; a.download = name
+  document.body.appendChild(a); a.click()
+  document.body.removeChild(a); URL.revokeObjectURL(url)
+  certRenewed.value = false
+}
 const isEnriching = ref(false)
 const enrichStatus = ref(null)
 const certErrorVisible = ref(false)
@@ -231,7 +263,8 @@ onMounted(async () => {
     if (restored) { syncVaultSoul(); updateVaultInSoul(fileManifest.value) }
     else loadProfileLocal(soulMeta.value?.id)
   }
-  await refreshCert()
+  const certChanged = await refreshCert()
+  if (certChanged) certRenewed.value = true
   certValidating.value = false
 
   fetch('/api/validate', { headers: { Authorization: `Bearer ${soulToken.value}` } })

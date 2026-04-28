@@ -1173,6 +1173,87 @@ Authorization: Bearer &lt;soul-cert oder service-token&gt;</DocCode>
           </section>
 
           <!-- ═══════════════════════════════════════
+               SECTION 11 – KEY-MANAGEMENT
+               ═══════════════════════════════════════ -->
+          <section :id="'key-management'" class="doc-section mb-16 scroll-mt-20">
+            <DocHeading level="1" badge="Admin">Key-Management</DocHeading>
+            <p class="doc-lead">Der VPS-Betreiber kann Anthropic-API-Keys, den Soul-Master-Key und den Admin-Token über eine gesicherte Admin-Schnittstelle rotieren — ohne Server-SSH.</p>
+
+            <DocHeading level="2">Key-Hierarchie</DocHeading>
+            <div class="doc-info-box my-4 font-mono text-xs text-[var(--sys-fg-dim)] leading-relaxed">
+              <div>1. config.json (pro Soul)   → anthropic_key     — individueller Key einer Soul</div>
+              <div>2. master.json              → anthropic_key     — Fallback für alle Souls ohne eigenen Key</div>
+              <div>3. systemd env              → ANTHROPIC_API_KEY — Server-Default (letzter Fallback)</div>
+            </div>
+            <p class="doc-p">Die Reihenfolge ist fix: Hat eine Soul einen eigenen Key in ihrer <code class="doc-code">config.json</code>, wird dieser immer bevorzugt. Fehlt er, greift der Fallback-Key aus <code class="doc-code">master.json</code>. Fehlt auch der, kommt die systemd-Umgebungsvariable zum Einsatz. Die API-Antwort enthält <code class="doc-code">key_source</code> mit dem Wert <code class="doc-code">"soul"</code>, <code class="doc-code">"master"</code> oder <code class="doc-code">"env"</code> — so erkennst du immer, welcher Key tatsächlich verwendet wurde.</p>
+
+            <DocHeading level="2">GET /api/get-config</DocHeading>
+            <p class="doc-p">Liest die aktuelle Soul-Konfiguration. Authentifizierung via <code class="doc-code">soul_cert</code>. Gibt Key-Quellen und Modell zurück, aber niemals die rohen API-Keys.</p>
+            <DocCode lang="http">GET /api/get-config
+Authorization: Bearer {soul_id}.{cert}</DocCode>
+            <DocCode lang="json">{
+  "ok": true,
+  "model": "claude-sonnet-4-6",
+  "has_soul_key": true,
+  "key_source": "soul",
+  "has_master_key": true
+}</DocCode>
+
+            <DocHeading level="2">POST /api/set-config</DocHeading>
+            <p class="doc-p">Setzt den individuellen Anthropic-API-Key und/oder das Modell für eine einzelne Soul. Authentifizierung via <code class="doc-code">soul_cert</code>.</p>
+            <DocCode lang="http">POST /api/set-config
+Authorization: Bearer {soul_id}.{cert}
+Content-Type: application/json
+
+{
+  "anthropic_key": "sk-ant-...",
+  "model": "claude-sonnet-4-6"
+}</DocCode>
+            <DocCode lang="json">{ "ok": true }</DocCode>
+
+            <DocHeading level="2">POST /api/set-master</DocHeading>
+            <p class="doc-p">Admin-Endpunkt — rotiert <code class="doc-code">soul_master_key</code>, <code class="doc-code">admin_token</code> und/oder den globalen <code class="doc-code">anthropic_key</code> in <code class="doc-code">master.json</code>. Alle drei Felder sind optional — nur gesendete Felder werden überschrieben.</p>
+            <div class="doc-warning-box my-4">
+              <p class="text-xs font-semibold text-[var(--sys-amber)] mb-1">Authentifizierung: X-Admin-Token (kein soul_cert)</p>
+              <p class="text-xs text-[var(--sys-fg-dim)]">Dieser Endpunkt ist bewusst nicht mit soul_cert geschützt — er muss auch nach einer Master-Key-Rotation erreichbar sein, wenn alle soul_certs noch ungültig sind. Der Admin-Token (<code class="doc-code">adm_</code> + 64 Hex-Zeichen) ist separat in <code class="doc-code">master.json</code> gespeichert.</p>
+            </div>
+            <DocCode lang="http">POST /api/set-master
+X-Admin-Token: adm_{64hex}
+Content-Type: application/json
+
+{
+  "soul_master_key": "sys_{64hex}",
+  "new_admin_token": "adm_{64hex}",
+  "anthropic_key":   "sk-ant-..."
+}</DocCode>
+            <DocCode lang="json">{
+  "ok": true,
+  "prev_valid_until": "2026-04-28T14:37:00Z"
+}</DocCode>
+            <p class="doc-p">Nach einer Master-Key-Rotation gilt der alte Key noch für <strong>15 Minuten</strong> als Grace-Period — damit alle offenen Browser-Sessions automatisch einen neuen <code class="doc-code">soul_cert</code> beziehen können (<code class="doc-code">refreshCert()</code> wird bei jedem Seitenaufruf aufgerufen). <code class="doc-code">prev_valid_until</code> ist leer, wenn kein Master-Key rotiert wurde.</p>
+
+            <DocHeading level="2">POST /api/test-key</DocHeading>
+            <p class="doc-p">Validiert einen Anthropic-API-Key serverseitig. Browser-seitige Direktaufrufe zu <code class="doc-code">api.anthropic.com</code> scheitern an CORS — dieser Proxy umgeht das. Authentifizierung via <code class="doc-code">soul_cert</code>.</p>
+            <DocCode lang="http">POST /api/test-key
+Authorization: Bearer {soul_id}.{cert}
+Content-Type: application/json
+
+{ "anthropic_key": "sk-ant-..." }</DocCode>
+            <DocCode lang="json">{ "ok": true,  "status": 200 }
+{ "ok": false, "status": 401 }</DocCode>
+
+            <DocHeading level="2">Admin-Token-Rotation über die UI</DocHeading>
+            <p class="doc-p">Den Admin-Token kannst du vollständig über das Setup-Menü (<em>⚙ Setup → Server-Admin</em>) rotieren — ohne SSH oder DevTools. Der neue Token wird im Browser via <code class="doc-code">crypto.getRandomValues()</code> generiert und niemals vom Server erzeugt.</p>
+            <div class="doc-info-box my-4">
+              <p class="text-xs font-semibold text-[var(--sys-accent)] mb-2">Token-Formate</p>
+              <div class="space-y-1 text-xs font-mono">
+                <div class="flex gap-3"><span class="text-[var(--sys-accent)] w-28 flex-none">admin_token</span><span class="text-[var(--sys-fg-dim)]">adm_ + 64 Hex-Zeichen (lowercase)</span></div>
+                <div class="flex gap-3"><span class="text-[var(--sys-accent)] w-28 flex-none">soul_master_key</span><span class="text-[var(--sys-fg-dim)]">sys_ + 64 Hex-Zeichen (lowercase)</span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ═══════════════════════════════════════
                SECTION 10 – FAQ
                ═══════════════════════════════════════ -->
           <section :id="'faq'" class="doc-section mb-16 scroll-mt-20">
@@ -1286,6 +1367,7 @@ const nav = [
       { id: 'mcp-self-hosted', title: 'Self-Hosted MCP' },
       { id: 'reference-impl',  title: 'Referenzimplementierung' },
       { id: 'api-reference',   title: 'API-Referenz' },
+      { id: 'key-management',  title: 'Key-Management' },
     ]
   },
   {
@@ -1529,6 +1611,27 @@ const endpoints = [
     method: 'GET', path: '/internal/validate-pol-token', permission: 'localhost only',
     desc: 'Validiert pol_access_token via pol_access shared dict. Gibt {ok, soul_id, expires_at} zurück. Wird von soul-mcp aufgerufen um OAuth soul_cert von zahlenden pol_access_token zu unterscheiden.',
     response: '{ "ok": true, "soul_id": "...", "expires_at": "2026-07-25T..." }'
+  },
+  // ── Key-Management ──────────────────────────────────────────────────────────
+  {
+    method: 'GET', path: '/api/get-config', permission: 'Soul-Cert',
+    desc: 'Liest die aktuelle Soul-Konfiguration (Modell, Key-Quelle). Gibt niemals rohe API-Keys zurück. key_source zeigt an welcher Key aktiv ist: "soul" (eigener Key in config.json) → "master" (Fallback aus master.json) → "env" (systemd ANTHROPIC_API_KEY).',
+    response: '{\n  "ok": true,\n  "model": "claude-sonnet-4-6",\n  "has_soul_key": true,\n  "key_source": "soul",\n  "has_master_key": true\n}'
+  },
+  {
+    method: 'POST', path: '/api/set-config', permission: 'Soul-Cert',
+    desc: 'Setzt den individuellen Anthropic-API-Key und/oder Modell für diese Soul. Felder sind optional — nur gesendete Werte werden überschrieben. anthropic_key="" löscht den Soul-Key.',
+    response: '{ "ok": true }'
+  },
+  {
+    method: 'POST', path: '/api/set-master', permission: 'X-Admin-Token (adm_ + 64hex)',
+    desc: 'Admin-Endpunkt — rotiert soul_master_key, new_admin_token und/oder globalen anthropic_key in master.json. Alle Felder optional. soul_master_key-Rotation: alter Key bleibt 15 Minuten als Grace-Period gültig, damit offene Browser-Sessions refreshCert() ausführen können.',
+    response: '{ "ok": true, "prev_valid_until": "2026-04-28T14:37:00Z" }'
+  },
+  {
+    method: 'POST', path: '/api/test-key', permission: 'Soul-Cert',
+    desc: 'Validiert einen Anthropic-API-Key serverseitig (CORS-Proxy — Browser kann api.anthropic.com nicht direkt aufrufen). Ruft /v1/messages mit max_tokens:5 auf. Gibt {ok, status} zurück.',
+    response: '{ "ok": true, "status": 200 }'
   },
 ]
 

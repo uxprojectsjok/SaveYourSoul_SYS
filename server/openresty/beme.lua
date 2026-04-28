@@ -155,7 +155,8 @@ table.insert(messages, { role = "user", content = message })
 
 -- ── Anthropic API aufrufen ─────────────────────────────────────────────────
 
-local api_key = os.getenv("ANTHROPIC_API_KEY") or ""
+local cfg = require("config_reader")
+local api_key = cfg.get_anthropic_key(ngx.ctx.soul_id)
 if api_key == "" then
   ngx.status = 500
   ngx.say('{"error":"ANTHROPIC_API_KEY nicht konfiguriert"}')

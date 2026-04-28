@@ -14,7 +14,8 @@ if ngx.req.get_method() ~= "POST" then
   return
 end
 
-local api_key = os.getenv("ANTHROPIC_API_KEY") or ""
+local cfg = require("config_reader")
+local api_key = cfg.get_anthropic_key(ngx.ctx.soul_id)
 if api_key == "" then
   ngx.status = 503
   ngx.header["Content-Type"] = "application/json"

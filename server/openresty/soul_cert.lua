@@ -8,12 +8,15 @@
 --   Neue Soul  (kein api_context.json): kein proof erforderlich.
 --   Bestehende Soul: proof = aktuell gültiger soul_cert muss mitgesendet werden.
 --   Server prüft HMAC für cert_versions 0..20 — akzeptiert bei erstem Treffer.
+--   Unterstützt Grace-Period: prüft auch vorherigen Master-Key nach Rotation.
 
-local master_key = os.getenv("SOUL_MASTER_KEY")
+local cfg        = require("config_reader")
+local master_key = cfg.get_master_key()
+
 if not master_key or master_key == "" then
   ngx.status = 500
   ngx.header["Content-Type"] = "application/json"
-  ngx.say('{"error":"SOUL_MASTER_KEY nicht gesetzt"}')
+  ngx.say('{"error":"SOUL_MASTER_KEY nicht konfiguriert"}')
   return
 end
 
@@ -66,12 +69,17 @@ if cf then
     return
   end
 
-  -- Alle cert_versions 0..20 prüfen — akzeptiert wenn eine passt
+  -- Alle cert_versions 0..20 prüfen — aktueller Key + vorheriger Key (Grace-Period)
+  local prev_key = cfg.get_master_key_prev()
   local valid = false
   for v = 0, 20 do
     if hmac.cert_for_soul(master_key, soul_id, v) == proof then
-      valid = true
-      break
+      valid = true; break
+    end
+    if prev_key and prev_key ~= "" then
+      if hmac.cert_for_soul(prev_key, soul_id, v) == proof then
+        valid = true; break
+      end
     end
   end
 
@@ -83,7 +91,7 @@ if cf then
   end
 end
 
--- Cert ausstellen
+-- Cert ausstellen (immer mit aktuellem Key)
 local cert = hmac.cert_for_soul(master_key, soul_id, cert_version)
 
 ngx.header["Content-Type"] = "application/json"

@@ -843,9 +843,13 @@ async function handleRotateCert() {
     if (vaultConnected.value && composableSoulContent.value) {
       const fileName = localSoulFileName.value;
       await writeFile(fileName, new TextEncoder().encode(composableSoulContent.value));
+      showSuccess(`Cert rotiert ✓  (Version ${result.cert_version})`);
+    } else {
+      // Kein Vault verbunden → Download erzwingen, damit der neue Cert lokal gesichert ist.
+      // Ohne Download: bei Browser-Reset oder Gerätewechsel ist kein Login mehr möglich.
+      downloadSoulLocal();
+      showSuccess(`Cert rotiert ✓  (Version ${result.cert_version}) — sys.md wird heruntergeladen`);
     }
-
-    showSuccess(`Cert rotiert ✓  (Version ${result.cert_version})`);
   } finally {
     rotateBusy.value = false;
   }
