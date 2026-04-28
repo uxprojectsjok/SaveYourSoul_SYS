@@ -113,17 +113,15 @@
 
         <div
           v-for="section in SOUL_SECTIONS" :key="section.key"
-          class="rounded-xl border overflow-hidden transition-all duration-200"
-          :class="editingSection === section.key
-            ? 'border-[var(--sys-violet)]/40 bg-[var(--sys-bg-elevated)]'
-            : 'border-[var(--sys-border)] bg-[var(--sys-bg-elevated)]'"
+          class="rounded-xl border overflow-hidden transition-all duration-200 border-[var(--sys-border)] bg-[var(--sys-bg-elevated)]"
         >
           <!-- Section header -->
-          <button
-            class="w-full flex items-center justify-between gap-2 px-3 py-2.5 hover:bg-white/[0.04] transition-colors"
-            @click="toggleSection(section.key)"
-          >
-            <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-full flex items-center gap-2 px-3 py-2.5">
+            <!-- Collapse toggle (takes most of the row) -->
+            <button
+              class="flex-1 flex items-center gap-2.5 min-w-0 hover:opacity-80 transition-opacity text-left"
+              @click="toggleSection(section.key)"
+            >
               <i :class="[section.icon, 'ri-fw text-sm flex-none']"
                  :style="{ color: openedSections[section.key] ? section.color : 'var(--sys-fg-dim)' }"
                  aria-hidden="true" />
@@ -134,66 +132,43 @@
                 {{ section.label }}
               </span>
               <span v-if="!getContent(section.key)" class="text-[10px] text-[var(--sys-fg-dim)] opacity-50 flex-none">leer</span>
-            </div>
-            <svg class="w-3 h-3 text-[var(--sys-fg-dim)] flex-none transition-transform duration-200"
-              :class="openedSections[section.key] ? 'rotate-180' : ''"
-              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7"/>
-            </svg>
-          </button>
+            </button>
 
-          <!-- Expanded -->
+            <!-- Edit button -->
+            <button
+              @click.stop="startEdit(section.key)"
+              class="edit-icon-btn flex-none"
+              :aria-label="'Bearbeiten: ' + section.label"
+            >
+              <i class="ri-pencil-line ri-fw" aria-hidden="true" />
+            </button>
+
+            <!-- Collapse chevron -->
+            <button
+              @click="toggleSection(section.key)"
+              class="flex-none w-6 h-6 flex items-center justify-center rounded hover:bg-white/[0.06] transition-colors"
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <svg class="w-3 h-3 text-[var(--sys-fg-dim)] transition-transform duration-200"
+                :class="openedSections[section.key] ? 'rotate-180' : ''"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Expanded content (view only) -->
           <Transition name="expand">
-            <div v-if="openedSections[section.key]" class="border-t border-[var(--sys-border)]">
-
-              <!-- View mode -->
-              <div v-if="editingSection !== section.key" class="px-3 py-2.5">
-                <p v-if="getContent(section.key)"
-                  class="text-xs text-[var(--sys-fg-muted)] leading-relaxed whitespace-pre-wrap break-words">
-                  {{ getContent(section.key) }}
-                </p>
-                <p v-else class="text-xs text-[var(--sys-fg-dim)] italic opacity-50">Noch nichts eingetragen.</p>
-                <div class="flex justify-end mt-2">
-                  <button @click.stop="startEdit(section.key)"
-                    class="inline-flex items-center gap-1 text-[10px] text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg)] hover:bg-white/[0.06] transition-colors px-2 py-1 rounded min-h-[32px]">
-                    <i class="ri-pencil-line ri-fw" aria-hidden="true" />
-                    Bearbeiten
-                  </button>
-                </div>
-              </div>
-
-              <!-- Edit mode -->
-              <div v-else class="px-3 py-2.5 flex flex-col gap-2">
-                <!-- Agent-Kontext hint -->
-                <p v-if="section.agent" class="text-[10px] leading-snug px-2 py-1.5 rounded bg-[var(--sys-orange)]/10 border border-[var(--sys-orange)]/30 text-[var(--sys-orange)]">
-                  ⚠ Dieser Inhalt wird zahlenden Agenten via <span class="font-mono">soul_read</span> öffentlich übermittelt. Keine privaten Daten eintragen.
-                </p>
-                <textarea
-                  ref="editTextareaRef"
-                  v-model="editText"
-                  class="w-full min-h-[100px] bg-white/[0.04] border border-[var(--sys-border)] rounded-lg px-2.5 py-2 text-xs text-[var(--sys-fg)] leading-relaxed resize-y focus:outline-none focus:border-[var(--sys-violet)]/50 placeholder-[var(--sys-fg-dim)] transition-colors"
-                  :placeholder="section.label + ' …'"
-                  @keydown.ctrl.enter="saveEdit(section.key)"
-                  @keydown.meta.enter="saveEdit(section.key)"
-                  @keydown.escape="cancelEdit"
-                />
-                <div class="flex justify-end gap-1.5">
-                  <button @click="cancelEdit"
-                    class="text-[10px] text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg)] hover:bg-white/[0.06] transition-colors px-2 py-1 rounded">
-                    Abbrechen
-                  </button>
-                  <button @click="saveEdit(section.key)"
-                    class="text-[10px] font-semibold text-white px-2.5 py-1 rounded transition-colors"
-                    style="background: var(--sys-violet)">
-                    Speichern
-                  </button>
-                </div>
-              </div>
-
+            <div v-if="openedSections[section.key]" class="border-t border-[var(--sys-border)] px-3 py-2.5">
+              <p v-if="getContent(section.key)"
+                class="text-xs text-[var(--sys-fg-muted)] leading-relaxed whitespace-pre-wrap break-words">
+                {{ getContent(section.key) }}
+              </p>
+              <p v-else class="text-xs text-[var(--sys-fg-dim)] italic opacity-50">Noch nichts eingetragen.</p>
             </div>
           </Transition>
         </div>
-
 
       </div>
 
@@ -245,6 +220,77 @@
     </div>
 
   </div>
+
+  <!-- ── EDIT MODAL ─────────────────────────────────────────────────────── -->
+  <Teleport to="body">
+    <Transition name="modal">
+      <div
+        v-if="editingSection"
+        class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4"
+        @click.self="cancelEdit"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="currentSection?.label + ' bearbeiten'"
+      >
+        <div class="relative w-full max-w-lg bg-[var(--sys-bg-elevated)] border border-[var(--sys-border)] rounded-2xl shadow-2xl max-h-[90dvh] flex flex-col overflow-hidden">
+
+          <!-- Modal header -->
+          <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--sys-border)] flex-none">
+            <div class="flex items-center gap-2.5">
+              <i :class="[currentSection?.icon, 'ri-fw text-base flex-none']"
+                 :style="{ color: currentSection?.color }" aria-hidden="true" />
+              <span class="text-sm font-semibold text-[var(--sys-fg)]">{{ currentSection?.label }}</span>
+            </div>
+            <button
+              @click="cancelEdit"
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sys-fg-dim)] hover:text-[var(--sys-fg)] hover:bg-white/[0.06] transition-colors"
+              aria-label="Schließen"
+            >
+              <i class="ri-close-line ri-fw text-base" aria-hidden="true" />
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="flex-1 overflow-y-auto p-5 flex flex-col gap-3 min-h-0">
+            <p v-if="currentSection?.agent"
+              class="text-[11px] leading-snug px-3 py-2 rounded-lg bg-[var(--sys-orange)]/10 border border-[var(--sys-orange)]/30 text-[var(--sys-orange)] flex-none">
+              ⚠ Dieser Inhalt wird zahlenden Agenten via <span class="font-mono">soul_read</span> öffentlich übermittelt. Keine privaten Daten eintragen.
+            </p>
+            <textarea
+              ref="editTextareaRef"
+              v-model="editText"
+              class="w-full min-h-[240px] bg-white/[0.04] border border-[var(--sys-border)] rounded-xl px-4 py-3 text-sm text-[var(--sys-fg)] leading-relaxed resize-y focus:outline-none focus:border-[var(--sys-violet)]/50 placeholder-[var(--sys-fg-dim)] transition-colors"
+              :placeholder="(currentSection?.label || '') + ' …'"
+              @keydown.ctrl.enter="saveEdit(editingSection)"
+              @keydown.meta.enter="saveEdit(editingSection)"
+              @keydown.escape="cancelEdit"
+            />
+          </div>
+
+          <!-- Modal footer -->
+          <div class="flex items-center justify-between gap-3 px-5 py-4 border-t border-[var(--sys-border)] flex-none">
+            <span class="text-[10px] text-[var(--sys-fg-dim)] hidden sm:block">⌘/Ctrl+Enter zum Speichern</span>
+            <div class="flex gap-2 ml-auto">
+              <button @click="cancelEdit" class="sys-btn-outlined px-4 h-9 text-sm">
+                Abbrechen
+              </button>
+              <button
+                @click="saveEdit(editingSection)"
+                :disabled="isSaving"
+                class="sys-btn-filled px-5 h-9 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg v-if="isSaving" class="w-3.5 h-3.5 animate-spin mr-1.5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" d="M12 3a9 9 0 1 0 9 9"/>
+                </svg>
+                <span>{{ isSaving ? 'Speichert…' : 'Speichern' }}</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup>
@@ -271,17 +317,17 @@ const { appendGrowthEntry } = useChainAnchor();
 
 // ── Local state ──────────────────────────────────────────────────────────
 const scrollContainerRef = ref(null);
-// Maturity: expanded on desktop, collapsed on mobile by default
-const maturityOpen = ref(typeof window !== 'undefined' ? window.innerWidth >= 900 : true);
-const editingSection   = ref(null);
-const editText         = ref("");
-const editTextareaRef  = ref(null);
-const openedSections   = ref({});
-const openSyncSections = ref({});
-const saveFlash        = ref(false);
-const syncSaving       = ref(false);
-const isEnriching      = ref(false);
-const enrichStatus     = ref(null);
+const maturityOpen       = ref(typeof window !== 'undefined' ? window.innerWidth >= 900 : true);
+const editingSection     = ref(null);
+const editText           = ref("");
+const editTextareaRef    = ref(null);
+const isSaving           = ref(false);
+const openedSections     = ref({});
+const openSyncSections   = ref({});
+const saveFlash          = ref(false);
+const syncSaving         = ref(false);
+const isEnriching        = ref(false);
+const enrichStatus       = ref(null);
 
 // Scroll to top when diff appears so the amber block is visible
 watch(syncStatus, (val) => {
@@ -311,13 +357,15 @@ const SOUL_SECTIONS = [
 // ── Computed ─────────────────────────────────────────────────────────────
 const parsed = computed(() => parseSoul(soulContent.value));
 
+const currentSection = computed(() =>
+  SOUL_SECTIONS.find(s => s.key === editingSection.value) ?? null
+);
+
 function getContent(key) {
-  // Agent-Kontext: spezielle Marker-Extraktion
   if (key === AGENT_SECTION_KEY) {
     return getAgentSection(soulContent.value) ?? "";
   }
   let c = parsed.value.sections[key];
-  // Session-Log: beide Varianten zusammenführen
   if (key === "Session-Log (komprimiert)" || key === "Session-Log") {
     const a = parsed.value.sections["Session-Log"] ?? "";
     const b = parsed.value.sections["Session-Log (komprimiert)"] ?? "";
@@ -327,7 +375,6 @@ function getContent(key) {
   if (c.includes("Noch nicht beschrieben") || c.includes("Noch nicht eingetragen")) return "";
   return c;
 }
-
 
 const maturity = computed(() => {
   if (!soulContent.value) return { score: 0, level: "Genesis", isMature: false, breakdown: null };
@@ -340,7 +387,6 @@ const hasMessages = computed(() =>
 
 // ── Section toggle ────────────────────────────────────────────────────────
 function toggleSection(key) {
-  if (editingSection.value === key) return;
   openedSections.value[key] = !openedSections.value[key];
 }
 
@@ -348,7 +394,6 @@ function toggleSection(key) {
 function startEdit(key) {
   editingSection.value = key;
   editText.value = getContent(key);
-  openedSections.value[key] = true;
   nextTick(() => editTextareaRef.value?.focus());
 }
 
@@ -359,17 +404,25 @@ function cancelEdit() {
 
 async function saveEdit(key) {
   if (editingSection.value !== key) return;
-  const updated = key === AGENT_SECTION_KEY
-    ? setAgentSection(soulContent.value, editText.value)
-    : updateSection(soulContent.value, key, editText.value);
-  updateContent(updated);
-  if (vaultConnected.value) {
-    writeSoulMd(soulContent.value, "sys").catch(() => {});
+  isSaving.value = true;
+  try {
+    const updated = key === AGENT_SECTION_KEY
+      ? setAgentSection(soulContent.value, editText.value)
+      : updateSection(soulContent.value, key, editText.value);
+    updateContent(updated);
+    // Write to vault (local)
+    if (vaultConnected.value) {
+      writeSoulMd(soulContent.value, "sys").catch(() => {});
+    }
+    // Push to server → sys.md
+    await pushToServer();
+    editingSection.value = null;
+    editText.value = "";
+    saveFlash.value = true;
+    setTimeout(() => { saveFlash.value = false; }, 2000);
+  } finally {
+    isSaving.value = false;
   }
-  editingSection.value = null;
-  editText.value = "";
-  saveFlash.value = true;
-  setTimeout(() => { saveFlash.value = false; }, 2000);
 }
 
 // ── Soul updaten (Enrichment) ─────────────────────────────────────────────
@@ -424,13 +477,6 @@ function extractSections(md) {
 
 const localLastSession  = computed(() => extractMeta(soulContent.value,  "last_session"));
 const serverLastSession = computed(() => extractMeta(serverContent.value, "last_session"));
-
-const newerSide = computed(() => {
-  const l = localLastSession.value;
-  const s = serverLastSession.value;
-  if (l && s && l !== s) return l > s ? "local" : "server";
-  return "unknown";
-});
 
 const changedSections = computed(() => {
   if (!serverContent.value) return [];
@@ -504,6 +550,20 @@ async function handlePushLocal() {
 .maturity-chevron.rotate-180 { transform: rotate(180deg); }
 .meta-saved { color: #34d399; white-space: nowrap; font-size: 10px; }
 
+/* ── Edit icon button (pencil in section header) ─────────────────── */
+.edit-icon-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 6px; flex: none;
+  color: var(--sys-fg-dim);
+  font-size: 13px;
+  transition: color 0.15s, background 0.15s;
+}
+.edit-icon-btn:hover {
+  color: var(--sys-fg);
+  background: rgba(255,255,255,0.07);
+}
+
+/* ── Sync action buttons ─────────────────────────────────────────── */
 .sync-action-btn {
   display: inline-flex; align-items: center; justify-content: center;
   height: 26px; min-height: 0;
@@ -522,6 +582,7 @@ async function handlePushLocal() {
   border-color: rgba(255,255,255,0.20);
 }
 
+/* ── Transitions ─────────────────────────────────────────────────── */
 .expand-enter-active,
 .expand-leave-active {
   transition: all 0.2s ease;
@@ -544,6 +605,24 @@ async function handlePushLocal() {
 }
 .fade-quick-enter-from,
 .fade-quick-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+.modal-enter-active .relative,
+.modal-leave-active .relative {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.modal-enter-from .relative,
+.modal-leave-to .relative {
+  transform: translateY(12px);
   opacity: 0;
 }
 </style>
