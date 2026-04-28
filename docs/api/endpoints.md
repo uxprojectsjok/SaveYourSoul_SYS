@@ -309,7 +309,7 @@ GET /api/soul/discover?q=expertise
     {
       "soul_id": "uuid-v4",
       "name": "Jan",
-      "mcp_endpoint": "https://sys.uxprojects-jok.com/mcp",
+      "mcp_endpoint": "https://YOUR_DOMAIN/mcp",
       "price_pol": 0.001,
       "wallet": "0x...",
       "free_tools": ["soul_read", "soul_maturity"],
@@ -351,7 +351,7 @@ Server validates on-chain:
   "expires_at": "2026-04-28T07:13:44Z",
   "soul_id": "uuid-v4",
   "free_tools": ["soul_read", "soul_maturity"],
-  "mcp_endpoint": "https://sys.uxprojects-jok.com/mcp"
+  "mcp_endpoint": "https://YOUR_DOMAIN/mcp"
 }
 ```
 

@@ -1242,6 +1242,24 @@ Content-Type: application/json
             <DocCode lang="json">{ "ok": true,  "status": 200 }
 { "ok": false, "status": 401 }</DocCode>
 
+            <DocHeading level="2">Erststart — First-Setup-Flow</DocHeading>
+            <p class="doc-p">Auf einer frischen Instanz existiert noch kein <code class="doc-code">admin_token</code> in <code class="doc-code">master.json</code>. Der erste Aufruf von <code class="doc-code">POST /api/soul-cert</code> für eine neue Soul (kein <code class="doc-code">api_context.json</code> auf dem Server) erkennt diesen Zustand automatisch und generiert den initialen Admin-Token serverseitig aus <code class="doc-code">/dev/urandom</code>.</p>
+            <DocCode lang="json">// Nur beim allerersten soul-cert-Aufruf auf frischer Instanz:
+{
+  "cert":        "a1b2c3d4...",
+  "first_setup": true,
+  "admin_token": "adm_{64hex}"
+}</DocCode>
+            <div class="doc-warning-box my-4">
+              <p class="text-xs font-semibold text-[var(--sys-amber)] mb-1">Einmalig — nicht reproduzierbar</p>
+              <p class="text-xs text-[var(--sys-fg-dim)]">Der Token wird genau einmal zurückgegeben und direkt in <code class="doc-code">master.json</code> geschrieben. Alle späteren <code class="doc-code">soul-cert</code>-Antworten enthalten kein <code class="doc-code">admin_token</code>-Feld. Ohne Sicherung ist der Token nicht wiederherstellbar — er muss über <code class="doc-code">POST /api/set-master</code> rotiert werden (wozu er selbst benötigt wird).</p>
+            </div>
+            <p class="doc-p">Das Frontend erkennt <code class="doc-code">first_setup: true</code> und zeigt einen nicht-schließbaren Modal (<code class="doc-code">FirstSetupModal.vue</code>) mit Copy-Button und Bestätigungs-Checkbox. Erst nach expliziter Bestätigung öffnet sich automatisch das SettingsModal um Anthropic-Key und Master-Key einzurichten.</p>
+            <div class="doc-info-box my-4">
+              <p class="text-xs font-semibold text-[var(--sys-accent)] mb-2">Voraussetzung</p>
+              <p class="text-xs text-[var(--sys-fg-dim)]"><code class="doc-code">allowCreateSoul: true</code> in <code class="doc-code">nuxt.config.js</code> muss für den Erststart aktiv sein — die SYS-Instanz ist standardmäßig invite-only. Nach dem Setup kann der Wert zurück auf <code class="doc-code">false</code> gesetzt werden.</p>
+            </div>
+
             <DocHeading level="2">Admin-Token-Rotation über die UI</DocHeading>
             <p class="doc-p">Den Admin-Token kannst du vollständig über das Setup-Menü (<em>⚙ Setup → Server-Admin</em>) rotieren — ohne SSH oder DevTools. Der neue Token wird im Browser via <code class="doc-code">crypto.getRandomValues()</code> generiert und niemals vom Server erzeugt.</p>
             <div class="doc-info-box my-4">
@@ -1611,6 +1629,12 @@ const endpoints = [
     method: 'GET', path: '/internal/validate-pol-token', permission: 'localhost only',
     desc: 'Validiert pol_access_token via pol_access shared dict. Gibt {ok, soul_id, expires_at} zurück. Wird von soul-mcp aufgerufen um OAuth soul_cert von zahlenden pol_access_token zu unterscheiden.',
     response: '{ "ok": true, "soul_id": "...", "expires_at": "2026-07-25T..." }'
+  },
+  // ── Auth ────────────────────────────────────────────────────────────────────
+  {
+    method: 'POST', path: '/api/soul-cert', permission: 'Kein Auth (neue Soul) / soul_cert als proof (bestehende Soul)',
+    desc: 'Stellt einen HMAC-SHA256-Cert für eine soul_id aus. Neue Souls (kein api_context.json auf Server) benötigen kein proof-Feld. Bestehende Souls müssen den aktuell gültigen soul_cert als proof mitschicken. Auf frischer Instanz (kein admin_token in master.json): Response enthält einmalig first_setup: true und admin_token.',
+    response: '{ "cert": "a1b2c3d4..." }\n// Nur auf frischer Instanz, beim ersten Aufruf:\n{ "cert": "...", "first_setup": true, "admin_token": "adm_{64hex}" }'
   },
   // ── Key-Management ──────────────────────────────────────────────────────────
   {

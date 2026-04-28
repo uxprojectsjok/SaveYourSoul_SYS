@@ -149,6 +149,7 @@
     <SoulAnchorModal :is-open="anchorModalOpen" @close="anchorModalOpen = false" />
     <SettingsModal :open="settingsOpen" @close="settingsOpen = false" @master-rotated="handleMasterRotated" />
     <ConfirmModal />
+    <FirstSetupModal :token="firstSetupToken" @dismiss="firstSetupToken = null; settingsOpen = true" />
   </ClientOnly>
 </template>
 
@@ -174,9 +175,10 @@ import SoulAnchorModal from '~/components/SoulAnchorModal.vue'
 import SettingsModal from '~/components/SettingsModal.vue'
 import SoulViewer from '~/components/SoulViewer.vue'
 import ConfirmModal from '~/components/ConfirmModal.vue'
+import FirstSetupModal from '~/components/FirstSetupModal.vue'
 
 const router = useRouter()
-const { soulContent, soulToken, hasSoul, soulMeta, load, save, updateVaultInSoul, importFromText, clear, refreshCert, fetchFromServer, syncStatus, serverContent, acceptServerVersion, serverVaultEncrypted } = useSoul()
+const { soulContent, soulToken, hasSoul, soulMeta, load, save, updateVaultInSoul, importFromText, clear, refreshCert, fetchFromServer, syncStatus, serverContent, acceptServerVersion, serverVaultEncrypted, firstSetupToken } = useSoul()
 const { messages, clearSession, addMessage } = useSession()
 const { requestPermissions: requestCameraPermissions } = useCamera()
 const { isSupported: vaultSupported, isConnected: vaultConnected, contextFiles, fileManifest, connectVault, restoreVault, writeSoulMd, loadProfileLocal, scanVault } = useVault()

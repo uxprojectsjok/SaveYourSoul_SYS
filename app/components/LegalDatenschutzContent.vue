@@ -252,7 +252,7 @@
 
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">12. Webanalyse mit Plausible Analytics</h2>
-      <p class="text-base text-[var(--sys-fg-muted)]">Diese Website nutzt <strong class="text-[var(--sys-fg)]">Plausible Analytics</strong> in einer selbst gehosteten Variante auf einem Server in Deutschland (<code class="font-mono text-xs text-[var(--sys-violet)]">analytics.YOUR_DOMAIN</code>). Plausible arbeitet <strong class="text-[var(--sys-fg)]">ohne Cookies</strong> und erstellt keine personenbezogenen Nutzerprofile.</p>
+      <p class="text-base text-[var(--sys-fg-muted)]">Diese Website nutzt <strong class="text-[var(--sys-fg)]">Plausible Analytics</strong> in einer selbst gehosteten Variante auf einem Server in Deutschland (<code class="font-mono text-xs text-[var(--sys-violet)]">analytics.uxprojects-jok.com</code>). Plausible arbeitet <strong class="text-[var(--sys-fg)]">ohne Cookies</strong> und erstellt keine personenbezogenen Nutzerprofile.</p>
       <ul class="space-y-1 text-base text-[var(--sys-fg-muted)] list-disc list-inside ml-2 mt-2">
         <li>Erhobene Daten: anonymisierte Nutzungsinformationen (Seitenaufrufe, Verweildauer, Herkunftsland)</li>
         <li>IP-Adressen: keine Speicherung im Klartext</li>

@@ -363,7 +363,6 @@
     <!-- ─── Modals ─────────────────────────────────────────────────── -->
     <ModalCreateSoul
       :is-open="createSoulOpen"
-      @create="handleSoulCreate"
       @cancel="createSoulOpen = false"
     />
 
@@ -670,11 +669,6 @@ async function confirmReset() {
     danger: true,
   })
   if (ok) _clear?.()
-}
-
-function handleSoulCreate(soulText) {
-  if (soulText) importFromText(soulText)
-  createSoulOpen.value = false
 }
 
 function handleLoginUpload(text) {

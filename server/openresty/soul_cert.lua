@@ -10,8 +10,19 @@
 --   Server prüft HMAC für cert_versions 0..20 — akzeptiert bei erstem Treffer.
 --   Unterstützt Grace-Period: prüft auch vorherigen Master-Key nach Rotation.
 
+local cjson      = require("cjson.safe")
 local cfg        = require("config_reader")
 local master_key = cfg.get_master_key()
+
+local MASTER_PATH = "/var/lib/sys/config/master.json"
+
+local function read_master()
+  local f = io.open(MASTER_PATH, "r")
+  if not f then return nil end
+  local raw = f:read("*a"); f:close()
+  local ok, data = pcall(cjson.decode, raw or "")
+  return (ok and type(data) == "table") and data or nil
+end
 
 if not master_key or master_key == "" then
   ngx.status = 500
@@ -30,7 +41,6 @@ if not body or body == "" then
   return
 end
 
-local cjson = require("cjson.safe")
 local ok, data = pcall(cjson.decode, body)
 if not ok or type(data) ~= "table" or type(data.soul_id) ~= "string" or #data.soul_id < 1 then
   ngx.status = 400
@@ -94,6 +104,42 @@ end
 -- Cert ausstellen (immer mit aktuellem Key)
 local cert = hmac.cert_for_soul(master_key, soul_id, cert_version)
 
+-- ── First-Setup: neue Soul + noch kein admin_token → einmalig generieren ──────
+-- Tritt nur auf einer frischen Instanz auf (master.json hat noch kein admin_token).
+-- Der Token wird genau einmal im Response mitgeschickt und danach nie wieder.
+local first_setup_token = nil
+if not cf then  -- cf ist nil → neue Soul (kein api_context.json gefunden)
+  local master = read_master()
+  if not master or type(master.admin_token) ~= "string" or master.admin_token == "" then
+    -- Zufälligen admin_token aus /dev/urandom generieren
+    local rnd = io.open("/dev/urandom", "rb")
+    if rnd then
+      local bytes = rnd:read(32); rnd:close()
+      if bytes and #bytes == 32 then
+        local hex = ""
+        for i = 1, 32 do hex = hex .. string.format("%02x", bytes:byte(i)) end
+        first_setup_token = "adm_" .. hex
+
+        -- In master.json persistieren
+        local existing = master or {}
+        existing.admin_token = first_setup_token
+        os.execute("mkdir -p /var/lib/sys/config")
+        local wf = io.open(MASTER_PATH, "w")
+        if wf then
+          wf:write(cjson.encode(existing)); wf:close()
+          os.execute("chmod 600 " .. MASTER_PATH)
+          os.execute("chown www-data:www-data " .. MASTER_PATH .. " 2>/dev/null || true")
+          cfg.invalidate_master_cache()
+        end
+      end
+    end
+  end
+end
+
 ngx.header["Content-Type"] = "application/json"
 ngx.header["Cache-Control"] = "no-store"
-ngx.say('{"cert":"' .. cert .. '"}')
+if first_setup_token then
+  ngx.say(cjson.encode({ cert = cert, first_setup = true, admin_token = first_setup_token }))
+else
+  ngx.say('{"cert":"' .. cert .. '"}')
+end

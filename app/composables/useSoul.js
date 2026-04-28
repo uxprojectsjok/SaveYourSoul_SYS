@@ -9,6 +9,9 @@ const CERT_KEY = "sys.soul_cert";
 // Singleton-State (Modul-Scope, nicht Component-Scope)
 const soulContent          = ref("");
 const soulCert             = ref("");
+// Einmalig gesetzt wenn die erste Soul auf einer frischen Instanz angelegt wird.
+// Wird in session.vue abgegriffen um den FirstSetupModal anzuzeigen.
+const firstSetupToken      = ref(null);
 const isLoaded             = ref(false);
 const syncStatus           = ref(null); // null | 'checking' | 'in_sync' | 'differs'
 const serverContent        = ref("");
@@ -142,6 +145,12 @@ ${idea ? idea : "*Noch nicht beschrieben.*"}
       if (res.ok) {
         const data = await res.json();
         cert = data.cert;
+        // First-Setup: frische Instanz — admin_token einmalig im Response
+        if (data.first_setup && data.admin_token) {
+          firstSetupToken.value = data.admin_token;
+          // Direkt in localStorage schreiben → SettingsModal erkennt Admin sofort
+          localStorage.setItem("sys_admin_token", data.admin_token);
+        }
       }
     } catch {
       // Fallback: lokale Generierung (offline / kein Server)
@@ -661,6 +670,7 @@ Mögliche section-Werte (exakt so schreiben):
     pendingSoulFileWrite,
     serverVaultEncrypted,
     isLoginInProgress,
+    firstSetupToken,
   };
 }
 

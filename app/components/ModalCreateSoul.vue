@@ -86,10 +86,11 @@
               </button>
               <button
                 @click="handleCreate"
-                class="flex-1 h-11 rounded-xl border text-sm font-semibold text-black transition-all"
+                :disabled="loading"
+                class="flex-1 h-11 rounded-xl border text-sm font-semibold text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 style="background:linear-gradient(135deg,var(--sys-accent),var(--sys-indigo));border-color:transparent"
               >
-                Erstellen
+                {{ loading ? "Erstelle…" : "Erstellen" }}
               </button>
             </div>
           </div>
@@ -101,16 +102,22 @@
 
 <script setup>
 import { ref, watch, nextTick } from "vue";
+import { useRouter } from "vue-router";
+import { useSoul } from "~/composables/useSoul.js";
 
 const props = defineProps({
   isOpen: Boolean
 });
 
-const emit = defineEmits(["create", "cancel"]);
+const emit = defineEmits(["cancel"]);
 
-const hash     = ref("");
-const idea     = ref("");
-const copied   = ref(false);
+const { createNew } = useSoul();
+const router = useRouter();
+
+const hash      = ref("");
+const idea      = ref("");
+const copied    = ref(false);
+const loading   = ref(false);
 const ideaInput = ref(null);
 
 function generateHash() {
@@ -120,9 +127,10 @@ function generateHash() {
 
 watch(() => props.isOpen, (val) => {
   if (val) {
-    hash.value   = generateHash();
-    idea.value   = "";
-    copied.value = false;
+    hash.value    = generateHash();
+    idea.value    = "";
+    copied.value  = false;
+    loading.value = false;
     nextTick(() => ideaInput.value?.focus());
     document.body.style.overflow = "hidden";
   } else {
@@ -136,7 +144,16 @@ async function copyHash() {
   setTimeout(() => { copied.value = false; }, 2000);
 }
 
-function handleCreate() {
-  emit("create", { name: hash.value, idea: idea.value.trim() });
+async function handleCreate() {
+  if (loading.value) return;
+  loading.value = true;
+  try {
+    await createNew(hash.value, idea.value.trim());
+    // firstSetupToken (falls frische Instanz) ist jetzt im useSoul-Singleton gesetzt.
+    // session.vue liest ihn beim Mount und zeigt den FirstSetupModal.
+    router.push("/session");
+  } finally {
+    loading.value = false;
+  }
 }
 </script>

@@ -37,7 +37,10 @@
 
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Domain</h2>
-      <p class="text-base">https://YOUR_DOMAIN</p>
+      <div class="text-base leading-relaxed space-y-0.5">
+        <p><a href="https://sys.uxprojects-jok.com" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">https://sys.uxprojects-jok.com</a> <span class="text-[var(--sys-fg-dim)] text-sm">— SaveYourSoul App</span></p>
+        <p><a href="https://uxprojects-jok.com" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">https://uxprojects-jok.com</a> <span class="text-[var(--sys-fg-dim)] text-sm">— UX-Projects</span></p>
+      </div>
     </section>
 
     <section>

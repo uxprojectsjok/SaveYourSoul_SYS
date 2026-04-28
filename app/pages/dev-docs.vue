@@ -662,8 +662,8 @@ image_list({ access_token: "abc123..." })       // → image list</DocCode>
             <li>Amount (<code class="doc-code">tx.value</code>) must be ≥ <code class="doc-code">pol_per_request</code></li>
           </ul>
 
-          <DocHeading level="2">soul_cert Proof Requirement</DocHeading>
-          <p class="doc-p">Since April 2026, <code class="doc-code">POST /api/soul-cert</code> for an existing soul requires a <code class="doc-code">proof</code> field — the current valid soul_cert. This prevents any third party from obtaining a cert for a soul they don't own, even if they know the soul_id. New souls (no <code class="doc-code">api_context.json</code> on disk) do not require proof.</p>
+          <DocHeading level="2">soul_cert Proof Requirement &amp; Bootstrap</DocHeading>
+          <p class="doc-p">Since April 2026, <code class="doc-code">POST /api/soul-cert</code> for an existing soul requires a <code class="doc-code">proof</code> field — the current valid soul_cert. This prevents any third party from obtaining a cert for a soul they don't own, even if they know the soul_id. New souls (no <code class="doc-code">api_context.json</code> on disk) do not require proof. Additionally, if <code class="doc-code">master.json</code> has no <code class="doc-code">admin_token</code>, the first new-soul cert call auto-generates one and returns it once as <code class="doc-code">first_setup: true</code> (see Instance Bootstrap in Key Management).</p>
           <DocCode lang="http">POST /api/soul-cert
 Content-Type: application/json
 
@@ -999,6 +999,28 @@ Response header: key_source = "soul" | "master" | "env"</DocCode>
             </table>
           </div>
 
+          <DocHeading level="2">Instance Bootstrap — First-Setup Flow</DocHeading>
+          <p class="doc-p">On a fresh instance, <code class="doc-code">master.json</code> has no <code class="doc-code">admin_token</code>. The first call to <code class="doc-code">POST /api/soul-cert</code> for a new soul (no <code class="doc-code">api_context.json</code> on disk) bootstraps the admin token automatically:</p>
+          <div class="doc-steps">
+            <div class="doc-step">
+              <div class="doc-step-num">1</div>
+              <div><p class="text-sm font-semibold mb-0.5">soul_cert.lua detects first-setup condition</p><p class="text-sm text-[var(--sys-fg-dim)]"><code class="doc-code">cf == nil</code> (new soul, no api_context.json) AND <code class="doc-code">master.admin_token</code> absent/empty.</p></div>
+            </div>
+            <div class="doc-step">
+              <div class="doc-step-num">2</div>
+              <div><p class="text-sm font-semibold mb-0.5">Token generated server-side from /dev/urandom</p><p class="text-sm text-[var(--sys-fg-dim)]">32 bytes → 64 hex → <code class="doc-code">adm_{64hex}</code> (68 chars). Written to master.json alongside the existing soul_master_key. Cache invalidated.</p></div>
+            </div>
+            <div class="doc-step">
+              <div class="doc-step-num">3</div>
+              <div><p class="text-sm font-semibold mb-0.5">Token returned once in soul-cert response</p><p class="text-sm text-[var(--sys-fg-dim)]"><code class="doc-code">&#123; cert, first_setup: true, admin_token: "adm_..." &#125;</code>. All subsequent responses return only <code class="doc-code">&#123; cert &#125;</code>.</p></div>
+            </div>
+            <div class="doc-step">
+              <div class="doc-step-num">4</div>
+              <div><p class="text-sm font-semibold mb-0.5">Frontend shows FirstSetupModal</p><p class="text-sm text-[var(--sys-fg-dim)]"><code class="doc-code">useSoul.createNew()</code> sets <code class="doc-code">firstSetupToken</code> singleton ref + writes to <code class="doc-code">localStorage["sys_admin_token"]</code>. <code class="doc-code">session.vue</code> renders <code class="doc-code">FirstSetupModal.vue</code> — non-dismissable until admin confirms save. On dismiss, SettingsModal opens automatically.</p></div>
+            </div>
+          </div>
+          <p class="doc-p"><strong>Trigger path:</strong> <code class="doc-code">ModalCreateSoul</code> → <code class="doc-code">useSoul.createNew()</code> → <code class="doc-code">POST /api/soul-cert</code> → soul built + saved → <code class="doc-code">router.push('/session')</code> → <code class="doc-code">FirstSetupModal</code>. Requires <code class="doc-code">allowCreateSoul: true</code> in <code class="doc-code">nuxt.config.js</code> — the instance is invite-only by default.</p>
+
           <DocHeading level="2">config_reader.lua — Cache Invalidation</DocHeading>
           <p class="doc-p">After any write to master.json or a soul's config.json, the cache must be cleared. All write endpoints call <code class="doc-code">cfg.invalidate_master_cache()</code> (set_master.lua, set_config.lua). The cache key is <code class="doc-code">"master"</code> in <code class="doc-code">ngx.shared.config_cache</code>. TTL is 60 seconds — a passive fallback in case of missed invalidation.</p>
 
@@ -1220,7 +1242,7 @@ const mcpTools = [
 ]
 
 const endpoints = [
-  { method: 'POST', path: '/api/soul-cert', auth: 'none', desc: 'Derive soul_cert for a soul_id (optional cert_version in body)' },
+  { method: 'POST', path: '/api/soul-cert', auth: 'none (new soul) / soul_cert as proof (existing)', desc: 'Derive soul_cert. Existing souls must send current cert as proof. On fresh instance (no admin_token in master.json + new soul): returns first_setup:true and admin_token once.' },
   { method: 'POST', path: '/api/soul-rotate-cert', auth: 'soul_cert', desc: 'Rotate cert — increments cert_version in sys.md, old cert immediately invalid' },
   { method: 'POST', path: '/api/soul-sign-session', auth: 'none', desc: 'Sign a growth chain entry' },
   { method: 'GET', path: '/api/validate', auth: 'soul_cert', desc: 'Validate cert (200 or 401)' },
@@ -1316,7 +1338,7 @@ const fileLimits = [
 const luaScripts = [
   { file: 'soul_auth.lua', phase: 'access', purpose: 'soul_cert validation (stub)' },
   { file: 'vault_auth.lua', phase: 'access', purpose: 'soul_cert + service_token validation (stub)' },
-  { file: 'soul_cert.lua', phase: 'content', purpose: 'cert derivation endpoint (stub)' },
+  { file: 'soul_cert.lua', phase: 'content', purpose: 'cert derivation endpoint (stub) — on fresh instance (no admin_token in master.json): generates admin_token from /dev/urandom, writes to master.json, returns first_setup: true + admin_token once' },
   { file: 'soul_rotate_cert.lua', phase: 'content', purpose: 'cert rotation — increments cert_version in sys.md' },
   { file: 'soul_sign_session.lua', phase: 'content', purpose: 'growth chain signing (stub)' },
   { file: 'soul_token_jwt.lua', phase: 'content', purpose: 'JWT issuance (stub)' },
