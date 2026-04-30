@@ -158,5 +158,5 @@ Please open an issue before starting large changes.
 
 To inquire about official certification, licensing, or partnership:
 
-- Email: info@uxprojects-jok.com
-- Web: https://uxprojects-jok.com
+- Email: [ihre@email.com]
+- Web: [https://ihre-domain.com]

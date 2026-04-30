@@ -163,7 +163,7 @@
           <div class="center"><span class="notice-text">Geschlossene Anwendung von UX-Projects Jan-Oliver Karo. Kein öffentlicher Betrieb. Testphase unter Realbedingungen für eingeladene oder interne Nutzerinnen oder Nutzer.</span></div>
           <div class="actions">
             <button v-if="config.public.allowCreateSoul" class="btn ghost" @click="createSoulOpen = true">Create Soul</button>
-            <button class="btn primary" @click="loginOpen = true">Login <span class="arr">→</span></button>
+            <button v-if="config.public.allowLogin" class="btn primary" @click="loginOpen = true">Login <span class="arr">→</span></button>
           </div>
         </nav>
 
@@ -191,7 +191,7 @@
               <p>Kein Account. Kein Plattformzwang. Deine Soul gehört dir — und arbeitet für dich.</p>
               <div class="cta-row">
                 <button v-if="config.public.allowCreateSoul" class="btn primary" @click="createSoulOpen = true">Create Soul <span class="arr">→</span></button>
-                <button class="btn ghost" @click="loginOpen = true">Login with Soul</button>
+                <button v-if="config.public.allowLogin" class="btn ghost" @click="loginOpen = true">Login with Soul</button>
               </div>
             </aside>
           </div>

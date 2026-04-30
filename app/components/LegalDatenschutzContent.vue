@@ -32,7 +32,7 @@
         <p>Wäldchesborn 57</p>
         <p>35043 Marburg</p>
         <p>Deutschland</p>
-        <p class="mt-2">E-Mail: <a href="mailto:info@uxprojects-jok.com" class="text-[var(--sys-violet)] hover:underline underline-offset-2">info@uxprojects-jok.com</a></p>
+        <p class="mt-2">E-Mail: <a href="mailto:[ihre@email.com]" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[ihre@email.com]</a></p>
       </div>
     </section>
 
@@ -182,7 +182,7 @@
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">7. Speicherdauer</h2>
       <div class="space-y-2 text-sm text-[var(--sys-fg-muted)]">
-        <p>VPS-Daten (sys.md, Vault-Dateien, api_context.json, soul_connections.json) werden gespeichert bis zur aktiven Löschung durch den Nutzer — oder auf schriftliche Anfrage an <a href="mailto:info@uxprojects-jok.com" class="text-[var(--sys-violet)] hover:underline underline-offset-2">info@uxprojects-jok.com</a>, spätestens innerhalb von 30 Tagen (Art. 17 DSGVO). Der Nutzer kann alle VPS-Daten jederzeit vollständig über die App löschen (Kachel „Alle VPS-Daten löschen").</p>
+        <p>VPS-Daten (sys.md, Vault-Dateien, api_context.json, soul_connections.json) werden gespeichert bis zur aktiven Löschung durch den Nutzer — oder auf schriftliche Anfrage an <a href="mailto:[ihre@email.com]" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[ihre@email.com]</a>, spätestens innerhalb von 30 Tagen (Art. 17 DSGVO). Der Nutzer kann alle VPS-Daten jederzeit vollständig über die App löschen (Kachel „Alle VPS-Daten löschen").</p>
         <p>sessionStorage-Daten werden beim Schließen des Browser-Tabs automatisch gelöscht.</p>
         <p>localStorage-Daten (Profilbild-Thumbnail, Statistik-Präferenz, Onboarding-Status) verbleiben bis zur manuellen Löschung im Browser oder durch Zurücksetzen der Anwendung.</p>
         <p>IndexedDB-Daten (Vault-Handle) verbleiben bis zur manuellen Trennung des Vaults in der App.</p>
@@ -234,7 +234,7 @@
           <span>Art. 7 Abs. 3 DSGVO — Widerruf einer erteilten Einwilligung jederzeit möglich (z. B. durch Löschung der eigenen Daten). Der Widerruf berührt nicht die Rechtmäßigkeit der bis dahin erfolgten Verarbeitung.</span>
         </div>
       </div>
-      <p class="text-base text-[var(--sys-fg-muted)] mt-4">Zur Wahrnehmung dieser Rechte genügt eine formlose E-Mail an <a href="mailto:info@uxprojects-jok.com" class="text-[var(--sys-violet)] hover:underline underline-offset-2">info@uxprojects-jok.com</a>.</p>
+      <p class="text-base text-[var(--sys-fg-muted)] mt-4">Zur Wahrnehmung dieser Rechte genügt eine formlose E-Mail an <a href="mailto:[ihre@email.com]" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[ihre@email.com]</a>.</p>
       <p class="text-base text-[var(--sys-fg-muted)] mt-3">Du hast zudem das Recht, dich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. Zuständig für den Verantwortlichen ist:</p>
       <div class="text-sm text-[var(--sys-fg-muted)] mt-2 ml-2">
         <p class="font-medium text-[var(--sys-fg)]">Der Hessische Beauftragte für Datenschutz und Informationsfreiheit (HBDI)</p>
@@ -252,7 +252,7 @@
 
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">12. Webanalyse mit Plausible Analytics</h2>
-      <p class="text-base text-[var(--sys-fg-muted)]">Diese Website nutzt <strong class="text-[var(--sys-fg)]">Plausible Analytics</strong> in einer selbst gehosteten Variante auf einem Server in Deutschland (<code class="font-mono text-xs text-[var(--sys-violet)]">analytics.uxprojects-jok.com</code>). Plausible arbeitet <strong class="text-[var(--sys-fg)]">ohne Cookies</strong> und erstellt keine personenbezogenen Nutzerprofile.</p>
+      <p class="text-base text-[var(--sys-fg-muted)]">Diese Website nutzt <strong class="text-[var(--sys-fg)]">Plausible Analytics</strong> in einer selbst gehosteten Variante auf einem Server in Deutschland (<code class="font-mono text-xs text-[var(--sys-violet)]">[analytics.ihre-domain.com]</code>). Plausible arbeitet <strong class="text-[var(--sys-fg)]">ohne Cookies</strong> und erstellt keine personenbezogenen Nutzerprofile.</p>
       <ul class="space-y-1 text-base text-[var(--sys-fg-muted)] list-disc list-inside ml-2 mt-2">
         <li>Erhobene Daten: anonymisierte Nutzungsinformationen (Seitenaufrufe, Verweildauer, Herkunftsland)</li>
         <li>IP-Adressen: keine Speicherung im Klartext</li>
@@ -265,7 +265,7 @@
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">13. Automatisierte Entscheidungsfindung</h2>
       <p class="text-base text-[var(--sys-fg-muted)]">Es findet keine automatisierte Entscheidungsfindung einschließlich Profiling im Sinne von Art. 22 DSGVO statt. KI-Antworten dienen ausschließlich der persönlichen Reflexion des Nutzers und haben keine rechtsverbindliche Wirkung.</p>
-      <p class="text-base text-[var(--sys-fg-muted)] mt-2"><strong class="text-[var(--sys-fg)]">Hinweis zur Datenschutzbeauftragten-Bestellung:</strong> Gemäß § 38 BDSG ist für dieses Projekt keine Datenschutzbeauftragte oder kein Datenschutzbeauftragter bestellt, da die Voraussetzungen (mehr als 20 mit Datenverarbeitung beschäftigte Personen) nicht vorliegen. Anfragen zum Datenschutz richten Sie bitte direkt an den Verantwortlichen: <a href="mailto:info@uxprojects-jok.com" class="text-[var(--sys-violet)] hover:underline underline-offset-2">info@uxprojects-jok.com</a>.</p>
+      <p class="text-base text-[var(--sys-fg-muted)] mt-2"><strong class="text-[var(--sys-fg)]">Hinweis zur Datenschutzbeauftragten-Bestellung:</strong> Gemäß § 38 BDSG ist für dieses Projekt keine Datenschutzbeauftragte oder kein Datenschutzbeauftragter bestellt, da die Voraussetzungen (mehr als 20 mit Datenverarbeitung beschäftigte Personen) nicht vorliegen. Anfragen zum Datenschutz richten Sie bitte direkt an den Verantwortlichen: <a href="mailto:[ihre@email.com]" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[ihre@email.com]</a>.</p>
     </section>
 
     <section>

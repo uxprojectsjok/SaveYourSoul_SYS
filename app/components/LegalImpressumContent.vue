@@ -20,7 +20,7 @@
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Kontakt</h2>
       <div class="text-base leading-relaxed space-y-1">
-        <p>E-Mail: <a href="mailto:info@uxprojects-jok.com" class="text-[var(--sys-violet)] hover:underline underline-offset-2">info@uxprojects-jok.com</a></p>
+        <p>E-Mail: <a href="mailto:[ihre@email.com]" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[ihre@email.com]</a></p>
         <p class="text-xs text-[var(--sys-fg-dim)] mt-1">Anfragen beantworte ich in der Regel innerhalb von 48 Stunden.</p>
       </div>
     </section>
@@ -38,8 +38,8 @@
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Domain</h2>
       <div class="text-base leading-relaxed space-y-0.5">
-        <p><a href="https://sys.uxprojects-jok.com" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">https://sys.uxprojects-jok.com</a> <span class="text-[var(--sys-fg-dim)] text-sm">— SaveYourSoul App</span></p>
-        <p><a href="https://uxprojects-jok.com" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">https://uxprojects-jok.com</a> <span class="text-[var(--sys-fg-dim)] text-sm">— UX-Projects</span></p>
+        <p><a href="[https://ihre-domain.com]" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[https://ihre-domain.com]</a> <span class="text-[var(--sys-fg-dim)] text-sm">— SaveYourSoul App</span></p>
+        <p><a href="[https://ihre-domain.com]" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[https://ihre-domain.com]</a> <span class="text-[var(--sys-fg-dim)] text-sm">— UX-Projects</span></p>
       </div>
     </section>
 

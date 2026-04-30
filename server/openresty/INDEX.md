@@ -76,10 +76,10 @@ Alle Dateien dieses Verzeichnisses sind die **Quell-Kopie** der Live-Lua-Scripts
 
 | Datei | Beschreibung |
 |---|---|
-| `sys.uxprojects-jok.com.nginx` | Aktive vhost-Konfiguration (Live-Stand) |
+| `your-domain.conf` | Aktive vhost-Konfiguration (Live-Stand) |
 | `vhost.conf.template` | Template für neue vhost-Setups |
 | `vhost_backup` | Älterer vhost-Stand als Referenz |
-| `old_vps_sys.uxprojects-jok.com` | Konfiguration der vorherigen VPS-Instanz |
+| `old_vps_your-domain` | Konfiguration der vorherigen VPS-Instanz |
 
 ---
 
