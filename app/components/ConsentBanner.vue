@@ -123,8 +123,8 @@ function loadPlausible() {
   const inject = () => {
     const script = document.createElement("script");
     script.async = true;
-    script.setAttribute("data-domain", "YOUR_DOMAIN");
-    script.src = "https://analytics.YOUR_DOMAIN/js/script.js";
+    script.setAttribute("data-domain", "uxprojects-jok.com");
+    script.src = "https://analytics.uxprojects-jok.com/js/script.js";
     script.id = "plausible-script";
     script.onerror = () => { script.remove(); };
     document.head.appendChild(script);
@@ -145,10 +145,10 @@ function loadPlausible() {
   --paper-2: #1a1726;
   --rule: rgba(226,220,240,0.10);
   --rule-2: rgba(226,220,240,0.20);
-  --fg: #ece7f5;
-  --fg-2: rgba(236,231,245,0.72);
-  --fg-3: rgba(236,231,245,0.48);
-  --fg-4: rgba(236,231,245,0.30);
+  --fg: #ffffff;
+  --fg-2: rgba(255,255,255,0.85);
+  --fg-3: rgba(255,255,255,0.65);
+  --fg-4: rgba(255,255,255,0.45);
   --accent: #8b5cf6;
   --serif: 'Noto Serif', Georgia, serif;
   --sans: 'Inter', system-ui, sans-serif;
@@ -190,7 +190,7 @@ function loadPlausible() {
 
 .cb-kicker {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--fg-4);
@@ -239,7 +239,7 @@ function loadPlausible() {
 
 .cb-btn {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   min-height: 40px;

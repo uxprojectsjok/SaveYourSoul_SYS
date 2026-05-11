@@ -1,158 +1,5 @@
 <template>
   <ClientOnly>
-    <!-- ═══════════════════════════════════════════════════════════════
-         SYS · index.vue — Blockchain-violet editorial redesign
-         Integrated logo + background image, responsive desktop→mobile.
-         ═══════════════════════════════════════════════════════════════ -->
-
-    <!-- ─────────────── SOUL AKTIV ─ Dashboard ─────────────── -->
-    <template v-if="hasSoul">
-      <div class="sys-page">
-        <header class="sys-dash-head">
-          <div class="lockup">
-            <span class="mark">SYS<span class="dot">.</span></span>
-          </div>
-          <div class="id">
-            <span class="live"></span>
-            #{{ soulMeta?.name || '------' }} · Soul aktiv · {{ shortId }}
-          </div>
-          <button class="logout" @click="confirmReset" aria-label="Ausloggen">
-            Ausloggen <span class="arr">↗</span>
-          </button>
-        </header>
-
-        <div class="sys-dash-body">
-          <aside class="col-left">
-            <div class="profile">
-              <label class="avatar" title="Profilbild ändern">
-                <img v-if="hasProfile" :src="profileUrl" alt="Profilbild" />
-                <span v-else>{{ initial }}</span>
-                <input type="file" accept="image/*" hidden @change="handleProfileUpload" />
-              </label>
-              <div>
-                <div class="kicker">Soul · {{ soulMeta?.version || '01' }}</div>
-                <h1 class="name">{{ soulMeta?.name || 'Seele' }}<em>.</em></h1>
-                <code class="soul-id">{{ soulMeta?.id || '—' }}</code>
-              </div>
-            </div>
-
-            <button class="cta" @click="$router.push('/session')">
-              <span>
-                <span class="sub">Primäre Aktion</span>
-                <span class="lbl">Entwicklung starten</span>
-              </span>
-              <span class="arr">→</span>
-            </button>
-
-            <dl class="metrics">
-              <div class="m">
-                <dt>Soul-Datei</dt>
-                <dd class="mono">sys.md</dd>
-                <span class="status ok"><i></i>Aktiv</span>
-              </div>
-              <div class="m">
-                <dt>Erstellt</dt>
-                <dd>{{ fmtDate(soulMeta?.created) }}</dd>
-                <span class="status"></span>
-              </div>
-              <div class="m">
-                <dt>Letzte Session</dt>
-                <dd>{{ fmtDate(soulMeta?.lastSession) }}</dd>
-                <span class="status ok"><i></i>Synced</span>
-              </div>
-              <div class="m">
-                <dt>Cert</dt>
-                <dd class="mono sm">{{ shortCert }}</dd>
-                <span class="status ok"><i></i>Signiert</span>
-              </div>
-              <div class="m">
-                <dt>Chain</dt>
-                <dd><b>{{ chainCount }}</b> Sessions</dd>
-                <span class="status" :class="hasAnchor ? 'ok' : 'off'"><i></i>{{ hasAnchor ? 'Verankert' : 'Kein Anker' }}</span>
-              </div>
-              <div class="m">
-                <dt>Vault</dt>
-                <dd>{{ vaultConnected ? 'Lokal verbunden' : 'Nicht verbunden' }}</dd>
-                <span class="status" :class="vaultConnected ? 'ok' : 'off'"><i></i>{{ vaultConnected ? 'Bereit' : 'Offline' }}</span>
-              </div>
-            </dl>
-
-            <!-- ── Earnings-Banner (sichtbar wenn amortization aktiv) ── -->
-            <div v-if="earnings.total_requests > 0" class="earnings-banner">
-              <div class="eb-left">
-                <span class="eb-icon">⬡</span>
-                <div class="eb-text">
-                  <span class="eb-pol">{{ earnings.total_pol }} POL</span>
-                  <span class="eb-label">von KI-Agenten verdient</span>
-                </div>
-              </div>
-              <div class="eb-right">
-                <span class="eb-count">{{ earnings.total_requests }}</span>
-                <span class="eb-sub">Zugriffe</span>
-              </div>
-            </div>
-
-            <nav class="actions">
-              <button class="act" @click="setupOpen = true">
-                <span><span class="lbl">Soul einrichten</span><span class="sub">Wizard · Vault · Verschlüsselung</span></span>
-                <span class="ar">→</span>
-              </button>
-              <button class="act" @click="filesOpen = true">
-                <span><span class="lbl">Dateien verwalten</span><span class="sub">Audio · Video · Bilder · Kontext</span></span>
-                <span class="ar">→</span>
-              </button>
-              <button class="act" @click="encryptOpen = true">
-                <span><span class="lbl">Soul exportieren</span><span class="sub">.soul · AES-GCM · 12 Wörter</span></span>
-                <span class="ar">→</span>
-              </button>
-              <button class="act" @click="anchorOpen = true">
-                <span><span class="lbl">Polygon verankern</span><span class="sub">SHA-256 · Zeitstempel · irreversibel</span></span>
-                <span class="ar">→</span>
-              </button>
-              <button class="act" @click="marketplaceOpen = true">
-                <span><span class="lbl">Agent Marketplace</span><span class="sub">IPFS-Registrierung · Amortisierung · POL</span></span>
-                <span class="ar">→</span>
-              </button>
-            </nav>
-          </aside>
-
-          <section class="col-right">
-            <div class="rt-head">
-              <h3>Chronik<em>.</em></h3>
-              <div class="meta">Session-Log · {{ journal.length }} Einträge</div>
-            </div>
-
-            <article v-for="n in journal" :key="n.id" class="note">
-              <div class="when">{{ n.when[0] }}</div>
-              <p class="note-body">{{ n.body }}</p>
-              <span class="tag">{{ n.tag }}</span>
-            </article>
-
-            <div class="maturity">
-              <div>
-                <h5>Soul-Reife · <em>{{ maturityLevel }}</em></h5>
-                <div class="bar"><div class="bar-fill" :style="{ width: maturity + '%' }"></div></div>
-                <div class="ticks"><span>Genesis</span><span>Aufbau</span><span>Etabliert</span><span>Premium</span></div>
-              </div>
-              <div class="val">{{ maturity }}<span>%</span></div>
-            </div>
-          </section>
-        </div>
-        <footer class="dash-foot">
-          <span class="dash-copy">© 2026 · UX-Projects Jan-Oliver Karo</span>
-          <nav class="dash-links">
-            <NuxtLink to="/datenschutz">Datenschutz</NuxtLink>
-            <NuxtLink to="/impressum">Impressum</NuxtLink>
-            <NuxtLink to="/lizenz">Lizenz</NuxtLink>
-            <NuxtLink to="/dev-docs">Dev-Docs</NuxtLink>
-            <NuxtLink to="/api-docs">API-Docs</NuxtLink>
-          </nav>
-        </footer>
-      </div>
-    </template>
-
-    <!-- ─────────────── NO SOUL ─ Landing ─────────────── -->
-    <template v-else>
       <div class="sys-page landing">
 
         <nav class="l-nav">
@@ -160,7 +7,7 @@
             <span class="mark">SYS<span class="dot">.</span></span>
             <span class="tag">Save Your Soul · v1.0β</span>
           </div>
-          <div class="center"><span class="notice-text">Geschlossene Anwendung von UX-Projects Jan-Oliver Karo. Kein öffentlicher Betrieb. Testphase unter Realbedingungen für eingeladene oder interne Nutzerinnen oder Nutzer.</span></div>
+          <div class="center"><span class="notice-text">Jan-Oliver Karo · UX-Projects · Marburg</span></div>
           <div class="actions">
             <button v-if="config.public.allowCreateSoul" class="btn ghost" @click="createSoulOpen = true">Create Soul</button>
             <button v-if="config.public.allowLogin" class="btn primary" @click="loginOpen = true">Login <span class="arr">→</span></button>
@@ -170,11 +17,12 @@
         <div class="ticker" aria-hidden="true">
           <div class="track">
             <span v-for="i in 2" :key="i">
-              <em>◆</em> Portable identity layer for AI
-              <em>◆</em> AES-256 local-first
-              <em>◆</em> MCP protocol native
-              <em>◆</em> Polygon anchored
-              <em>◆</em> sys.md — your file, your rules
+              <em>◆</em> Deine KI-Identität, komplett unter deiner Kontrolle
+              <em>◆</em> Lokal gespeichert · AES-256 verschlüsselt
+              <em>◆</em> KI-Agenten verbinden sich direkt per MCP
+              <em>◆</em> Peer-to-Peer · Nodes vernetzen sich untereinander
+              <em>◆</em> Blockchain-verankert · on-chain verifiziert
+              <em>◆</em> sys.md — deine Datei, deine Regeln
             </span>
           </div>
         </div>
@@ -186,8 +34,8 @@
           <div class="hero-grid">
             <h1 class="display">Save <em>Your</em><br>Soul<span class="amp">.</span></h1>
             <aside class="side">
-              <div class="issue">Protokoll · nicht Produkt · nicht Plattform</div>
-              <p>Deine KI kennt dich. <b>KI-Agenten finden dich — und zahlen dafür.</b> Kryptographisch signiert, lokal gespeichert, on-chain verankert.</p>
+              <div class="issue">Dein Node · dein Server · deine Daten</div>
+              <p>Deine KI kennt dich. <b>Andere Nodes finden dich — Agenten zahlen für Zugang.</b> Kryptographisch signiert, lokal gespeichert, dezentral vernetzt.</p>
               <p>Kein Account. Kein Plattformzwang. Deine Soul gehört dir — und arbeitet für dich.</p>
               <div class="cta-row">
                 <button v-if="config.public.allowCreateSoul" class="btn primary" @click="createSoulOpen = true">Create Soul <span class="arr">→</span></button>
@@ -197,7 +45,7 @@
           </div>
           <div class="hero-meta">
             <span><b>01</b> Portable Identitätsdatei</span>
-            <span><b>02</b> KI-Agenten zahlen für Zugang</span>
+            <span><b>02</b> Peer-to-Peer vernetzt</span>
             <span><b>03</b> Lokal · verschlüsselt · on-chain</span>
             <span><b>04</b> MCP · Polygon · IPFS</span>
           </div>
@@ -216,16 +64,16 @@
             <h2>In drei Schritten<br><em>zur lebendigen Soul.</em></h2>
           </header>
           <ol class="steps">
-            <li><div class="big"><em>01</em></div><div class="k">Schritt 01 · Soul</div><h3>Soul erstellen</h3><p>Einloggen oder auf Einladung eine neue Soul anlegen. Dein digitales Profil ist sofort bereit.</p></li>
-            <li><div class="big"><em>02</em></div><div class="k">Schritt 02 · MCP</div><h3>MCP verbinden</h3><p>MCP-Endpunkt in deinem KI-Client eintragen — OAuth-Login erscheint automatisch.</p><code>&lt;dein-server&gt;/mcp</code></li>
-            <li><div class="big"><em>03</em></div><div class="k">Schritt 03 · Guide</div><h3>/soul_guide aktivieren</h3><p>Prompt einmal aufrufen — deine KI liest die Soul und schreibt nach jedem bedeutsamen Gespräch eigenständig Einträge.</p></li>
+            <li><div class="big"><em>01</em></div><div class="k">Schritt 01 · Einrichtung</div><h3>Eigenen Node starten</h3><p>SaveYourSoul mit dem geführten Einrichtungsassistenten auf eigenem Server in Betrieb nehmen.</p></li>
+            <li><div class="big"><em>02</em></div><div class="k">Schritt 02 · MCP</div><h3>KI-Client verbinden</h3><p>Verbindungsadresse in deinem KI-Client eintragen — die Anmeldung erscheint automatisch.</p></li>
+            <li><div class="big"><em>03</em></div><div class="k">Schritt 03 · Guide</div><h3>Soul Guide starten</h3><p>Einmal im KI-Chat aufrufen — deine KI liest die Soul und schreibt nach bedeutsamen Gesprächen Einträge.</p></li>
           </ol>
         </section>
 
         <section class="sec no-pad-bottom">
           <header class="sec-head">
-            <span class="n">Vier Bausteine</span>
-            <h2>Stimme. Gesicht.<br><em>Bewegung. Gedanken.</em></h2>
+            <span class="n">Fünf Bausteine</span>
+            <h2>Identität. Vault.<br><em>KI. Netzwerk. Markt.</em></h2>
           </header>
           <div class="feat">
             <article>
@@ -233,35 +81,35 @@
               <div class="k">I · Soul Protocol</div>
               <h3>Identität<em>,</em> als Datei.</h3>
               <p class="lede">Eine kryptographisch signierte Identitätsdatei, die deine Persönlichkeit strukturiert erfasst und durch jede Session weiterentwickelt wird.</p>
-              <ul><li>HMAC-SHA256 Signatur</li><li>sys.md Open Format</li><li>Soul Kalender · Vault-Sync</li><li>Wächst mit jeder Session</li><li>Blockchain-Anker (optional)</li></ul>
+              <ul><li>Kryptographische Signatur</li><li>Offenes sys.md-Format</li><li>Soul-Kalender · Vault-Sync</li><li>Wächst mit jeder Session</li><li>Blockchain-Anker (optional)</li></ul>
             </article>
             <article>
               <div class="feat-vis" aria-hidden="true"><img src="/ecosystem/Vault.webp" alt="" /></div>
               <div class="k">II · Memory Vault</div>
               <h3>Vault<em>,</em> als Tresor.</h3>
               <p class="lede">Dein lokaler, verschlüsselter Ordner für alles, was dich ausmacht — Stimme, Gesicht, Bewegung, Bilder, Texte. Lokal auf deinem Gerät.</p>
-              <ul><li>Stimme, Gesicht &amp; Bewegung</li><li>AES-256-GCM · Passkey (WebAuthn PRF)</li><li>12-Wort BIP39 Recovery</li><li>Vault Explorer · Bulk-Upload</li><li>Geräteübergreifender Import</li></ul>
+              <ul><li>Stimme, Gesicht &amp; Bewegung</li><li>AES-256 Verschlüsselung</li><li>12-Wort-Wiederherstellungsschlüssel</li><li>Datei-Verwaltung</li><li>Geräteübergreifender Import</li></ul>
             </article>
             <article>
               <div class="feat-vis" aria-hidden="true"><img src="/ecosystem/phase4-robot.webp" alt="" /></div>
               <div class="k">III · AI Interface</div>
               <h3>KI<em>,</em> die dich kennt.</h3>
-              <p class="lede">Sprich mit einer KI, die deine Soul kennt. Gedanken werden analysiert, die Soul automatisch angereichert — dein Profil wächst mit.</p>
-              <ul><li>Soul als Kontext für KI</li><li>Streaming-Antworten (SSE)</li><li>Automatische Soul-Anreicherung</li><li>Vision Pipeline · Kamera → Bild/Video</li><li>Entwicklungs-Analyse &amp; Wachstum</li></ul>
+              <p class="lede">Sprich mit einer KI, die deine Soul kennt. Die Soul wird automatisch angereichert — dein Profil wächst mit.</p>
+              <ul><li>Soul als Kontext für KI</li><li>Echtzeit-Streaming-Antworten</li><li>Automatische Soul-Anreicherung</li><li>Kamera-Analyse · Bild &amp; Video</li></ul>
             </article>
             <article>
               <div class="feat-vis" aria-hidden="true"><img src="/ecosystem/phase3-api.webp" alt="" /></div>
-              <div class="k">IV · Soul API</div>
-              <h3>Zugriff<em>,</em> unter Kontrolle.</h3>
-              <p class="lede">Gib externen Diensten kontrollierten Zugriff auf deine Soul-Daten. Stimme, Gesicht, Kontext — du bestimmst, was freigegeben wird.</p>
-              <ul><li>Webhook-Token Authentifizierung</li><li>6 granulare Berechtigungen</li><li>Service-Tokens für Drittdienste</li><li>Soul Grants · Peer-to-Peer</li><li>Browser Extension · Chrome MV3</li></ul>
+              <div class="k">IV · Soul Network</div>
+              <h3>Netzwerk<em>,</em> für Nodes.</h3>
+              <p class="lede">Verbinde deinen Node mit anderen. Peers teilen Kontext, Kalender und Vault-Inhalte — direkt, kryptographisch gesichert, ohne Zwischendienst.</p>
+              <ul><li>Peer-to-Peer Verbindungen</li><li>Kontext &amp; Vault zwischen Nodes</li><li>Kalender-Sync zwischen Peers</li><li>Mehrstufige Zugangskontrolle</li><li>Browser-Erweiterung für Chrome</li></ul>
             </article>
             <article>
               <div class="feat-vis" aria-hidden="true"><img src="/ecosystem/agent_marketplace.webp" alt="" /></div>
               <div class="k">V · Agent Marketplace</div>
               <h3>KI-Agenten<em>,</em> finden dich.</h3>
               <p class="lede">Registriere deine Soul im dezentralen IPFS-Verzeichnis. Externe KI-Agenten entdecken dich, zahlen in POL und erhalten kontrollierten MCP-Zugang.</p>
-              <ul><li>IPFS-Registrierung via Pinata (dezentral)</li><li>POL-Amortisierung pro Sitzung</li><li>Polygon-verifizierte Wallet-Identität</li><li>Replay-geschützte TX-Validierung</li><li>Einnahmen-Ledger · In-App Benachrichtigung</li></ul>
+              <ul><li>Dezentrale Verzeichnis-Registrierung</li><li>Einnahmen pro KI-Zugriff</li><li>Blockchain-verifizierte Identität</li><li>On-chain Zahlungsvalidierung</li><li>Einnahmen-Übersicht</li></ul>
             </article>
           </div>
         </section>
@@ -274,13 +122,13 @@
           </header>
 
           <div class="mv-intro">
-            <p>KI-Agenten werden zur wichtigsten Nachfrageseite für menschliches Kontextwissen. ERC-8004 hat dafür den Agenten-Trust-Stack gebaut: Identität, Reputation, Validierung — für die Maschine. SaveYourSoul ist die zwangsläufige Gegenseite: dieselbe Infrastruktur, dieselben Primitives, aber für den Menschen. Dezentral, kryptographisch gesichert, ökonomisch selbsttragend. Du bestimmst den Preis, die Laufzeit und was sichtbar ist — jeder Zugriff wird on-chain abgerechnet.</p>
+            <p>KI-Agenten brauchen menschlichen Kontext — und zahlen dafür. SaveYourSoul macht deinen Node zum wirtschaftlichen Teilnehmer im KI-Ökosystem: dezentral registriert, kryptographisch gesichert, ökonomisch selbsttragend. Du bestimmst den Preis, die Laufzeit und was sichtbar ist — jeder Zugriff wird on-chain abgerechnet.</p>
           </div>
           <ol class="steps">
-            <li><div class="big"><em>01</em></div><div class="k">Schritt 01 · Discover</div><h3>Discover</h3><p>Ein KI-Agent ruft <code>soul_discover(q="Thema")</code> auf. Das dezentrale IPFS-Verzeichnis liefert: Name, MCP-Endpunkt, Preis pro Sitzung, Wallet-Adresse, verfügbare Tools.</p></li>
-            <li><div class="big"><em>02</em></div><div class="k">Schritt 02 · Risikohinweis</div><h3>Risikohinweis</h3><p>Vor jeder Zahlung zeigt das MCP-Protokoll einen expliziten Warnhinweis: Blockchain-Transaktionen sind endgültig. Kein Rückgabe-Mechanismus. Erst nach Bestätigung (<code>user_confirmed: true</code>) geht die TX durch.</p></li>
-            <li><div class="big"><em>03</em></div><div class="k">Schritt 03 · Pay</div><h3>Pay</h3><p>POL-Zahlung an deine Wallet-Adresse auf Polygon Mainnet. Der Server verifiziert TX on-chain: Empfänger, Betrag ≥ Sollbetrag, mind. 1 Bestätigung, Replay-Schutz (48h). Bei Erfolg: <code>access_token</code>.</p></li>
-            <li><div class="big"><em>04</em></div><div class="k">Schritt 04 · Access</div><h3>Access</h3><p>Mit dem <code>access_token</code> ruft der Agent <code>soul_read()</code>, Kontext-Dateien und weitere freigegebene Tools auf — für die Laufzeit die du festlegst (max. 90 Tage). Kein permanenter Zugang.</p></li>
+            <li><div class="big"><em>01</em></div><div class="k">Schritt 01 · Entdecken</div><h3>Entdecken</h3><p>KI-Agenten finden deinen Node über das dezentrale IPFS-Verzeichnis — Name, Adresse und Zugangsmodus sind öffentlich sichtbar.</p></li>
+            <li><div class="big"><em>02</em></div><div class="k">Schritt 02 · Prüfen</div><h3>Prüfen</h3><p>Der Agent ruft das öffentliche Profil ab: freigegebene Inhalte, Zugangsmodus und Preis — bevor eine Verbindung entsteht.</p></li>
+            <li><div class="big"><em>03</em></div><div class="k">Schritt 03 · Zahlung</div><h3>Zahlung</h3><p>POL-Zahlung direkt an deine Wallet auf Polygon. Der Node verifiziert die Transaktion on-chain, bevor Zugang gewährt wird.</p></li>
+            <li><div class="big"><em>04</em></div><div class="k">Schritt 04 · Zugang</div><h3>Zugang</h3><p>Der Agent erhält zeitlich begrenzten Zugang zu den von dir freigegebenen Inhalten. Laufzeit und Umfang bestimmst du.</p></li>
           </ol>
 
         </section>
@@ -295,8 +143,8 @@
 
         <section class="sec">
           <header class="sec-head">
-            <span class="n">Setup · FAQ</span>
-            <h2>Die wichtigsten<br><em>Schritte.</em></h2>
+            <span class="n">Häufige Fragen</span>
+            <h2>Häufig<br><em>gefragt.</em></h2>
           </header>
           <div class="faq-list">
             <div
@@ -335,9 +183,9 @@
             <h2>Wohin die<br><em>Reise führt.</em></h2>
           </header>
           <ul class="timeline">
-            <li class="active"><span class="phase">Alpha · Done ✓</span><span class="date">2026</span><h4>Core · Deployed</h4><div class="chips"><span>Soul Protocol</span><span>Memory Vault</span><span>AES-256 · Passkey</span><span>MCP Server</span><span>Soul API</span><span>Polygon Anchor</span><span>Browser Extension</span><span>PWA Mobile</span></div></li>
-            <li class="active"><span class="phase">Beta · Live</span><span class="date">2026</span><h4>Erweiterte Identität</h4><div class="chips"><span>Soul Network</span><span>Mehrere Soul-Versionen</span><span>Erweiterte API-Docs</span><span>Offenes Protokoll</span><span>Agent Marketplace</span><span>POL Amortisierung</span><span>IPFS-Registrierung (Pinata)</span><span>Key-Management Admin-UI</span><span>Cert-Rotation · Auto-Renewal</span><span>API-Key Hierarchie (Soul → Master → Env)</span></div></li>
-            <li><span class="phase">Vision</span><span class="date">Langfristig</span><h4>Offenes Ökosystem · ERC-8004</h4><div class="chips"><span>Soul als ERC-8004 Teilnehmer</span><span>Agenten-Identität als Zugangsbedingung</span><span>Bidirektionale Reputation on-chain</span><span>Trustless Token-Ausgabe</span><span>Interoperable Identitäten</span><span>Robotik-Integration</span><span>Community-Governance</span></div></li>
+            <li class="active"><span class="phase">Phase 1 · Abgeschlossen ✓</span><span class="date">2026</span><h4>Kernfunktionen · Live</h4><div class="chips"><span>Soul Protocol</span><span>Memory Vault</span><span>Verschlüsselung · Biometrischer Zugang</span><span>MCP Server</span><span>Soul Network</span><span>Polygon-Anker</span><span>Browser-Erweiterung</span><span>PWA Mobile</span><span>KI-Bildgenerierung · WaveSpeed AI</span></div></li>
+            <li class="active"><span class="phase">Beta · Live</span><span class="date">2026</span><h4>Erweiterte Identität</h4><div class="chips"><span>Agent Marketplace</span><span>Einnahmen per KI-Zugriff</span><span>Dezentrale Verzeichnis-Registrierung</span><span>Multi-Hoster Modus</span><span>Mehrere Soul-Versionen</span><span>Schlüsselverwaltung</span><span>Automatische Zertifikatserneuerung</span><span>Mehrstufige Zugangsverwaltung</span><span>Offenes Protokoll</span></div></li>
+            <li><span class="phase">Vision</span><span class="date">Langfristig</span><h4>Offenes Ökosystem</h4><div class="chips"><span>Interoperable Identitäten</span><span>Agenten-Identität als Zugangsbedingung</span><span>Bidirektionale Reputation on-chain</span><span>Automatische Zugangsvergabe</span><span>Geräteübergreifende Identitäten</span><span>Robotik-Integration</span><span>Community-Governance</span></div></li>
           </ul>
         </section>
 
@@ -348,382 +196,60 @@
             </div>
             <p>SaveYourSoul ist ein Privacy-first-Tool für digitale Identität. Servergespeicherte Inhalte werden standardmäßig verschlüsselt. Kein Tracking, keine Werbenetzwerke, keine zentralen Nutzerprofile.</p>
           </div>
-          <div><h5>Protokoll</h5><ul><li><NuxtLink to="/api-docs">API Docs</NuxtLink></li><li><NuxtLink to="/dev-docs">Dev Docs</NuxtLink></li><li><a href="https://github.com/uxprojectsjok/SaveYourSoul_SYS" target="_blank" rel="noopener">GitHub</a></li></ul></div>
+          <div><h5>Protokoll</h5><ul><li><NuxtLink to="/api-docs">API Docs</NuxtLink></li><li><NuxtLink to="/dev-docs">Dev Docs</NuxtLink></li><li><a href="https://github.com/uxprojectsjok/personal-sys-vps" target="_blank" rel="noopener">GitHub</a></li></ul></div>
           <div><h5>Rechtliches</h5><ul><li><NuxtLink to="/datenschutz">Datenschutz</NuxtLink></li><li><NuxtLink to="/impressum">Impressum</NuxtLink></li><li><NuxtLink to="/lizenz">Lizenz</NuxtLink></li></ul></div>
         </footer>
+        <div class="disclaimer">
+          <p><strong>Haftungsausschluss:</strong> Diese Software wird ohne jegliche Gewährleistung bereitgestellt — weder ausdrücklich noch stillschweigend. Der Autor übernimmt keine Haftung für Datenverlust, Systemausfälle, fehlerhafte KI-Ausgaben oder sonstige direkte oder indirekte Schäden, die durch die Nutzung entstehen. Jede/r Betreiber/in ist selbst verantwortlich für den Betrieb des eigenen Nodes, die Sicherheit der Zugangsdaten und die Einhaltung geltenden Rechts. KI-Ausgaben stellen keine medizinischen, rechtlichen oder finanziellen Beratungen dar. <NuxtLink to="/lizenz">Vollständige Lizenzbedingungen →</NuxtLink></p>
+        </div>
         <div class="foot-rule">
           <span>© 2026 · UX-Projects Jan-Oliver Karo</span>
-          <span>WCAG 2.1 AA</span>
+          <span>Apache 2.0</span>
         </div>
       </div>
-    </template>
 
-    <ConfirmModal />
 
-    <!-- ─── Modals ─────────────────────────────────────────────────── -->
-    <ModalCreateSoul
-      :is-open="createSoulOpen"
-      @cancel="createSoulOpen = false"
-    />
-
-    <!-- ── Login: sys.md upload (primär) ─────────────────────────── -->
-    <Teleport to="body">
-      <Transition name="login-sheet">
-        <div
-          v-if="loginOpen"
-          class="fixed inset-0 z-50 flex flex-col justify-end items-center"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Soul laden"
-          @click.self="loginOpen = false"
-        >
-          <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="loginOpen = false"></div>
-          <div class="login-sheet">
-            <div class="login-handle">
-              <div class="login-bar"></div>
-              <button class="login-close" @click="loginOpen = false" aria-label="Schließen">✕</button>
-            </div>
-            <div class="login-kicker">Soul laden</div>
-            <h2 class="login-title">Mit sys<em>.</em>md einloggen</h2>
-            <p class="login-sub">Lade deine Soul-Datei — lokal gespeichert, verlässt dieses Gerät nicht.</p>
-            <SoulUpload @uploaded="handleLoginUpload" />
-            <div class="login-divider">
-              <span>oder</span>
-            </div>
-            <button class="login-alt" @click="openDecryptFromLogin">
-              <span>Verschlüsselten Vault laden</span>
-              <span class="login-alt-sub">.soul-Bundle · 12 Schlüsselwörter</span>
-              <span class="login-arr">→</span>
-            </button>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
-
-    <!-- ── .soul Bundle (verschlüsselt) ──────────────────────────── -->
-    <SoulDecryptModal
-      :is-open="decryptOpen"
-      @close="decryptOpen = false"
-      @uploaded="decryptOpen = false"
-    />
-
-    <!-- ── Soul einrichten ───────────────────────────────────────── -->
-    <Teleport to="body">
-      <Transition name="sys-modal">
-        <div v-if="setupOpen" class="sys-modal-wrap" role="dialog" aria-modal="true" @click.self="setupOpen = false">
-          <div class="sys-modal-panel">
-            <div class="sys-modal-head">
-              <div>
-                <div class="sys-modal-kicker">Konfiguration</div>
-                <h2 class="sys-modal-title">Soul einrichten<em>.</em></h2>
-              </div>
-              <button class="sys-modal-close" @click="setupOpen = false" aria-label="Schließen"><span aria-hidden="true">×</span></button>
-            </div>
-            <div class="sys-modal-body">
-              <SoulSetupWizard
-                :soul-cert="soulToken"
-                :soul-content="soulContent"
-                :soul-id="soulMeta?.id || ''"
-                :modal="true"
-                @close="setupOpen = false"
-              />
-            </div>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
-
-    <!-- ── Dateien verwalten ──────────────────────────────────────── -->
-    <Teleport to="body">
-      <Transition name="sys-modal">
-        <div v-if="filesOpen" class="sys-modal-wrap" role="dialog" aria-modal="true" @click.self="filesOpen = false">
-          <div class="sys-modal-panel sys-modal-panel--wide">
-            <div class="sys-modal-head">
-              <div>
-                <div class="sys-modal-kicker">Vault</div>
-                <h2 class="sys-modal-title">Dateien verwalten<em>.</em></h2>
-              </div>
-              <button class="sys-modal-close" @click="filesOpen = false" aria-label="Schließen"><span aria-hidden="true">×</span></button>
-            </div>
-            <div class="sys-modal-body">
-              <VaultExplorer
-                :soul-cert="soulToken"
-                :soul-content="soulContent"
-                @encrypt="encryptOpen = true"
-              />
-            </div>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
-
-    <SoulEncryptModal
-      :is-open="encryptOpen"
-      @close="encryptOpen = false"
-    />
-
-    <SoulAnchorModal
-      :is-open="anchorOpen"
-      @close="anchorOpen = false"
-    />
-
-    <Teleport to="body">
-      <AgentMarketplacePanel
-        v-if="marketplaceOpen"
-        :soul-cert="soulToken"
-        @close="marketplaceOpen = false"
-      />
-    </Teleport>
-
-    <ConfirmModal />
-    <Toast :toasts="toasts" @dismiss="dismissToast" />
   </ClientOnly>
 </template>
 
 <script setup>
-import { computed, ref, watch, onUnmounted } from 'vue'
-import { useConfirm } from '~/composables/useConfirm.js'
-import { useSoul } from '~/composables/useSoul.js'
-import { useVault } from '~/composables/useVault.js'
-import { useProfile } from '~/composables/useProfile.js'
-import { computeMaturity } from '#shared/utils/soulMaturity.js'
-import { parseSoul } from '#shared/utils/soulParser.js'
-import ConfirmModal from '~/components/ConfirmModal.vue'
-import Toast from '~/components/ui/Toast.vue'
-import ModalCreateSoul from '~/components/ModalCreateSoul.vue'
-import SoulEncryptModal from '~/components/SoulEncryptModal.vue'
-import SoulAnchorModal from '~/components/SoulAnchorModal.vue'
-import AgentMarketplacePanel from '~/components/AgentMarketplacePanel.vue'
-import SoulDecryptModal from '~/components/SoulDecryptModal.vue'
-import SoulUpload from '~/components/SoulUpload.vue'
-import SoulSetupWizard from '~/components/SoulSetupWizard.vue'
-import VaultExplorer from '~/components/VaultExplorer.vue'
+import { ref } from 'vue'
 
-const config  = useRuntimeConfig()
-const router  = useRouter()
-const { ask: confirmAsk } = useConfirm()
-const { hasSoul, soulContent, soulToken, soulMeta, importFromText, clear: _clear } = useSoul()
-const { isConnected: vaultConnected, disconnectVault } = useVault()
-const { hasProfile, profileUrl, handleUpload: handleProfileUpload } = useProfile()
+const config = useRuntimeConfig()
 
-const earnings          = ref({ total_pol: '0.000000', total_requests: 0 })
-const toasts            = ref([])
-let   _lastReqCount     = 0
-let   _toastIdCounter   = 0
-
-function showToast(opts) {
-  const id = ++_toastIdCounter
-  toasts.value.push({ id, ...opts })
-}
-function dismissToast(id) {
-  toasts.value = toasts.value.filter(t => t.id !== id)
-}
-
-// ── Earnings laden wenn Soul aktiv ────────────────────────────────────────
-async function loadEarnings(retry = true, notify = false) {
-  if (!notify) earnings.value = { total_pol: '0.000000', total_requests: 0 }
-  if (!soulToken.value || soulToken.value === 'anonymous') return
-  try {
-    const base = window.location.origin
-    const r = await fetch(`${base}/api/soul/earnings`, {
-      headers: { 'Authorization': `Bearer ${soulToken.value}` }
-    })
-    if (r.status === 401 && retry) {
-      setTimeout(() => loadEarnings(false), 1500)
-      return
-    }
-    if (!r.ok) return
-    const d = await r.json()
-    const newCount = d.total_requests ?? 0
-    if (notify && newCount > _lastReqCount) {
-      const diff = newCount - _lastReqCount
-      const last = Array.isArray(d.entries) && d.entries.length
-        ? d.entries[d.entries.length - 1]
-        : null
-      const from = last?.from
-        ? last.from.slice(0, 6) + '…' + last.from.slice(-4)
-        : 'Agent'
-      const pol  = last?.pol_amount ?? d.total_pol
-      showToast({
-        variant: 'success',
-        title:   `+${pol} POL erhalten`,
-        message: `${diff === 1 ? 'Zahlung' : diff + ' Zahlungen'} von ${from}`,
-      })
-    }
-    _lastReqCount = newCount
-    earnings.value = d
-  } catch { /* ignore */ }
-}
-
-let _earningsTimer   = null
-let _earningsPoll    = null
-
-watch(soulToken, (v, old) => {
-  if (old && v !== old) disconnectVault()
-  // Sofort laden (kein Polling-Notify beim ersten Laden)
-  clearTimeout(_earningsTimer)
-  _earningsTimer = setTimeout(loadEarnings, 400)
-  // Polling starten / zurücksetzen
-  clearInterval(_earningsPoll)
-  _earningsPoll = null
-  _lastReqCount = 0
-  if (v && v !== 'anonymous') {
-    // Nach initialem Laden: alle 30s auf neue Zahlungen prüfen
-    _earningsPoll = setInterval(() => loadEarnings(false, true), 30_000)
-  }
-}, { immediate: true })
-
-onUnmounted(() => {
-  clearTimeout(_earningsTimer)
-  clearInterval(_earningsPoll)
-})
-
-// ── Landing FAQ ───────────────────────────────────────────────────────────
 const landingFaq = ref([
   {
-    q: 'Was muss ich als erstes einrichten?',
-    a: 'Schritt 1 — API-Key einrichten (VPS-Admin): Im Session-Bereich → "Setup" → Reiter "Mein API-Key" → Anthropic-Key eintragen und testen. Alternativ über "Server-Admin" einen globalen Fallback-Key hinterlegen.\n\nSchritt 2 — Soul erstellen: Einloggen oder eine neue Soul anlegen. Dein Profil (sys.md) wird lokal in deinem Vault gespeichert — nur du hast Zugriff.\n\nSchritt 3 — Soul hochladen: Im Session-Bereich → API-Kontext → Berechtigungen setzen → sys.md auf den Server hochladen. Damit ist die Soul erreichbar.\n\nSchritt 4 — KI verbinden: In Claude Desktop oder claude.ai den Verbindungs-Endpunkt eintragen. Ein Login-Fenster erscheint automatisch.\n\nSchritt 5 — /soul_guide aufrufen: Einmal im KI-Chat eingeben — die KI liest dein Profil und führt sich ab jetzt selbst nach bedeutsamen Gesprächen.',
+    q: 'Was ist SaveYourSoul und für wen ist es gemacht?',
+    a: 'SaveYourSoul ist ein selbst gehostetes Tool für digitale Identität. Du installierst es auf deinem eigenen Server, erstellst eine Soul — eine kryptographisch signierte Profildatei — und verbindest deinen KI-Client direkt damit. Keine Plattform dazwischen, keine Cloud-Abhängigkeit. Deine Daten bleiben auf deinem Server.\n\nGeeignet für alle, die ihrem KI-Assistenten echten persönlichen Kontext geben wollen — und die Kontrolle darüber behalten möchten, was die KI über sie weiß.',
     open: false,
   },
   {
-    q: 'Wie aktiviere ich den Agent Marketplace? (Schritt für Schritt)',
-    a: 'Voraussetzung: Soul läuft bereits auf dem Server (Schritt 1–2 aus "Was muss ich einrichten?" erledigt). Für den Bezahlt-Modus wird zusätzlich eine Krypto-Wallet benötigt.\n\n1. Blockchain-Anker setzen (nur für Bezahlt-Modus): Im Dashboard → "Polygon verankern" → Wallet verbinden → Transaktion bestätigen. Damit wird die Soul als echt verifiziert.\n\n2. IPFS-Pinning-Schlüssel eintragen: Einen JWT-Schlüssel eines IPFS-Pinning-Dienstes deiner Wahl im Dashboard → "Agent Marketplace" → "IPFS-Schlüssel" einfügen → speichern. Kein technisches Wissen nötig.\n\n3. Zugangsmodus wählen: Im selben Panel → "Zugangsmodus" → Frei oder Bezahlt. Frei ist Standard und sofort aktiv. Für Bezahlt: Preis pro Anfrage + Wallet-Adresse eintragen → speichern.\n\n4. Soul veröffentlichen: Panel → "IPFS-Registrierung" → Metadaten prüfen → "Auf IPFS registrieren". Deine Soul ist danach im dezentralen Verzeichnis auffindbar.\n\n5. Prüfen: Im KI-Chat "soul_discover" aufrufen und nach deinem Namen suchen — deine Soul sollte erscheinen.',
+    q: 'Was brauche ich, um meinen eigenen Node zu starten?',
+    a: 'Einen VPS (Ubuntu 24, min. 2 GB RAM), eine Domain und einen Anthropic-API-Schlüssel. Der Einrichtungsassistent (init.sh) hilft bei allem anderen — OpenResty, SSL, Frontend.\n\nNach der Einrichtung: Soul erstellen, KI-Client verbinden, Soul Guide einmal im Chat aufrufen. Ab da wächst dein Profil mit jeder Session.',
     open: false,
   },
   {
-    q: 'Was ist IPFS-Pinning und warum brauche ich das?',
-    a: 'Damit andere KI-Agenten deine Soul finden können, werden deine öffentlichen Kontaktdaten (Name, Server-Adresse, Zugangsmodus) dauerhaft im dezentralen IPFS-Netzwerk gespeichert. Ein IPFS-Pinning-Dienst übernimmt das Speichern ("Pinnen") — du wählst selbst welchen du nutzt.\n\nWichtig: Was einmal auf IPFS liegt, kann nicht gelöscht werden. Nur Daten veröffentlichen die dauerhaft öffentlich sein dürfen.\n\nEinrichten: JWT-Schlüssel eines IPFS-Pinning-Dienstes deiner Wahl im Dashboard → Agent Marketplace → "IPFS-Schlüssel" einfügen → speichern.',
+    q: 'Wie verbinde ich Claude oder einen anderen KI-Client?',
+    a: 'Im Dashboard unter MCP-Verbindung die Adresse deines Nodes kopieren. In Claude Desktop oder claude.ai unter Einstellungen → Integrations → MCP-Server eintragen. Claude erkennt deine Soul beim nächsten Start und liest dein Profil automatisch als Kontext ein.\n\nDas Gleiche funktioniert mit jedem MCP-kompatiblen Client — Cursor, Continue.dev und andere.',
     open: false,
   },
   {
-    q: 'In welcher Reihenfolge muss ich vorgehen?',
-    a: 'Kurzform: IPFS-Schlüssel eintragen → Zugangsmodus wählen → Soul veröffentlichen. Für den Bezahlt-Modus kommt davor noch der Blockchain-Anker.\n\nWarum diese Reihenfolge?\n\nIPFS-Schlüssel zuerst — ohne ihn kann die Soul nicht veröffentlicht werden. Einfach im Panel eintragen, kein Neustart nötig.\n\nZugangsmodus vor Veröffentlichung — der gewählte Modus (Frei oder Bezahlt) wird mit in die öffentlichen Daten geschrieben. Also erst entscheiden, dann veröffentlichen.\n\nBlockchain-Anker nur für Bezahlt-Modus — wer POL verlangen möchte, muss vorher bestätigen dass die Soul einer echten Person gehört. Freier Modus funktioniert ohne diesen Schritt.',
+    q: 'Sind meine Daten wirklich nur auf meinem Server?',
+    a: 'Ja. Der Vault wird AES-256 verschlüsselt, bevor irgendetwas den Browser verlässt. Auf dem Server liegen nur verschlüsselte Blöcke — ohne dein Passwort oder 12-Wort-Mnemonic kann niemand die Inhalte lesen, auch nicht der Serverbetreiber.\n\nDie KI bekommt als Kontext nur das, was du explizit hochlädst. Rohdaten aus dem Vault verlassen deinen Server nicht.',
     open: false,
   },
   {
-    q: 'Wie prüfe ich ob meine Soul im Marketplace sichtbar ist?',
-    a: 'Einfachste Methode: Im KI-Chat "soul_discover" aufrufen und nach deinem Namen suchen. Deine Soul sollte mit Name, Zugangsmodus und Server-Adresse erscheinen.\n\nAlternativ: Den Link der nach der Veröffentlichung angezeigt wird direkt im Browser öffnen — dort siehst du den gespeicherten Datensatz.\n\nHinweis: Nach der Veröffentlichung kann es 30–60 Sekunden dauern bis die Soul im Verzeichnis erscheint.',
+    q: 'Wie funktioniert der Agent Marketplace?',
+    a: 'Du registrierst deine Soul im dezentralen IPFS-Verzeichnis und legst optional einen Preis in POL (Polygon) fest. KI-Agenten, die nach passendem Kontext suchen, finden deinen Node, schicken die Zahlung direkt an deine Wallet und erhalten einen zeitlich begrenzten MCP-Zugang.\n\nAlles läuft automatisch — du siehst Zugriffe und Einnahmen im Dashboard. Du bestimmst den Preis, die Laufzeit und welche Daten freigegeben werden.',
     open: false,
   },
   {
-    q: 'Was passiert wenn ein KI-Agent meine Soul findet und zugreifen will?',
-    a: 'Bei freiem Zugang: Der Agent verbindet sich direkt — kein weiterer Schritt nötig.\n\nBei Bezahlt-Modus läuft alles automatisch im Hintergrund:\n\n1. Der Agent sieht deinen Preis und deine Wallet-Adresse im Verzeichnis.\n2. Er sendet den fälligen Betrag in POL (Polygon-Kryptowährung) an deine Wallet.\n3. Er meldet die Zahlung dem Server — dieser prüft sie on-chain.\n4. Bei erfolgreicher Prüfung erhält der Agent Zugang — die Dauer legst du selbst fest.\n\nDu musst nichts tun — alles läuft automatisch. Deine Einnahmen siehst du im Dashboard unter "Einnahmen".',
+    q: 'Kann ich meinen Node mit Familie oder einem Team teilen?',
+    a: 'Ja — im Multi-Hoster Modus können mehrere Personen eigene Souls auf demselben Server anlegen. Jede Soul ist vollständig isoliert: eigener Vault, eigene Verschlüsselung, eigene Zugangskontrolle.\n\nDer Serverbetreiber sieht keine Inhalte der anderen Souls. Jede Person verwaltet ihren Zugang eigenständig.',
     open: false,
   },
 ])
 
-// ── Modal-State ───────────────────────────────────────────────────────────
-const createSoulOpen    = ref(false)
-const loginOpen         = ref(false)   // einfaches sys.md-Upload-Sheet
-const decryptOpen       = ref(false)   // verschlüsselter .soul-Bundle
-const setupOpen         = ref(false)   // SoulSetupWizard
-const filesOpen         = ref(false)   // VaultExplorer
-const encryptOpen       = ref(false)
-const anchorOpen        = ref(false)
-const marketplaceOpen   = ref(false)   // AgentMarketplacePanel
-
-// ── Computed ──────────────────────────────────────────────────────────────
-const initial      = computed(() => (soulMeta.value?.name || 'S').charAt(0).toUpperCase())
-const shortId      = computed(() => { const id = soulMeta.value?.id || ''; return id ? id.slice(0, 8) + '…' + id.slice(-4) : '—' })
-const shortCert    = computed(() => { const c = soulMeta.value?.cert || ''; return c ? c.slice(0, 8) + '…' + c.slice(-4) : '—' })
-
-// chainCount aus soul_growth_chain Array-Länge
-const chainCount = computed(() => {
-  if (!soulContent.value) return 0
-  const m = soulContent.value.match(/soul_growth_chain:\s*(\[[\s\S]*?\])/m)
-  if (!m) return 0
-  try {
-    const arr = JSON.parse(m[1])
-    return Array.isArray(arr) ? arr.length : 0
-  } catch {
-    // Fallback: Zeilen zählen die mit - beginnen
-    const lines = m[1].split('\n').filter(l => l.trim().startsWith('-'))
-    return lines.length
-  }
-})
-
-// hasAnchor: true wenn soul_chain_anchor nicht null/leer
-const hasAnchor = computed(() => {
-  if (!soulContent.value) return false
-  const m = soulContent.value.match(/soul_chain_anchor:\s*(.+)/)
-  const val = m?.[1]?.trim()
-  return !!val && val !== 'null' && val !== '~' && val !== ''
-})
-
-// Maturity wird live aus dem Soul-Content berechnet — nicht aus Frontmatter-Feld
-const maturityData = computed(() => computeMaturity(soulContent.value))
-const maturity     = computed(() => maturityData.value.score)
-const maturityLevel = computed(() => maturityData.value.level)
-
-function fmtDate(d) {
-  if (!d) return '—'
-  try { return new Date(d).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' }) }
-  catch { return String(d) }
-}
-async function confirmReset() {
-  const ok = await confirmAsk({
-    title: 'Ausloggen',
-    message: 'Soul aus dem Browser entfernen? Deine Datei bleibt erhalten.',
-    confirmText: 'Ausloggen',
-    cancelText: 'Abbrechen',
-    danger: true,
-  })
-  if (ok) _clear?.()
-}
-
-function handleLoginUpload(text) {
-  importFromText(text)
-  loginOpen.value = false
-}
-
-function openDecryptFromLogin() {
-  loginOpen.value = false
-  decryptOpen.value = true
-}
-
-// ── Chronik: letzte 4 Einträge aus Session-Log Section ───────────────────
-const journal = computed(() => {
-  if (!soulContent.value) return []
-  const { sections } = parseSoul(soulContent.value)
-  const raw = (sections['Session-Log (komprimiert)'] || sections['Session-Log'] || '').replace(/\r/g, '')
-  if (!raw.trim()) return []
-
-  // Einträge: Zeilen die mit "- **DATUM**:" beginnen
-  const entries = []
-  const lines = raw.split('\n')
-  let current = null
-  for (const line of lines) {
-    const m = line.match(/^-\s+\*\*([^*:]+):?\*\*:?\s*(.*)/)
-    if (m) {
-      if (current) entries.push(current)
-      current = { dateStr: m[1].trim(), body: m[2].trim() }
-    } else if (current && line.trim() && !line.trim().startsWith('-')) {
-      current.body += ' ' + line.trim()
-    }
-  }
-  if (current) entries.push(current)
-  if (!entries.length) return []
-
-  // Letzten 4, neueste zuerst
-  return entries.slice(0, 4).map((e, i) => {
-    let when = [e.dateStr, '']
-    try {
-      const d = new Date(e.dateStr)
-      if (!isNaN(d)) {
-        const today = new Date()
-        const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1)
-        if (d.toDateString() === today.toDateString()) {
-          when = ['Heute', '']
-        } else if (d.toDateString() === yesterday.toDateString()) {
-          when = ['Gestern', '']
-        } else {
-          when = [d.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' }), '']
-        }
-      }
-    } catch {}
-    return { id: i, when, body: e.body, tag: 'Log' }
-  })
-})
 </script>
 
 <style scoped>
@@ -731,7 +257,7 @@ const journal = computed(() => {
 .sys-page {
   --ink:#08070c; --paper:#12101a; --paper-2:#1a1726; --paper-3:#0d0b14;
   --rule:rgba(226,220,240,0.10); --rule-2:rgba(226,220,240,0.20);
-  --fg:#ece7f5; --fg-2:rgba(236,231,245,0.72); --fg-3:rgba(236,231,245,0.48); --fg-4:rgba(236,231,245,0.30);
+  --fg:#ffffff; --fg-2:rgba(255,255,255,0.85); --fg-3:rgba(255,255,255,0.65); --fg-4:rgba(255,255,255,0.45);
   --accent:#8b5cf6; --accent-2:rgba(139,92,246,0.14); --accent-bright:#a78bfa; --accent-deep:#6d28d9; --on-accent:#0a0810;
   --serif:'Noto Serif', Georgia, serif;
   --sans:'Inter', system-ui, -apple-system, sans-serif;
@@ -739,7 +265,7 @@ const journal = computed(() => {
   background: var(--paper); color: var(--fg); font-family: var(--sans);
   min-height: 100vh; min-height: 100dvh;
 }
-.kicker { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.24em; color: var(--fg-3); }
+.kicker { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.24em; color: var(--fg-3); }
 .arr { font-family: var(--serif); }
 .live { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); display: inline-block; }
 
@@ -747,125 +273,8 @@ const journal = computed(() => {
 .lockup .logo { width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 0 12px rgba(167,139,250,0.35)); }
 .lockup .mark { font-family: var(--serif); font-weight: 700; font-size: 22px; letter-spacing: -0.02em; }
 .lockup .mark .dot { color: var(--accent); }
-.lockup .tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--fg-3); border-left: 1px solid var(--rule-2); padding-left: 12px; }
+.lockup .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--fg-3); border-left: 1px solid var(--rule-2); padding-left: 12px; }
 @media (max-width: 560px) { .lockup .tag { display: none; } }
-
-/* ────── DASHBOARD ────── */
-.sys-dash-head { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; padding: 16px clamp(16px,3vw,32px); border-bottom: 1px solid var(--rule); background: var(--paper-3); }
-.sys-dash-head .id { justify-self: center; display: inline-flex; align-items: center; gap: 12px; padding: 8px 20px; border-left: 1px solid var(--rule-2); border-right: 1px solid var(--rule-2); font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3); }
-.sys-dash-head .logout { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3); background: transparent; border: 0; padding: 10px 14px; cursor: pointer; }
-.sys-dash-head .logout:hover { color: var(--accent); }
-@media (max-width: 800px) {
-  .sys-dash-head { grid-template-columns: auto auto; grid-template-rows: auto auto; }
-  .sys-dash-head .id { grid-column: 1/-1; grid-row: 2; justify-self: start; padding-left: 0; border-left: 0; font-size: 10px; }
-}
-
-.sys-dash-body { display: grid; grid-template-columns: 440px 1fr; gap: 0; }
-@media (max-width: 900px) { .sys-dash-body { grid-template-columns: 1fr; } }
-.col-left { padding: clamp(32px,5vw,56px) clamp(20px,4vw,44px); border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 32px; }
-.col-right { padding: clamp(32px,5vw,56px) clamp(20px,4vw,44px); display: flex; flex-direction: column; gap: 18px; }
-@media (max-width: 900px) { .col-left { border-right: 0; border-bottom: 1px solid var(--rule); } }
-
-.profile { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
-.profile .avatar { width: 88px; height: 88px; flex: none; border: 1px solid var(--rule-2); background:
-    radial-gradient(circle at 30% 30%, rgba(139,92,246,0.28), transparent 60%),
-    linear-gradient(135deg, #1d1a28 0%, #12101a 100%);
-  display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 36px; color: var(--fg); cursor: pointer; overflow: hidden; position: relative; }
-.profile .avatar::after { content: ""; position: absolute; inset: 0; background: url('~/assets/logo.png') center / 70% no-repeat; opacity: 0.18; mix-blend-mode: screen; pointer-events: none; }
-.profile .avatar img { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 1; }
-.profile .name { font-family: var(--serif); font-weight: 400; font-size: clamp(32px,4.5vw,44px); line-height: 0.95; letter-spacing: -0.025em; margin: 8px 0 10px; color: var(--fg); }
-.profile .name em { color: var(--accent); font-style: italic; }
-.profile .soul-id { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--fg-3); background: rgba(255,255,255,0.03); padding: 6px 10px; border: 1px solid var(--rule); display: block; word-break: break-all; max-width: 100%; }
-
-.cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 26px; background: var(--accent); color: var(--on-accent); border: 0; cursor: pointer; text-align: left; transition: all 0.2s; position: relative; overflow: hidden; }
-.cta::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); transform: translateX(-100%); transition: transform 0.6s; }
-.cta:hover { background: var(--accent-bright); box-shadow: 0 20px 50px rgba(139,92,246,0.35); }
-.cta:hover::before { transform: translateX(100%); }
-.cta .sub { font-family: var(--mono); font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase; opacity: 0.7; display: block; margin-bottom: 4px; }
-.cta .lbl { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; display: block; }
-.cta .arr { font-size: 28px; }
-
-.metrics { margin: 0; padding: 0; border-top: 1px solid var(--rule-2); }
-.metrics .m { display: grid; grid-template-columns: 140px 1fr auto; align-items: baseline; gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
-@media (max-width: 560px) { .metrics .m { grid-template-columns: 1fr auto; } .metrics dt { grid-column: 1/-1; margin-bottom: -8px; } }
-.metrics dt { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); }
-.metrics dd { margin: 0; font-family: var(--serif); font-size: 18px; color: var(--fg); letter-spacing: -0.005em; overflow-wrap: anywhere; }
-.metrics dd.mono { font-family: var(--mono); letter-spacing: 0.02em; font-size: 14px; }
-.metrics dd.mono.sm { font-size: 12px; }
-.metrics dd b { font-weight: 400; color: var(--accent); }
-.earnings-banner { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border: 1px solid rgba(139,92,246,0.25); background: linear-gradient(135deg, rgba(139,92,246,0.07), transparent 70%); gap: 12px; }
-.eb-left { display: flex; align-items: center; gap: 12px; }
-.eb-icon { font-size: 20px; color: var(--accent-bright); line-height: 1; }
-.eb-text { display: flex; flex-direction: column; gap: 2px; }
-.eb-pol { font-family: var(--serif); font-size: 20px; color: var(--fg); letter-spacing: -0.02em; }
-.eb-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-3); }
-.eb-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-.eb-count { font-family: var(--serif); font-size: 26px; color: var(--accent-bright); letter-spacing: -0.03em; line-height: 1; }
-.eb-sub { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-3); }
-.status { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-3); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-.status i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
-.status.ok { color: #b8dcc4; }
-.status.warn { color: var(--accent-bright); }
-.status.off { color: var(--fg-3); }
-
-.actions { display: flex; flex-direction: column; border-top: 1px solid var(--rule-2); }
-.act { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 18px 0; border: 0; border-bottom: 1px solid var(--rule); background: transparent; color: var(--fg); text-align: left; cursor: pointer; align-items: center; font: inherit; }
-.act:hover { background: rgba(139,92,246,0.04); }
-.act .lbl { font-family: var(--serif); font-size: 20px; letter-spacing: -0.01em; display: block; }
-.act .sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg-3); margin-top: 2px; display: block; }
-.act .ar { font-family: var(--serif); font-size: 22px; color: var(--fg-3); }
-.act:hover .ar { color: var(--accent); }
-
-.dash-foot { border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
-.dash-copy { color: var(--fg-4); padding: 14px clamp(20px,4vw,44px); white-space: nowrap; }
-.dash-links { display: flex; flex-wrap: wrap; }
-.dash-links a { color: var(--fg-3); text-decoration: none; padding: 0 16px; min-height: 48px; display: flex; align-items: center; border-left: 1px solid var(--rule); transition: color 0.15s; }
-.dash-links a:hover { color: var(--accent); }
-@media (max-width: 640px) {
-  .dash-foot { flex-direction: column; align-items: stretch; }
-  .dash-copy { padding: 12px 20px; border-bottom: 1px solid var(--rule); font-size: 9px; }
-  .dash-links { display: grid; grid-template-columns: 1fr 1fr; }
-  .dash-links a { border-left: 0; border-top: 1px solid var(--rule); padding: 14px 20px; font-size: 11px; letter-spacing: 0.14em; min-height: 44px; }
-  .dash-links a:nth-child(even) { border-left: 1px solid var(--rule); }
-}
-
-.rt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--rule); padding-bottom: 18px; margin-bottom: 8px; }
-.rt-head h3 { font-family: var(--serif); font-size: clamp(32px,4.5vw,44px); font-weight: 400; margin: 0; letter-spacing: -0.025em; }
-.rt-head h3 em { font-style: italic; color: var(--accent); }
-.rt-head .meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-3); }
-
-.note { padding: 18px 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 72px 1fr auto; gap: 20px; align-items: start; }
-.note .when { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--fg-3); white-space: nowrap; padding-top: 2px; }
-.note-body { font-size: 13px; line-height: 1.65; color: var(--fg-2); margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.note .tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-bright); padding: 3px 7px; border: 1px solid rgba(139,92,246,0.35); white-space: nowrap; }
-@media (max-width: 640px) { .note { grid-template-columns: 56px 1fr; gap: 12px; } .note .tag { display: none; } }
-
-.maturity { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; padding: 28px 0 0; margin-top: 16px; border-top: 1px solid var(--rule); }
-.maturity h5 { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); margin: 0 0 16px; font-weight: 500; }
-.maturity h5 em { font-style: normal; color: var(--accent-bright); }
-.bar { height: 6px; background: rgba(255,255,255,0.06); position: relative; overflow: hidden; }
-.bar-fill { position: absolute; inset: 0; background: linear-gradient(90deg, var(--accent-deep) 0%, var(--accent) 60%, var(--accent-bright) 100%); box-shadow: 0 0 20px rgba(139,92,246,0.5); transition: width 0.4s ease; }
-.ticks { display: flex; justify-content: space-between; margin-top: 10px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-4); }
-.maturity .val { font-family: var(--serif); font-size: clamp(48px,7vw,64px); line-height: 0.9; letter-spacing: -0.03em; color: var(--fg); }
-.maturity .val span { font-size: 22px; color: var(--fg-3); font-family: var(--mono); letter-spacing: 0.05em; margin-left: 4px; }
-
-@media (max-width: 480px) {
-  .col-left { padding: 20px 16px; gap: 20px; }
-  .col-right { padding: 20px 16px; }
-  .profile .avatar { width: 64px; height: 64px; font-size: 26px; flex-shrink: 0; }
-  .profile .name { font-size: 24px; margin: 4px 0 6px; }
-  .profile .soul-id { font-size: 9px; }
-  .cta { padding: 16px 18px; }
-  .cta .lbl { font-size: 17px; }
-  .act .lbl { font-size: 16px; }
-  .act { padding: 14px 0; gap: 12px; }
-  .metrics .m { gap: 12px; }
-  .metrics dd { font-size: 15px; }
-  .rt-head h3 { font-size: 24px; }
-  .maturity .val { font-size: 40px; }
-  .maturity .val span { font-size: 16px; }
-  .ticks { font-size: 8px; letter-spacing: 0.08em; }
-}
 
 /* ────── LANDING ────── */
 .landing { padding-top: 28px; }
@@ -902,18 +311,18 @@ const journal = computed(() => {
 .display .amp { font-family: var(--serif); font-style: italic; color: var(--fg-3); font-weight: 400; }
 .side { border-left: 1px solid var(--rule-2); padding-left: clamp(16px,3vw,28px); max-width: 360px; }
 @media (max-width: 900px) { .side { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule-2); padding-top: 24px; max-width: none; } }
-.side .issue { font-family: var(--mono); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+.side .issue { font-family: var(--mono); font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
 .side p { font-family: var(--serif); font-size: 17px; line-height: 1.55; color: var(--fg-2); margin: 0 0 20px; }
 .side p b { color: var(--fg); font-weight: 700; }
 .cta-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
-.hero-meta { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; padding: 28px 0 0; margin-top: 48px; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3); }
+.hero-meta { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; padding: 28px 0 0; margin-top: 48px; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3); }
 .hero-meta b { color: var(--fg); font-weight: 500; }
 @media (max-width: 640px) { .hero-meta { grid-template-columns: repeat(2,1fr); } }
 
 .masthead { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--rule); }
 .masthead > div { padding: 24px 28px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 8px; }
 .masthead > div:last-child { border-right: 0; }
-.masthead .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-4); }
+.masthead .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-4); }
 .masthead .val { font-family: var(--serif); font-size: 28px; line-height: 1; color: var(--fg); }
 .masthead .val em { font-size: 12px; color: var(--fg-3); font-family: var(--mono); letter-spacing: 0.1em; margin-left: 6px; font-style: normal; vertical-align: 1px; }
 @media (max-width: 900px) { .masthead { grid-template-columns: repeat(2,1fr); } .masthead > div:nth-child(2) { border-right: 0; } .masthead > div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); } }
@@ -934,9 +343,9 @@ const journal = computed(() => {
 @media (max-width: 900px) { .steps li { border-left: 0; border-top: 1px solid var(--rule); padding: 28px 0; } .steps li:first-child { border-top: 0; padding-top: 0; } }
 .steps .big { font-family: var(--serif); font-size: clamp(72px,9vw,112px); line-height: 0.85; color: var(--fg); letter-spacing: -0.04em; margin-bottom: 12px; }
 .steps .big em { font-style: italic; color: var(--accent); }
-.steps .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 16px; }
-.steps h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 12px; color: var(--fg); }
-.steps p { font-size: 14px; line-height: 1.6; color: var(--fg-2); margin: 0 0 14px; max-width: 36ch; }
+.steps .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 16px; }
+.steps h3 { font-family: var(--serif); font-weight: 400; font-size: clamp(22px,3.5vw,32px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 12px; color: var(--fg); }
+.steps p { font-size: 15px; line-height: 1.6; color: var(--fg-2); margin: 0 0 14px; max-width: 36ch; }
 .steps code { font-family: var(--mono); font-size: 11px; color: var(--accent-bright); background: var(--accent-2); padding: 4px 8px; letter-spacing: 0.02em; border: 1px solid rgba(139,92,246,0.2); }
 
 .feat { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--rule); }
@@ -950,7 +359,7 @@ const journal = computed(() => {
 .feat-vis img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; opacity: 0.88; transition: opacity 0.4s ease; }
 .feat article:hover .feat-vis img { opacity: 1; }
 
-.feat .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; color: var(--accent); text-transform: uppercase; }
+.feat .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; color: var(--accent); text-transform: uppercase; }
 .feat h3 { font-family: var(--serif); font-weight: 400; font-size: clamp(28px,3.5vw,40px); line-height: 1; letter-spacing: -0.025em; margin: 18px 0 16px; color: var(--fg); }
 .feat h3 em { font-style: italic; color: var(--accent); }
 .feat .lede { font-family: var(--serif); font-size: 17px; line-height: 1.55; color: var(--fg-2); margin: 0 0 20px; max-width: 40ch; }
@@ -973,7 +382,7 @@ const journal = computed(() => {
 .timeline .date { font-family: var(--serif); font-size: 20px; color: var(--fg); letter-spacing: -0.01em; }
 .timeline h4 { font-family: var(--serif); font-weight: 400; font-size: 22px; margin: 0; letter-spacing: -0.015em; }
 .timeline .chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-.timeline .chips span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 10px; border: 1px solid var(--rule-2); color: var(--fg-2); }
+.timeline .chips span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 10px; border: 1px solid var(--rule-2); color: var(--fg-2); }
 
 /* ────── LANDING FAQ ────── */
 .faq-list { border-top: 1px solid var(--rule); }
@@ -999,90 +408,14 @@ const journal = computed(() => {
 .colophon { display: grid; grid-template-columns: minmax(180px, 260px) auto auto; justify-content: start; column-gap: 56px; row-gap: 32px; padding: 56px clamp(20px,4vw,44px) 40px; }
 @media (max-width: 900px) { .colophon { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 480px) { .colophon { grid-template-columns: 1fr; } }
-.colophon h5 { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); margin: 0 0 18px; font-weight: 500; }
+.colophon h5 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); margin: 0 0 18px; font-weight: 500; }
 .colophon ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
 .colophon a { color: var(--fg-2); text-decoration: none; font-size: 13px; border-bottom: 1px solid transparent; }
 .colophon a:hover { color: var(--accent); border-color: var(--accent); }
 .colophon .word { font-family: var(--serif); font-size: 40px; letter-spacing: -0.02em; line-height: 1; }
 .colophon .word em { color: var(--accent); font-style: italic; }
 .colophon p { font-family: var(--serif); font-size: 15px; line-height: 1.5; color: var(--fg-3); margin: 16px 0 0; max-width: 28ch; }
-.foot-rule { padding: 18px clamp(20px,4vw,44px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-4); gap: 12px; flex-wrap: wrap; }
-
-/* ────── LOGIN BOTTOMSHEET ────── */
-.login-sheet {
-  position: relative; z-index: 10;
-  background: var(--paper-2); border-top: 1px solid var(--rule-2);
-  border-radius: 20px 20px 0 0;
-  padding: 20px clamp(16px,5vw,28px) 40px;
-  max-height: 92dvh; overflow-y: auto; overflow-x: hidden;
-  width: 100%; max-width: 520px; box-sizing: border-box;
-}
-.login-handle { display: flex; align-items: center; margin-bottom: 20px; }
-.login-bar { flex: 1; display: flex; justify-content: center; }
-.login-bar::after { content: ""; display: block; width: 40px; height: 2px; background: var(--rule-2); border-radius: 2px; }
-.login-close { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--rule); background: transparent; color: var(--fg-3); cursor: pointer; font-size: 12px; }
-.login-close:hover { color: var(--fg); border-color: var(--rule-2); }
-.login-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
-.login-title { font-family: var(--serif); font-weight: 400; font-size: clamp(28px,4vw,36px); letter-spacing: -0.025em; margin: 0 0 10px; color: var(--fg); line-height: 1; }
-.login-title em { font-style: italic; color: var(--accent); }
-.login-sub { font-family: var(--sans); font-size: 13px; color: var(--fg-3); line-height: 1.5; margin: 0 0 20px; }
-.login-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
-.login-divider::before, .login-divider::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
-.login-divider span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-4); }
-.login-alt { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 16px 18px; background: transparent; border: 1px solid var(--rule); color: var(--fg); cursor: pointer; text-align: left; font: inherit; transition: all 0.15s; box-sizing: border-box; }
-.login-alt:hover { border-color: var(--accent); background: var(--accent-2); }
-.login-alt span { font-family: var(--serif); font-size: clamp(15px,3.5vw,18px); letter-spacing: -0.01em; min-width: 0; }
-.login-alt-sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); flex: 1; min-width: 0; display: none; }
-@media (min-width: 400px) { .login-alt-sub { display: block; } }
-.login-arr { font-family: var(--serif); font-size: 20px; color: var(--fg-3); }
-.login-alt:hover .login-arr { color: var(--accent); }
-
-/* Login-Sheet Transition */
-.login-sheet-enter-active, .login-sheet-leave-active { transition: transform 0.3s cubic-bezier(0.32,0.72,0,1), opacity 0.25s ease; }
-.login-sheet-enter-from, .login-sheet-leave-to { transform: translateY(100%); opacity: 0; }
-
-/* ────── GENERISCHE MODALS (Setup / Files) ────── */
-.sys-modal-wrap {
-  position: fixed; inset: 0; z-index: 50;
-  display: flex; align-items: center; justify-content: center; padding: 16px;
-  background: rgba(7,6,11,0.78); backdrop-filter: blur(10px);
-  --paper: #12101a; --paper-2: #1a1726; --paper-3: #0d0b14;
-  --rule: rgba(226,220,240,0.10); --rule-2: rgba(226,220,240,0.20);
-  --fg: #ece7f5; --fg-2: rgba(236,231,245,0.72); --fg-3: rgba(236,231,245,0.48); --fg-4: rgba(236,231,245,0.30);
-  --accent: #8b5cf6; --accent-2: rgba(139,92,246,0.14); --accent-bright: #a78bfa;
-  --serif: 'Noto Serif', Georgia, serif; --mono: 'Oxanium', ui-monospace, monospace;
-}
-.sys-modal-panel {
-  position: relative; z-index: 10;
-  background: var(--paper); border: 1px solid var(--rule-2);
-  border-radius: 16px;
-  width: 100%; max-width: 520px; max-height: 92dvh;
-  display: flex; flex-direction: column; overflow: hidden;
-}
-.sys-modal-panel--wide { max-width: 760px; }
-.sys-modal-head {
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 8px 12px; min-height: 44px; border-bottom: 1px solid var(--rule);
-  background: var(--paper-3);
-}
-.sys-modal-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
-.sys-modal-title { font-family: var(--serif); font-weight: 400; font-size: 22px; letter-spacing: -0.02em; margin: 0; color: var(--fg); line-height: 1; }
-.sys-modal-title em { font-style: italic; color: var(--accent); }
-.sys-modal-close { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--rule-2); background: transparent; color: var(--fg-3); cursor: pointer; font-size: 22px; line-height: 1; font-family: var(--sans); padding: 0; flex-shrink: 0; }
-.sys-modal-close:hover { color: var(--fg); border-color: var(--rule-2); }
-.sys-modal-body { flex: 1; overflow-y: auto; padding: 28px 32px; }
-
-/* Centered modal Transition */
-.sys-modal-enter-active, .sys-modal-leave-active { transition: opacity 0.2s ease; }
-.sys-modal-enter-active .sys-modal-panel, .sys-modal-leave-active .sys-modal-panel { transition: transform 0.25s ease, opacity 0.2s; }
-.sys-modal-enter-from, .sys-modal-leave-to { opacity: 0; }
-.sys-modal-enter-from .sys-modal-panel, .sys-modal-leave-to .sys-modal-panel { transform: translateY(20px) scale(0.98); opacity: 0; }
-
-/* Mobile */
-@media (max-width: 639px) {
-  .sys-modal-wrap { padding: 12px; }
-  .sys-modal-panel { border-radius: 16px; max-height: calc(100dvh - 24px); }
-}
+.foot-rule { padding: 18px clamp(20px,4vw,44px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-4); gap: 12px; flex-wrap: wrap; }
 
 /* ────── AGENT MARKETPLACE VISION ────── */
 .marketplace-vision { background: linear-gradient(180deg, transparent 0%, rgba(139,92,246,0.04) 40%, transparent 100%); }
@@ -1094,7 +427,7 @@ const journal = computed(() => {
 .mv-step { padding: 28px 24px; border-right: 1px solid var(--rule); }
 .mv-step:last-of-type { border-right: 0; }
 .mv-num { font-family: var(--mono); font-size: clamp(40px,6vw,72px); font-weight: 700; line-height: 1; color: rgba(139,92,246,0.15); letter-spacing: -0.04em; margin-bottom: 12px; }
-.mv-step-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.mv-step-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
 .mv-step-desc { font-size: 13px; line-height: 1.65; color: var(--fg-2); margin: 0; }
 .mv-step-desc code { font-family: var(--mono); font-size: 11px; color: var(--fg); background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; }
 .mv-arrow { display: flex; align-items: center; justify-content: center; padding: 0 4px; color: var(--fg-4); font-size: 18px; }
@@ -1102,7 +435,13 @@ const journal = computed(() => {
 .mv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
 @media (max-width: 640px) { .mv-grid { grid-template-columns: 1fr 1fr; } }
 .mv-card { padding: 24px 20px; background: var(--paper); }
-.mv-card-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--fg-4); margin-bottom: 8px; }
+.mv-card-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--fg-4); margin-bottom: 8px; }
 .mv-card-value { font-family: var(--serif); font-size: clamp(22px,3vw,28px); letter-spacing: -0.02em; color: var(--fg); line-height: 1; margin-bottom: 6px; }
 .mv-card-sub { font-size: 12px; color: var(--fg-3); line-height: 1.5; }
+
+.disclaimer { padding: 20px clamp(20px,4vw,44px); border-top: 1px solid var(--rule); background: rgba(13,11,20,0.5); }
+.disclaimer p { font-family: var(--mono); font-size: 11px; line-height: 1.75; color: var(--fg-3); margin: 0; max-width: 120ch; letter-spacing: 0.01em; }
+.disclaimer strong { color: var(--fg-2); font-weight: 600; }
+.disclaimer a { color: var(--fg-2); text-decoration: underline; text-underline-offset: 3px; }
+.disclaimer a:hover { color: var(--accent-bright); }
 </style>

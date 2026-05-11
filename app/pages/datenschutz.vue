@@ -32,7 +32,7 @@ useSeoMeta({ title: 'Datenschutzerklärung – SaveYourSoul', robots: 'noindex' 
 .legal-page {
   --ink: #08070c; --paper: #12101a; --paper-2: #1a1726;
   --rule: rgba(226,220,240,0.10); --rule-2: rgba(226,220,240,0.20);
-  --fg: #ece7f5; --fg-2: rgba(236,231,245,0.72); --fg-3: rgba(236,231,245,0.48); --fg-4: rgba(236,231,245,0.30);
+  --fg: #ffffff; --fg-2: rgba(255,255,255,0.85); --fg-3: rgba(255,255,255,0.65); --fg-4: rgba(255,255,255,0.45);
   --accent: #8b5cf6; --accent-bright: #a78bfa;
   --serif: 'Noto Serif', Georgia, serif;
   --sans: 'Inter', system-ui, sans-serif;
@@ -57,8 +57,8 @@ useSeoMeta({ title: 'Datenschutzerklärung – SaveYourSoul', robots: 'noindex' 
 .mark { font-family: var(--mono); font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: var(--fg); }
 .dot { color: var(--accent); }
 .center { text-align: center; }
-.page-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-4); }
-.back { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); text-decoration: none; transition: color 0.15s; }
+.page-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-4); }
+.back { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); text-decoration: none; transition: color 0.15s; }
 .back:hover { color: var(--accent); }
 
 .content {
@@ -68,8 +68,8 @@ useSeoMeta({ title: 'Datenschutzerklärung – SaveYourSoul', robots: 'noindex' 
 }
 
 /* Editorial typography override for legal content */
-.content :deep(h1) { font-family: var(--serif); font-size: clamp(20px,4vw,40px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--fg); margin: 0 0 12px; }
-.content :deep(h2) { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); margin: 48px 0 16px; font-weight: 500; }
+.content :deep(h1) { font-family: var(--serif); font-size: clamp(26px,4vw,48px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--fg); margin: 0 0 12px; }
+.content :deep(h2) { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); margin: 48px 0 16px; font-weight: 500; }
 .content :deep(h3) { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--fg); margin: 28px 0 10px; }
 .content :deep(p) { font-size: 15px; line-height: 1.7; color: var(--fg-2); margin: 0 0 14px; }
 .content :deep(strong) { color: var(--fg); font-weight: 600; }
@@ -83,7 +83,7 @@ useSeoMeta({ title: 'Datenschutzerklärung – SaveYourSoul', robots: 'noindex' 
   padding: 20px clamp(20px,4vw,44px);
   border-top: 1px solid var(--rule);
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--fg-4);

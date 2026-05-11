@@ -20,7 +20,7 @@
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Kontakt</h2>
       <div class="text-base leading-relaxed space-y-1">
-        <p>E-Mail: <a href="mailto:[ihre@email.com]" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[ihre@email.com]</a></p>
+        <p>E-Mail: <a href="mailto:info@uxprojects-jok.com" class="text-[var(--sys-violet)] hover:underline underline-offset-2">info@uxprojects-jok.com</a></p>
         <p class="text-xs text-[var(--sys-fg-dim)] mt-1">Anfragen beantworte ich in der Regel innerhalb von 48 Stunden.</p>
       </div>
     </section>
@@ -38,8 +38,8 @@
     <section>
       <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Domain</h2>
       <div class="text-base leading-relaxed space-y-0.5">
-        <p><a href="[https://ihre-domain.com]" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[https://ihre-domain.com]</a> <span class="text-[var(--sys-fg-dim)] text-sm">— SaveYourSoul App</span></p>
-        <p><a href="[https://ihre-domain.com]" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">[https://ihre-domain.com]</a> <span class="text-[var(--sys-fg-dim)] text-sm">— UX-Projects</span></p>
+        <p><a href="https://sys.uxprojects-jok.com" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">https://sys.uxprojects-jok.com</a> <span class="text-[var(--sys-fg-dim)] text-sm">— SaveYourSoul Projektinfo-Seite</span></p>
+        <p><a href="https://uxprojects-jok.com" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">https://uxprojects-jok.com</a> <span class="text-[var(--sys-fg-dim)] text-sm">— UX-Projects</span></p>
       </div>
     </section>
 
@@ -66,9 +66,15 @@
     </section>
 
     <section>
-      <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Urheberrecht</h2>
-      <p class="text-base text-[var(--sys-fg-muted)]">Die von mir erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen meiner schriftlichen Zustimmung.</p>
-      <p class="text-base text-[var(--sys-fg-muted)] mt-3">Das sys.md-Format sowie ausgewählte Komponenten werden unter der Apache License 2.0 als Open Source bereitgestellt. Die entsprechenden Lizenztexte sind in der App unter „Lizenz &amp; Nutzungsbedingungen" einsehbar.</p>
+      <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Urheberrecht &amp; Lizenz</h2>
+      <p class="text-base text-[var(--sys-fg-muted)]">Die vollständige SaveYourSoul-Codebasis — einschließlich Frontend, Backend-Lua-Skripte, Installationsskripte und das sys.md-Format — wird unter der <strong class="text-[var(--sys-fg)]">Apache License 2.0</strong> als Open Source bereitgestellt. Der vollständige Lizenztext ist in der App unter „Lizenz &amp; Nutzungsbedingungen" einsehbar.</p>
+      <p class="text-base text-[var(--sys-fg-muted)] mt-3"><strong class="text-[var(--sys-fg)]">Marken:</strong> „SaveYourSoul" und „SYS" sind Marken von Jan-Oliver Karo. Die Apache-2.0-Lizenz räumt keine Rechte zur Nutzung dieser Marken ein. Details: <a href="https://github.com/uxprojectsjok/personal-sys-vps/blob/main/NOTICE" target="_blank" rel="noopener noreferrer" class="text-[var(--sys-violet)] hover:underline underline-offset-2">NOTICE</a>.</p>
+      <p class="text-base text-[var(--sys-fg-muted)] mt-3">Die Inhalte dieser Projektinfo-Seite (Texte, Design, Grafiken) unterliegen dem deutschen Urheberrecht. Die Vervielfältigung außerhalb der Open-Source-Lizenz bedarf meiner schriftlichen Zustimmung.</p>
+    </section>
+
+    <section>
+      <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Hosting</h2>
+      <p class="text-base text-[var(--sys-fg-muted)]">Diese statische Projektinfo-Seite wird gehostet bei: <strong class="text-[var(--sys-fg)]">IONOS SE</strong>, Elgendorfer Str. 57, 56410 Montabaur, Deutschland. Rechenzentrum: Berlin, Deutschland.</p>
     </section>
 
     <section>
@@ -80,14 +86,7 @@
       <p class="text-base text-[var(--sys-fg-muted)] mt-3">Zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle bin ich gemäß § 36 VSBG nicht verpflichtet und nicht bereit.</p>
     </section>
 
-    <section>
-      <h2 class="text-sm font-semibold text-[var(--sys-fg)] mb-3">Hosting</h2>
-      <p class="text-base text-[var(--sys-fg-muted)]">Diese Anwendung wird auf einem eigenen VPS bei der <strong class="text-[var(--sys-fg)]">IONOS SE</strong>, Elgendorfer Str. 57, 56410 Montabaur, Deutschland gehostet. Rechenzentrum: Berlin, Deutschland.</p>
-    </section>
-
-    <p class="text-xs text-[var(--sys-fg-dim)] pt-4 border-t border-[var(--sys-border)]">Stand: 03. April 2026 · © 2026 Jan-Oliver Karo. Alle Rechte vorbehalten.</p>
+    <p class="text-xs text-[var(--sys-fg-dim)] pt-4 border-t border-[var(--sys-border)]">Stand: 11. Mai 2026 · © 2026 Jan-Oliver Karo. Alle Rechte vorbehalten.</p>
 
   </div>
 </template>
-
-

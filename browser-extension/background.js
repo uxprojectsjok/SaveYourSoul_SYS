@@ -1,7 +1,7 @@
 // background.js – Service Worker
 // Handles: cert storage, soul caching, content-script messaging
 
-const API_BASE = 'https://YOUR_DOMAIN'
+const API_BASE = 'https://sys.uxprojects-jok.com'
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'CACHE_SOUL') {
