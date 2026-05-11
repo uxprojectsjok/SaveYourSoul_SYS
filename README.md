@@ -3,7 +3,7 @@
 **Ein offenes Protokoll für digitale Identität im KI-Zeitalter.**
 
 > 🌐 Homepage: [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com)
-> 🔒 Privates Implementierungs-Repo: [github.com/uxprojectsjok/personal-sys-vps](https://github.com/uxprojectsjok/personal-sys-vps) *(nicht öffentlich)*
+> 🔒 Implementierungs-Repo: aktuell gesperrt — finale Tests für Multi-Hoster-Modus laufen
 
 ---
 
@@ -75,8 +75,8 @@ Der wirtschaftliche Layer des Protokolls. Nodes registrieren sich im dezentralen
 **Phase 1 — Abgeschlossen ✓ (2026)**
 Soul Protocol · Memory Vault · Verschlüsselung · Biometrischer Zugang · MCP Server · Soul Network · Polygon-Anker · Browser-Erweiterung · PWA · KI-Bildgenerierung
 
-**Beta — Live (2026)**
-Agent Marketplace · Einnahmen per KI-Zugriff · Dezentrale Verzeichnis-Registrierung · Multi-Hoster-Modus · Mehrere Soul-Versionen · Schlüsselverwaltung · Offenes Protokoll
+**Beta — Live / In finaler Testphase (2026)**
+Agent Marketplace · Einnahmen per KI-Zugriff · Dezentrale Verzeichnis-Registrierung · **Multi-Hoster-Modus** *(letzte Tests)* · Mehrere Soul-Versionen · Schlüsselverwaltung · Offenes Protokoll
 
 **Vision — Langfristig**
 Interoperable Identitäten · Agenten-Identität als Zugangsbedingung · Bidirektionale Reputation on-chain · Automatische Zugangsvergabe · Geräteübergreifende Identitäten · Robotik-Integration · Community-Governance
@@ -121,7 +121,7 @@ Apache License 2.0 · Copyright 2026 Jan-Oliver Karo — UX-Projects, Marburg, G
 **An open protocol for digital identity in the age of AI.**
 
 > 🌐 Homepage: [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com)
-> 🔒 Private implementation repo: [github.com/uxprojectsjok/personal-sys-vps](https://github.com/uxprojectsjok/personal-sys-vps) *(not public)*
+> 🔒 Implementation repo: currently locked — final tests for multi-hoster mode in progress
 
 ---
 
@@ -189,8 +189,8 @@ The economic layer of the protocol. Nodes register in the decentralised IPFS dir
 **Phase 1 — Completed ✓ (2026)**
 Soul Protocol · Memory Vault · Encryption · Biometric access · MCP Server · Soul Network · Polygon anchor · Browser extension · PWA · AI image generation
 
-**Beta — Live (2026)**
-Agent Marketplace · Revenue per AI access · Decentralised directory registration · Multi-hoster mode · Multiple soul versions · Key management · Open protocol
+**Beta — Live / Final testing (2026)**
+Agent Marketplace · Revenue per AI access · Decentralised directory registration · **Multi-hoster mode** *(final tests)* · Multiple soul versions · Key management · Open protocol
 
 **Vision — Long-term**
 Interoperable identities · Agent identity as access condition · Bidirectional reputation on-chain · Automatic access granting · Cross-device identities · Robotics integration · Community governance
