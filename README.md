@@ -1,82 +1,83 @@
-# SaveYourSoul — Projektinfo-Seite
+# SaveYourSoul — Project Info Site
 
-Statische Nuxt 4 SSG Projektinfo-Seite für **SaveYourSoul (SYS)**, erreichbar unter [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com).
+Static Nuxt 4 SSG project info site for **SaveYourSoul (SYS)**, live at [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com).
 
-Diese Seite beschreibt das SaveYourSoul-Projekt. Sie enthält keine App-Logik und kein Backend — sie ist eine rein statische Website.
+This site describes the SaveYourSoul project. It contains no app logic and no backend — it is a purely static website.
+
+The actual SaveYourSoul product (node software, Lua API, MCP server, init script) lives in a separate repository:
+**[github.com/uxprojectsjok/personal-sys-vps](https://github.com/uxprojectsjok/personal-sys-vps)**
 
 ---
 
-## Was diese Seite ist
+## What's on this site
 
-- Landing Page mit Projekt-Überblick, Features, Roadmap und FAQ
-- API-Dokumentation (MCP Tools, HTTP-Endpunkte, Authentifizierung)
-- Dev-Dokumentation (Installation, Konfiguration, Architektur)
-- Rechtliche Seiten (Impressum, Datenschutz, Lizenz)
-
-Das eigentliche SaveYourSoul-Produkt (Node-Software, Lua-API, MCP-Server) ist ein separates Repository: [github.com/uxprojectsjok/personal-sys-vps](https://github.com/uxprojectsjok/personal-sys-vps)
+- Landing page — project overview, features, roadmap, FAQ
+- API reference — MCP tools, HTTP endpoints, authentication
+- Dev docs — installation, configuration, architecture
+- Legal pages — imprint, privacy policy, license
 
 ---
 
 ## Stack
 
-- **Nuxt 4** · SSG · `ssr: false` · rein client-seitig
-- **Deployment**: `npm run generate` → `rsync` nach `/var/www/sys.uxprojects-jok.com/`
-- **Webserver**: OpenResty (nginx) mit CSP, HSTS, Nonce-Injection
-- **Analytics**: Plausible (selbst gehostet, cookiefrei, consent-basiert)
+- **Nuxt 4** · SSG · `ssr: false` · fully client-side rendered
+- **Deploy**: `npm run generate` → `rsync` to web root
+- **Web server**: OpenResty (nginx) with CSP, HSTS, nonce injection
+- **Analytics**: self-hosted Plausible (cookieless, consent-based)
 
 ---
 
-## Struktur
+## Structure
 
 ```
 app/
 ├── pages/
-│   ├── index.vue          Landing Page
-│   ├── api-docs.vue       API-Referenz (MCP Tools, HTTP-Endpunkte)
-│   ├── dev-docs.vue       Dev-Dokumentation (Installation, Konfiguration)
-│   ├── datenschutz.vue    Datenschutzerklärung
-│   ├── impressum.vue      Impressum
-│   └── lizenz.vue         Lizenz & Nutzungsbedingungen
+│   ├── index.vue          Landing page
+│   ├── api-docs.vue       API reference (MCP tools, HTTP endpoints)
+│   ├── dev-docs.vue       Dev documentation (installation, configuration)
+│   ├── datenschutz.vue    Privacy policy (German, GDPR)
+│   ├── impressum.vue      Imprint (German, required by law)
+│   └── lizenz.vue         License & terms of use
 ├── components/
-│   ├── ConsentBanner.vue          Plausible-Einwilligung (DSGVO)
+│   ├── ConsentBanner.vue           Plausible consent (GDPR)
 │   ├── LegalDatenschutzContent.vue
 │   └── LegalImpressumContent.vue
-└── assets/css/            Design-System
+└── assets/css/            Design system tokens
 
 public/
-├── ecosystem/             Bilder (webp)
+├── ecosystem/             Images (webp)
 ├── fonts/                 Inter, Noto Serif, Oxanium, JetBrains Mono, Remix Icons
-└── icons/                 PWA-Icons
+└── icons/                 PWA icons
 
 shared/utils/
-├── soulParser.js          sys.md Parser
-└── soulMaturity.js        Soul-Reife-Berechnung
+├── soulParser.js          sys.md parser
+└── soulMaturity.js        Soul maturity scoring
 
-browser-extension/         Chrome MV3 Extension (eigenständig)
+browser-extension/         Chrome MV3 extension (standalone)
 ```
 
 ---
 
-## Lokale Entwicklung
+## Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Build & Deploy
+## Build & deploy
 
 ```bash
 npm run generate
-rsync -a --delete .output/public/ /var/www/sys.uxprojects-jok.com/
+rsync -a --delete .output/public/ /var/www/<domain>/
 ```
 
 ---
 
-## Design-System
+## Design tokens
 
-| Token | Wert |
-|-------|------|
+| Token | Value |
+|-------|-------|
 | `--paper` | `#12101a` |
 | `--accent` | `#8b5cf6` |
 | `--fg` | `#ffffff` |
@@ -86,8 +87,8 @@ rsync -a --delete .output/public/ /var/www/sys.uxprojects-jok.com/
 
 ---
 
-## Lizenz
+## License
 
-Apache License 2.0 — siehe [LICENSE](LICENSE)
+Apache License 2.0 — see [LICENSE](LICENSE)
 
 Copyright 2026 Jan-Oliver Karo — UX-Projects, Marburg, Germany
