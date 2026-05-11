@@ -3,7 +3,7 @@
 **Ein offenes Protokoll für digitale Identität im KI-Zeitalter.**
 
 > 🌐 Homepage: [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com)
-> 🔒 Implementierungs-Repo: aktuell gesperrt — finale Tests für Multi-Hoster-Modus laufen
+> 🛠️ Implementierungs-Repo: [github.com/uxprojectsjok/personal-sys-vps](https://github.com/uxprojectsjok/personal-sys-vps) *(in aktiver Entwicklung — noch nicht zur eigenen Installation geeignet)*
 
 ---
 
@@ -121,7 +121,7 @@ Apache License 2.0 · Copyright 2026 Jan-Oliver Karo — UX-Projects, Marburg, G
 **An open protocol for digital identity in the age of AI.**
 
 > 🌐 Homepage: [sys.uxprojects-jok.com](https://sys.uxprojects-jok.com)
-> 🔒 Implementation repo: currently locked — final tests for multi-hoster mode in progress
+> 🛠️ Implementation repo: [github.com/uxprojectsjok/personal-sys-vps](https://github.com/uxprojectsjok/personal-sys-vps) *(actively developed — not yet suitable for self-installation)*
 
 ---
 
