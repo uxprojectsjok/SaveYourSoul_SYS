@@ -5,8 +5,11 @@
       <div class="lockup">
         <span class="mark">SYS<span class="dot">.</span></span>
       </div>
-      <div class="center"><span class="page-title">API-Dokumentation</span></div>
-      <button class="back" @click="$router.back()" aria-label="Zurück">← Zurück</button>
+      <div class="center"><span class="page-title">{{ t.pageTitle }}</span></div>
+      <div class="nav-end">
+        <LangToggle />
+        <button class="back" @click="$router.back()" :aria-label="t.back">{{ t.back }}</button>
+      </div>
     </nav>
 
     <div class="docs-layout">
@@ -33,57 +36,57 @@
 
         <!-- Hero -->
         <div class="doc-hero">
-          <div class="doc-hero-kicker">API-Referenz · v1.0β</div>
+          <div class="doc-hero-kicker">{{ t.heroKicker }}</div>
           <h1>Save<em>Your</em>Soul<span class="amp">.</span></h1>
-          <p>MCP-Tools, HTTP-Endpunkte und Authentifizierung für den persönlichen SYS Node.</p>
+          <p>{{ t.heroSub }}</p>
         </div>
 
-        <!-- ── 1 · VERBINDUNG ── -->
+        <!-- ── 1 · CONNECTION ── -->
         <section id="connection" class="doc-section">
-          <div class="sec-label">01 · Verbindung</div>
-          <h2>MCP-Client verbinden</h2>
-          <p>Der MCP-Server läuft als eigenständiger Prozess auf deinem Node und kommuniziert per Streamable HTTP. Jeder MCP-kompatible Client kann sich direkt verbinden.</p>
+          <div class="sec-label">{{ t.s01label }}</div>
+          <h2>{{ t.s01h2 }}</h2>
+          <p>{{ t.s01p }}</p>
 
           <div class="endpoint-box">
             <span class="method get">MCP</span>
-            <code>https://&lt;deine-domain&gt;/mcp</code>
+            <code>https://&lt;your-domain&gt;/mcp</code>
           </div>
 
           <h3>Claude Desktop</h3>
-          <p>In <code>claude_desktop_config.json</code> eintragen:</p>
+          <p v-html="t.s01pClaude"></p>
           <pre><code>{
   "mcpServers": {
     "sys": {
-      "url": "https://&lt;deine-domain&gt;/mcp"
+      "url": "https://&lt;your-domain&gt;/mcp"
     }
   }
 }</code></pre>
 
           <h3>claude.ai (Integrations)</h3>
-          <p>Einstellungen → Integrationen → URL eintragen. Claude startet den OAuth-Flow automatisch — dein soul_cert wird als Bearer-Token ausgestellt.</p>
+          <p>{{ t.s01pClaudeai }}</p>
 
           <h3>OAuth-Scopes</h3>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Scope</th><th>Zugang</th></tr></thead>
+              <thead><tr><th>Scope</th><th>{{ t.thZugang }}</th></tr></thead>
               <tbody>
-                <tr><td><code>soul</code></td><td>sys.md lesen und schreiben</td></tr>
-                <tr><td><code>calendar</code></td><td>Kalender-Einträge</td></tr>
-                <tr><td><code>audio</code></td><td>Audio-Vault</td></tr>
-                <tr><td><code>images</code></td><td>Bild-Vault</td></tr>
-                <tr><td><code>video</code></td><td>Video-Vault</td></tr>
-                <tr><td><code>context</code></td><td>Kontext-Dokumente</td></tr>
-                <tr><td><code>network</code></td><td>Peer-Netzwerk</td></tr>
+                <tr><td><code>soul</code></td><td>{{ t.scopeSoul }}</td></tr>
+                <tr><td><code>calendar</code></td><td>{{ t.scopeCalendar }}</td></tr>
+                <tr><td><code>audio</code></td><td>Audio Vault</td></tr>
+                <tr><td><code>images</code></td><td>{{ t.scopeImages }}</td></tr>
+                <tr><td><code>video</code></td><td>Video Vault</td></tr>
+                <tr><td><code>context</code></td><td>{{ t.scopeContext }}</td></tr>
+                <tr><td><code>network</code></td><td>{{ t.scopeNetwork }}</td></tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <!-- ── 2 · AUTHENTIFIZIERUNG ── -->
+        <!-- ── 2 · AUTH ── -->
         <section id="auth" class="doc-section">
-          <div class="sec-label">02 · Authentifizierung</div>
-          <h2>Token-Typen</h2>
-          <p>Alle API-Aufrufe laufen über <code>vault_auth.lua</code>. Drei Token-Typen mit unterschiedlichem Scope:</p>
+          <div class="sec-label">{{ t.s02label }}</div>
+          <h2>{{ t.s02h2 }}</h2>
+          <p v-html="t.s02p"></p>
 
           <div class="table-wrap">
             <table>
@@ -92,43 +95,41 @@
                 <tr>
                   <td><code>soul_cert</code></td>
                   <td><code>{soul_id}.{hmac32}</code></td>
-                  <td>Vollzugriff — Soul-Inhaber</td>
+                  <td>{{ t.tdSoulCertScope }}</td>
                 </tr>
                 <tr>
                   <td><code>pol_access_token</code></td>
-                  <td>48 Hex-Zeichen</td>
-                  <td>Bezahlter Agent — GET Vault + Agent-Write</td>
+                  <td>48 Hex</td>
+                  <td>{{ t.tdPolScope }}</td>
                 </tr>
                 <tr>
                   <td><code>service_token</code></td>
-                  <td>Frei wählbar</td>
-                  <td>Autorisierte Dienste, Vault entsperrt</td>
+                  <td>{{ t.tdServiceTokenFormat }}</td>
+                  <td>{{ t.tdServiceScope }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <h3>soul_cert ableiten</h3>
+          <h3>{{ t.s02h3 }}</h3>
           <pre><code>cert = HMAC-SHA256(SOUL_MASTER_KEY, soul_id).hex()[:32]
 Authorization: Bearer {soul_id}.{cert}</code></pre>
 
-          <div class="info-box">
-            <strong>Hinweis:</strong> soul_cert und SOUL_MASTER_KEY werden bei der Einrichtung generiert und sind nur auf deinem Server gespeichert. Es gibt keine Möglichkeit, sie zurückzusetzen ohne Datenverlust.
-          </div>
+          <div class="info-box" v-html="t.s02info"></div>
         </section>
 
         <!-- ── 3 · MCP TOOLS · SOUL ── -->
         <section id="mcp-soul" class="doc-section">
-          <div class="sec-label">03 · MCP Tools · Soul</div>
-          <h2>Soul lesen &amp; schreiben</h2>
+          <div class="sec-label">{{ t.s03label }}</div>
+          <h2>{{ t.s03h2 }}</h2>
 
           <div class="tool-card">
             <div class="tool-head">
               <code class="tool-name">soul_read</code>
               <span class="tool-scope">soul_cert · pol_access_token</span>
             </div>
-            <p>Liest den vollständigen sys.md-Inhalt — Persönlichkeit, Werte, Biografie, Projekte, Session-Log. Soll zu Beginn jeder KI-Sitzung aufgerufen werden.</p>
-            <div class="tool-params">Keine Parameter</div>
+            <p>{{ t.soulReadDesc }}</p>
+            <div class="tool-params">{{ t.noParams }}</div>
           </div>
 
           <div class="tool-card">
@@ -136,11 +137,11 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">soul_write</code>
               <span class="tool-scope">soul_cert</span>
             </div>
-            <p>Schreibt Inhalt dauerhaft in eine sys.md-Sektion. Liest zuerst die aktuelle Datei, aktualisiert die Sektion, schreibt zurück.</p>
+            <p>{{ t.soulWriteDesc }}</p>
             <div class="tool-params">
-              <div class="param"><code>section</code> <span>string · Name der ## Sektion ohne "##"</span></div>
-              <div class="param"><code>content</code> <span>string · Markdown-Inhalt</span></div>
-              <div class="param"><code>mode</code> <span>replace | append | prepend — Standard: replace</span></div>
+              <div class="param"><code>section</code> <span>{{ t.paramSection }}</span></div>
+              <div class="param"><code>content</code> <span>{{ t.paramContent }}</span></div>
+              <div class="param"><code>mode</code> <span>{{ t.paramMode }}</span></div>
             </div>
           </div>
 
@@ -149,8 +150,8 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">soul_maturity</code>
               <span class="tool-scope">soul_cert</span>
             </div>
-            <p>Berechnet die Soul-Reife: Vollständigkeit, Session-Tiefe, Sektions-Coverage.</p>
-            <div class="tool-params">Keine Parameter</div>
+            <p>{{ t.soulMaturityDesc }}</p>
+            <div class="tool-params">{{ t.noParams }}</div>
           </div>
 
           <div class="tool-card">
@@ -158,8 +159,8 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">soul_skills</code>
               <span class="tool-scope">soul_cert</span>
             </div>
-            <p>Extrahiert strukturierte Fähigkeiten und Expertise-Bereiche aus der Soul.</p>
-            <div class="tool-params">Keine Parameter</div>
+            <p>{{ t.soulSkillsDesc }}</p>
+            <div class="tool-params">{{ t.noParams }}</div>
           </div>
 
           <div class="tool-card">
@@ -167,23 +168,23 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">soul_cloud_push</code>
               <span class="tool-scope">soul_cert</span>
             </div>
-            <p>Pusht die aktuelle sys.md verschlüsselt auf IPFS (Pinata). Gibt den IPFS-Hash zurück.</p>
-            <div class="tool-params">Keine Parameter</div>
+            <p>{{ t.soulCloudPushDesc }}</p>
+            <div class="tool-params">{{ t.noParams }}</div>
           </div>
         </section>
 
         <!-- ── 4 · MCP TOOLS · VAULT ── -->
         <section id="mcp-vault" class="doc-section">
-          <div class="sec-label">04 · MCP Tools · Vault</div>
-          <h2>Vault-Inhalte</h2>
+          <div class="sec-label">{{ t.s04label }}</div>
+          <h2>{{ t.s04h2 }}</h2>
 
           <div class="tool-card">
             <div class="tool-head">
               <code class="tool-name">vault_manifest</code>
               <span class="tool-scope">soul_cert</span>
             </div>
-            <p>Übersicht aller Vault-Ressourcen: freigegebene Dateitypen, soul_id, aktive Berechtigungen.</p>
-            <div class="tool-params">Keine Parameter</div>
+            <p>{{ t.vaultManifestDesc }}</p>
+            <div class="tool-params">{{ t.noParams }}</div>
           </div>
 
           <div class="tool-card">
@@ -191,9 +192,9 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">audio_list · audio_get</code>
               <span class="tool-scope">soul_cert · audio scope</span>
             </div>
-            <p><code>audio_list</code> gibt alle Audio-Dateien mit Metadaten zurück. <code>audio_get</code> lädt eine einzelne Datei.</p>
+            <p v-html="t.audioDesc"></p>
             <div class="tool-params">
-              <div class="param"><code>file</code> <span>string · audio_get · Dateiname</span></div>
+              <div class="param"><code>file</code> <span>{{ t.paramFileAudio }}</span></div>
             </div>
           </div>
 
@@ -202,9 +203,9 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">image_list · image_get</code>
               <span class="tool-scope">soul_cert · images scope</span>
             </div>
-            <p><code>image_list</code> gibt alle Bilder zurück. <code>image_get</code> lädt ein einzelnes Bild als Base64.</p>
+            <p v-html="t.imageDesc"></p>
             <div class="tool-params">
-              <div class="param"><code>file</code> <span>string · image_get · Dateiname</span></div>
+              <div class="param"><code>file</code> <span>{{ t.paramFileImage }}</span></div>
             </div>
           </div>
 
@@ -213,9 +214,9 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">video_list · video_get</code>
               <span class="tool-scope">soul_cert · video scope</span>
             </div>
-            <p><code>video_list</code> gibt alle Videos zurück. <code>video_get</code> lädt Metadaten und Stream-URL.</p>
+            <p v-html="t.videoDesc"></p>
             <div class="tool-params">
-              <div class="param"><code>file</code> <span>string · video_get · Dateiname</span></div>
+              <div class="param"><code>file</code> <span>{{ t.paramFileVideo }}</span></div>
             </div>
           </div>
 
@@ -224,9 +225,9 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">context_list · context_get</code>
               <span class="tool-scope">soul_cert · context scope</span>
             </div>
-            <p><code>context_list</code> gibt alle Kontext-Dokumente zurück (md, txt, pdf). <code>context_get</code> liefert den Inhalt einer Datei.</p>
+            <p v-html="t.contextDesc"></p>
             <div class="tool-params">
-              <div class="param"><code>file</code> <span>string · context_get · Dateiname</span></div>
+              <div class="param"><code>file</code> <span>{{ t.paramFileContext }}</span></div>
             </div>
           </div>
 
@@ -235,8 +236,8 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">calendar_read</code>
               <span class="tool-scope">soul_cert · calendar scope</span>
             </div>
-            <p>Liest alle Kalender-Einträge der Soul.</p>
-            <div class="tool-params">Keine Parameter</div>
+            <p>{{ t.calendarReadDesc }}</p>
+            <div class="tool-params">{{ t.noParams }}</div>
           </div>
 
           <div class="tool-card">
@@ -244,40 +245,40 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
               <code class="tool-name">profile_get · profile_save</code>
               <span class="tool-scope">soul_cert</span>
             </div>
-            <p>Liest oder speichert biometrische Profile: Gesicht, Stimme, Bewegung, Expertise.</p>
+            <p>{{ t.profileDesc }}</p>
             <div class="tool-params">
-              <div class="param"><code>type</code> <span>string · face | voice | motion | expertise</span></div>
+              <div class="param"><code>type</code> <span>{{ t.paramTypeProfile }}</span></div>
             </div>
           </div>
         </section>
 
         <!-- ── 5 · HTTP API ── -->
         <section id="http-api" class="doc-section">
-          <div class="sec-label">05 · HTTP API</div>
-          <h2>Wichtige Endpunkte</h2>
-          <p>Alle Endpunkte laufen über OpenResty/Lua auf deinem Node. Token als <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+          <div class="sec-label">{{ t.s05label }}</div>
+          <h2>{{ t.s05h2 }}</h2>
+          <p v-html="t.s05p"></p>
 
           <h3>Soul</h3>
           <div class="endpoint-list">
             <div class="endpoint">
               <span class="method get">GET</span><code>/api/soul</code>
-              <p>sys.md lesen · soul_cert oder pol_access_token</p>
+              <p v-html="t.epSoulGet"></p>
             </div>
             <div class="endpoint">
               <span class="method put">PUT</span><code>/api/context</code>
-              <p>sys.md Inhalt schreiben · soul_cert oder service_token · Body: <code>{ soul_content: "..." }</code></p>
+              <p v-html="t.epContextPut"></p>
             </div>
             <div class="endpoint">
               <span class="method post">POST</span><code>/api/soul-cert</code>
-              <p>soul_cert ausstellen · Body: <code>{ soul_id: "..." }</code></p>
+              <p v-html="t.epSoulCert"></p>
             </div>
             <div class="endpoint">
               <span class="method post">POST</span><code>/api/soul-rotate-cert</code>
-              <p>soul_cert rotieren · soul_cert (Bearer)</p>
+              <p>{{ t.epSoulRotate }}</p>
             </div>
             <div class="endpoint">
               <span class="method get">GET</span><code>/api/validate</code>
-              <p>soul_cert validieren · soul_cert (Bearer) · 200 OK bei Erfolg</p>
+              <p>{{ t.epValidate }}</p>
             </div>
           </div>
 
@@ -285,64 +286,64 @@ Authorization: Bearer {soul_id}.{cert}</code></pre>
           <div class="endpoint-list">
             <div class="endpoint">
               <span class="method post">POST</span><code>/api/vault/unlock</code>
-              <p>Vault entsperren · Passphrase oder Mnemonic</p>
+              <p>{{ t.epVaultUnlock }}</p>
             </div>
             <div class="endpoint">
               <span class="method post">POST</span><code>/api/vault/sync</code>
-              <p>Vault-Dateien hochladen oder synchronisieren · soul_cert</p>
+              <p>{{ t.epVaultSync }}</p>
             </div>
             <div class="endpoint">
               <span class="method get">GET</span><code>/api/vault/public/:soul_id</code>
-              <p>Public-Vault-Manifest einer Soul · kein Auth</p>
+              <p>{{ t.epVaultPublic }}</p>
             </div>
           </div>
 
-          <h3>KI &amp; Medien</h3>
+          <h3>{{ t.h3KI }}</h3>
           <div class="endpoint-list">
             <div class="endpoint">
               <span class="method post">POST</span><code>/api/wavespeed-submit</code>
-              <p>KI-Bildgenerierung starten (WaveSpeed AI) · soul_cert</p>
+              <p>{{ t.epWavespeed }}</p>
             </div>
             <div class="endpoint">
               <span class="method get">GET</span><code>/api/wavespeed-result</code>
-              <p>Generiertes Bild abrufen · soul_cert · Query: <code>job_id</code></p>
+              <p v-html="t.epWavespeedResult"></p>
             </div>
             <div class="endpoint">
               <span class="method post">POST</span><code>/api/tts</code>
-              <p>Text-to-Speech (ElevenLabs) · soul_cert</p>
+              <p>{{ t.epTTS }}</p>
             </div>
             <div class="endpoint">
               <span class="method post">POST</span><code>/api/vault/profile/analyze</code>
-              <p>Bild- oder Video-Analyse (Vision) · soul_cert</p>
+              <p>{{ t.epProfileAnalyze }}</p>
             </div>
           </div>
 
-          <h3>Peer-Netzwerk</h3>
+          <h3>{{ t.h3Peer }}</h3>
           <div class="endpoint-list">
             <div class="endpoint">
               <span class="method get">GET</span><code>/api/vault/connections</code>
-              <p>Verbundene Souls auflisten · soul_cert</p>
+              <p>{{ t.epConnectionsGet }}</p>
             </div>
             <div class="endpoint">
               <span class="method post">POST</span><code>/api/vault/connections</code>
-              <p>Verbindungsanfrage senden oder bestätigen · soul_cert</p>
+              <p>{{ t.epConnectionsPost }}</p>
             </div>
             <div class="endpoint">
               <span class="method get">GET</span><code>/api/vault/connections/peer-files</code>
-              <p>Freigegebene Dateien einer verbundenen Soul lesen · soul_cert · Query: <code>soul_id, file?</code></p>
+              <p v-html="t.epPeerFiles"></p>
             </div>
             <div class="endpoint">
               <span class="method get">GET</span><code>/api/vault/peer-stream</code>
-              <p>Datei einer verbundenen Soul streamen · soul_cert · Query: <code>soul_id, file</code></p>
+              <p v-html="t.epPeerStream"></p>
             </div>
           </div>
         </section>
 
         <!-- ── 6 · SYS.MD FORMAT ── -->
         <section id="sysmd" class="doc-section">
-          <div class="sec-label">06 · sys.md Format</div>
-          <h2>Die Soul-Datei</h2>
-          <p>sys.md ist eine Markdown-Datei mit YAML-Frontmatter. Das Format ist offen (Apache 2.0) — kompatible Implementierungen sind willkommen.</p>
+          <div class="sec-label">{{ t.s06label }}</div>
+          <h2>{{ t.s06h2 }}</h2>
+          <p>{{ t.s06p }}</p>
 
           <pre><code>---
 soul_id: 00000000-0000-0000-0000-000000000000
@@ -350,7 +351,7 @@ soul_name: ""
 created: YYYY-MM-DD
 last_session: YYYY-MM-DD
 version: 1
-soul_cert: [automatisch generiert]
+soul_cert: [auto-generated]
 vault_hash: ""
 soul_growth_chain: []
 soul_chain_anchor: null
@@ -368,10 +369,10 @@ storage_tx: ""
 ## Calendar
 
 &lt;!-- AGENT:START --&gt;
-[Agent-schreibbarer Bereich]
+{{ t.agentComment }}
 &lt;!-- AGENT:END --&gt;</code></pre>
 
-          <p>Der AGENT-Block ist der einzige Bereich, in den bezahlte Agenten schreiben können. Alle anderen Sektionen sind nur mit soul_cert schreibbar.</p>
+          <p>{{ t.s06agentNote }}</p>
         </section>
 
       </main>
@@ -386,29 +387,207 @@ storage_tx: ""
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 definePageMeta({ layout: false })
+
+const { lang } = useLang()
+
+const i18n = {
+  de: {
+    pageTitle: 'API-Dokumentation',
+    back: '← Zurück',
+    heroKicker: 'API-Referenz · v1.0β',
+    heroSub: 'MCP-Tools, HTTP-Endpunkte und Authentifizierung für den persönlichen SYS Node.',
+    nav: [
+      { label: 'Grundlagen', items: [
+        { id: 'connection', title: 'Verbindung' },
+        { id: 'auth',       title: 'Authentifizierung' },
+      ]},
+      { label: 'MCP Tools', items: [
+        { id: 'mcp-soul',  title: 'Soul' },
+        { id: 'mcp-vault', title: 'Vault' },
+      ]},
+      { label: 'HTTP API', items: [
+        { id: 'http-api', title: 'Endpunkte' },
+      ]},
+      { label: 'Referenz', items: [
+        { id: 'sysmd', title: 'sys.md Format' },
+      ]},
+    ],
+    s01label: '01 · Verbindung',
+    s01h2: 'MCP-Client verbinden',
+    s01p: 'Der MCP-Server läuft als eigenständiger Prozess auf deinem Node und kommuniziert per Streamable HTTP. Jeder MCP-kompatible Client kann sich direkt verbinden.',
+    s01pClaude: 'In <code>claude_desktop_config.json</code> eintragen:',
+    s01pClaudeai: 'Einstellungen → Integrationen → URL eintragen. Claude startet den OAuth-Flow automatisch — dein soul_cert wird als Bearer-Token ausgestellt.',
+    thZugang: 'Zugang',
+    scopeSoul: 'sys.md lesen und schreiben',
+    scopeCalendar: 'Kalender-Einträge',
+    scopeImages: 'Bild-Vault',
+    scopeContext: 'Kontext-Dokumente',
+    scopeNetwork: 'Peer-Netzwerk',
+    s02label: '02 · Authentifizierung',
+    s02h2: 'Token-Typen',
+    s02p: 'Alle API-Aufrufe laufen über <code>vault_auth.lua</code>. Drei Token-Typen mit unterschiedlichem Scope:',
+    tdSoulCertScope: 'Vollzugriff — Soul-Inhaber',
+    tdPolScope: 'Bezahlter Agent — GET Vault + Agent-Write',
+    tdServiceTokenFormat: 'Frei wählbar',
+    tdServiceScope: 'Autorisierte Dienste, Vault entsperrt',
+    s02h3: 'soul_cert ableiten',
+    s02info: '<strong>Hinweis:</strong> soul_cert und SOUL_MASTER_KEY werden bei der Einrichtung generiert und sind nur auf deinem Server gespeichert. Es gibt keine Möglichkeit, sie zurückzusetzen ohne Datenverlust.',
+    s03label: '03 · MCP Tools · Soul',
+    s03h2: 'Soul lesen & schreiben',
+    soulReadDesc: 'Liest den vollständigen sys.md-Inhalt — Persönlichkeit, Werte, Biografie, Projekte, Session-Log. Soll zu Beginn jeder KI-Sitzung aufgerufen werden.',
+    noParams: 'Keine Parameter',
+    soulWriteDesc: 'Schreibt Inhalt dauerhaft in eine sys.md-Sektion. Liest zuerst die aktuelle Datei, aktualisiert die Sektion, schreibt zurück.',
+    paramSection: 'string · Name der ## Sektion ohne "##"',
+    paramContent: 'string · Markdown-Inhalt',
+    paramMode: 'replace | append | prepend — Standard: replace',
+    soulMaturityDesc: 'Berechnet die Soul-Reife: Vollständigkeit, Session-Tiefe, Sektions-Coverage.',
+    soulSkillsDesc: 'Extrahiert strukturierte Fähigkeiten und Expertise-Bereiche aus der Soul.',
+    soulCloudPushDesc: 'Pusht die aktuelle sys.md verschlüsselt auf IPFS (Pinata). Gibt den IPFS-Hash zurück.',
+    s04label: '04 · MCP Tools · Vault',
+    s04h2: 'Vault-Inhalte',
+    vaultManifestDesc: 'Übersicht aller Vault-Ressourcen: freigegebene Dateitypen, soul_id, aktive Berechtigungen.',
+    audioDesc: '<code>audio_list</code> gibt alle Audio-Dateien mit Metadaten zurück. <code>audio_get</code> lädt eine einzelne Datei.',
+    paramFileAudio: 'string · audio_get · Dateiname',
+    imageDesc: '<code>image_list</code> gibt alle Bilder zurück. <code>image_get</code> lädt ein einzelnes Bild als Base64.',
+    paramFileImage: 'string · image_get · Dateiname',
+    videoDesc: '<code>video_list</code> gibt alle Videos zurück. <code>video_get</code> lädt Metadaten und Stream-URL.',
+    paramFileVideo: 'string · video_get · Dateiname',
+    contextDesc: '<code>context_list</code> gibt alle Kontext-Dokumente zurück (md, txt, pdf). <code>context_get</code> liefert den Inhalt einer Datei.',
+    paramFileContext: 'string · context_get · Dateiname',
+    calendarReadDesc: 'Liest alle Kalender-Einträge der Soul.',
+    profileDesc: 'Liest oder speichert biometrische Profile: Gesicht, Stimme, Bewegung, Expertise.',
+    paramTypeProfile: 'string · face | voice | motion | expertise',
+    s05label: '05 · HTTP API',
+    s05h2: 'Wichtige Endpunkte',
+    s05p: 'Alle Endpunkte laufen über OpenResty/Lua auf deinem Node. Token als <code>Authorization: Bearer &lt;token&gt;</code>.',
+    h3KI: 'KI & Medien',
+    h3Peer: 'Peer-Netzwerk',
+    epSoulGet: 'sys.md lesen · soul_cert oder pol_access_token',
+    epContextPut: 'sys.md Inhalt schreiben · soul_cert oder service_token · Body: <code>{ soul_content: "..." }</code>',
+    epSoulCert: 'soul_cert ausstellen · Body: <code>{ soul_id: "..." }</code>',
+    epSoulRotate: 'soul_cert rotieren · soul_cert (Bearer)',
+    epValidate: 'soul_cert validieren · soul_cert (Bearer) · 200 OK bei Erfolg',
+    epVaultUnlock: 'Vault entsperren · Passphrase oder Mnemonic',
+    epVaultSync: 'Vault-Dateien hochladen oder synchronisieren · soul_cert',
+    epVaultPublic: 'Public-Vault-Manifest einer Soul · kein Auth',
+    epWavespeed: 'KI-Bildgenerierung starten (WaveSpeed AI) · soul_cert',
+    epWavespeedResult: 'Generiertes Bild abrufen · soul_cert · Query: <code>job_id</code>',
+    epTTS: 'Text-to-Speech (ElevenLabs) · soul_cert',
+    epProfileAnalyze: 'Bild- oder Video-Analyse (Vision) · soul_cert',
+    epConnectionsGet: 'Verbundene Souls auflisten · soul_cert',
+    epConnectionsPost: 'Verbindungsanfrage senden oder bestätigen · soul_cert',
+    epPeerFiles: 'Freigegebene Dateien einer verbundenen Soul lesen · soul_cert · Query: <code>soul_id, file?</code>',
+    epPeerStream: 'Datei einer verbundenen Soul streamen · soul_cert · Query: <code>soul_id, file</code>',
+    s06label: '06 · sys.md Format',
+    s06h2: 'Die Soul-Datei',
+    s06p: 'sys.md ist eine Markdown-Datei mit YAML-Frontmatter. Das Format ist offen (Apache 2.0) — kompatible Implementierungen sind willkommen.',
+    agentComment: '[Agent-schreibbarer Bereich]',
+    s06agentNote: 'Der AGENT-Block ist der einzige Bereich, in den bezahlte Agenten schreiben können. Alle anderen Sektionen sind nur mit soul_cert schreibbar.',
+  },
+  en: {
+    pageTitle: 'API Documentation',
+    back: '← Back',
+    heroKicker: 'API Reference · v1.0β',
+    heroSub: 'MCP tools, HTTP endpoints and authentication for your personal SYS node.',
+    nav: [
+      { label: 'Basics', items: [
+        { id: 'connection', title: 'Connection' },
+        { id: 'auth',       title: 'Authentication' },
+      ]},
+      { label: 'MCP Tools', items: [
+        { id: 'mcp-soul',  title: 'Soul' },
+        { id: 'mcp-vault', title: 'Vault' },
+      ]},
+      { label: 'HTTP API', items: [
+        { id: 'http-api', title: 'Endpoints' },
+      ]},
+      { label: 'Reference', items: [
+        { id: 'sysmd', title: 'sys.md Format' },
+      ]},
+    ],
+    s01label: '01 · Connection',
+    s01h2: 'Connect an MCP Client',
+    s01p: 'The MCP server runs as a standalone process on your node and communicates via Streamable HTTP. Any MCP-compatible client can connect directly.',
+    s01pClaude: 'Add to <code>claude_desktop_config.json</code>:',
+    s01pClaudeai: 'Settings → Integrations → enter URL. Claude starts the OAuth flow automatically — your soul_cert is issued as a Bearer token.',
+    thZugang: 'Access',
+    scopeSoul: 'Read and write sys.md',
+    scopeCalendar: 'Calendar entries',
+    scopeImages: 'Image vault',
+    scopeContext: 'Context documents',
+    scopeNetwork: 'Peer network',
+    s02label: '02 · Authentication',
+    s02h2: 'Token Types',
+    s02p: 'All API calls go through <code>vault_auth.lua</code>. Three token types with different scopes:',
+    tdSoulCertScope: 'Full access — soul owner',
+    tdPolScope: 'Paid agent — GET vault + agent write',
+    tdServiceTokenFormat: 'Freely defined',
+    tdServiceScope: 'Authorized services, vault unlocked',
+    s02h3: 'Derive soul_cert',
+    s02info: '<strong>Note:</strong> soul_cert and SOUL_MASTER_KEY are generated during setup and stored only on your server. There is no way to reset them without data loss.',
+    s03label: '03 · MCP Tools · Soul',
+    s03h2: 'Read & write soul',
+    soulReadDesc: 'Reads the complete sys.md content — personality, values, biography, projects, session log. Should be called at the start of every AI session.',
+    noParams: 'No parameters',
+    soulWriteDesc: 'Writes content permanently to a sys.md section. Reads the current file first, updates the section, writes back.',
+    paramSection: 'string · Name of the ## section without "##"',
+    paramContent: 'string · Markdown content',
+    paramMode: 'replace | append | prepend — default: replace',
+    soulMaturityDesc: 'Calculates soul maturity: completeness, session depth, section coverage.',
+    soulSkillsDesc: 'Extracts structured skills and expertise areas from the soul.',
+    soulCloudPushDesc: 'Pushes the current sys.md encrypted to IPFS (Pinata). Returns the IPFS hash.',
+    s04label: '04 · MCP Tools · Vault',
+    s04h2: 'Vault Contents',
+    vaultManifestDesc: 'Overview of all vault resources: shared file types, soul_id, active permissions.',
+    audioDesc: '<code>audio_list</code> returns all audio files with metadata. <code>audio_get</code> loads a single file.',
+    paramFileAudio: 'string · audio_get · filename',
+    imageDesc: '<code>image_list</code> returns all images. <code>image_get</code> loads a single image as Base64.',
+    paramFileImage: 'string · image_get · filename',
+    videoDesc: '<code>video_list</code> returns all videos. <code>video_get</code> loads metadata and stream URL.',
+    paramFileVideo: 'string · video_get · filename',
+    contextDesc: '<code>context_list</code> returns all context documents (md, txt, pdf). <code>context_get</code> delivers a file\'s content.',
+    paramFileContext: 'string · context_get · filename',
+    calendarReadDesc: 'Reads all calendar entries of the soul.',
+    profileDesc: 'Reads or saves biometric profiles: face, voice, motion, expertise.',
+    paramTypeProfile: 'string · face | voice | motion | expertise',
+    s05label: '05 · HTTP API',
+    s05h2: 'Key Endpoints',
+    s05p: 'All endpoints run through OpenResty/Lua on your node. Pass tokens as <code>Authorization: Bearer &lt;token&gt;</code>.',
+    h3KI: 'AI & Media',
+    h3Peer: 'Peer Network',
+    epSoulGet: 'Read sys.md · soul_cert or pol_access_token',
+    epContextPut: 'Write sys.md content · soul_cert or service_token · Body: <code>{ soul_content: "..." }</code>',
+    epSoulCert: 'Issue soul_cert · Body: <code>{ soul_id: "..." }</code>',
+    epSoulRotate: 'Rotate soul_cert · soul_cert (Bearer)',
+    epValidate: 'Validate soul_cert · soul_cert (Bearer) · 200 OK on success',
+    epVaultUnlock: 'Unlock vault · passphrase or mnemonic',
+    epVaultSync: 'Upload or sync vault files · soul_cert',
+    epVaultPublic: 'Public vault manifest of a soul · no auth',
+    epWavespeed: 'Start AI image generation (WaveSpeed AI) · soul_cert',
+    epWavespeedResult: 'Retrieve generated image · soul_cert · Query: <code>job_id</code>',
+    epTTS: 'Text-to-Speech (ElevenLabs) · soul_cert',
+    epProfileAnalyze: 'Image or video analysis (Vision) · soul_cert',
+    epConnectionsGet: 'List connected souls · soul_cert',
+    epConnectionsPost: 'Send or confirm connection request · soul_cert',
+    epPeerFiles: 'Read shared files of a connected soul · soul_cert · Query: <code>soul_id, file?</code>',
+    epPeerStream: 'Stream a file from a connected soul · soul_cert · Query: <code>soul_id, file</code>',
+    s06label: '06 · sys.md Format',
+    s06h2: 'The Soul File',
+    s06p: 'sys.md is a Markdown file with YAML frontmatter. The format is open (Apache 2.0) — compatible implementations are welcome.',
+    agentComment: '[Agent-writable area]',
+    s06agentNote: 'The AGENT block is the only area that paid agents can write to. All other sections can only be written with soul_cert.',
+  },
+}
+
+const t = computed(() => lang.value === 'de' ? i18n.de : i18n.en)
+const nav = computed(() => t.value.nav)
+
 useSeoMeta({ title: 'API-Dokumentation – SaveYourSoul', robots: 'noindex' })
 
 const active = ref('connection')
-
-const nav = [
-  { label: 'Grundlagen', items: [
-    { id: 'connection', title: 'Verbindung' },
-    { id: 'auth',       title: 'Authentifizierung' },
-  ]},
-  { label: 'MCP Tools', items: [
-    { id: 'mcp-soul',  title: 'Soul' },
-    { id: 'mcp-vault', title: 'Vault' },
-  ]},
-  { label: 'HTTP API', items: [
-    { id: 'http-api', title: 'Endpunkte' },
-  ]},
-  { label: 'Referenz', items: [
-    { id: 'sysmd', title: 'sys.md Format' },
-  ]},
-]
 
 function scrollTo(id) {
   const el = document.getElementById(id)
@@ -446,7 +625,8 @@ onUnmounted(() => observer?.disconnect())
 .dot { color: var(--accent); }
 .center { text-align: center; }
 .page-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-4); }
-.back { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); background: none; border: none; cursor: pointer; transition: color 0.15s; }
+.nav-end { display: flex; align-items: center; gap: 16px; }
+.back { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); background: none; border: none; cursor: pointer; transition: color 0.15s; white-space: nowrap; }
 .back:hover { color: var(--accent); }
 @media (max-width: 640px) { .l-nav { grid-template-columns: 1fr auto; } .center { display: none; } }
 
@@ -500,7 +680,6 @@ td code { font-family: var(--mono); font-size: 11px; color: var(--accent-bright)
 .method.get { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.2); }
 .method.post { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.2); }
 .method.put { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.2); }
-.method.mcp { background: rgba(139,92,246,0.15); color: var(--accent-bright); border: 1px solid rgba(139,92,246,0.2); }
 
 /* Endpoint list */
 .endpoint-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--rule); margin: 16px 0 24px; }
@@ -524,7 +703,7 @@ td code { font-family: var(--mono); font-size: 11px; color: var(--accent-bright)
 
 /* Info box */
 .info-box { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.2); padding: 16px 20px; margin: 20px 0; font-size: 14px; line-height: 1.6; color: var(--fg-2); }
-.info-box strong { color: var(--fg); }
+.info-box :deep(strong) { color: var(--fg); }
 
 /* Footer */
 .foot-rule { padding: 18px clamp(20px,4vw,44px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-4); gap: 12px; flex-wrap: wrap; }

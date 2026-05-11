@@ -5,10 +5,13 @@
       <div class="lockup">
         <span class="mark">SYS<span class="dot">.</span></span>
       </div>
-      <div class="center"><span class="page-title">Datenschutzerklärung</span></div>
-      <button class="back" @click="$router.back()" aria-label="Zurück">
-        ← Zurück
-      </button>
+      <div class="center"><span class="page-title">{{ lang === 'de' ? 'Datenschutzerklärung' : 'Privacy Policy' }}</span></div>
+      <div class="nav-end">
+        <LangToggle />
+        <button class="back" @click="$router.back()" :aria-label="lang === 'de' ? 'Zurück' : 'Back'">
+          {{ lang === 'de' ? '← Zurück' : '← Back' }}
+        </button>
+      </div>
     </nav>
 
     <main id="main-content" class="content">
@@ -26,6 +29,7 @@
 <script setup>
 definePageMeta({ layout: false })
 useSeoMeta({ title: 'Datenschutzerklärung – SaveYourSoul', robots: 'noindex' })
+const { lang } = useLang()
 </script>
 
 <style scoped>
@@ -48,17 +52,16 @@ useSeoMeta({ title: 'Datenschutzerklärung – SaveYourSoul', robots: 'noindex' 
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 24px;
-  padding: 0 clamp(20px,4vw,44px) 24px;
-  padding-top: 28px;
+  padding: 28px clamp(20px,4vw,44px) 24px;
   border-bottom: 1px solid var(--rule);
 }
 .lockup { display: flex; align-items: center; gap: 10px; }
-.logo { width: 32px; height: 32px; object-fit: contain; }
 .mark { font-family: var(--mono); font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: var(--fg); }
 .dot { color: var(--accent); }
 .center { text-align: center; }
 .page-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-4); }
-.back { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); text-decoration: none; transition: color 0.15s; }
+.nav-end { display: flex; align-items: center; gap: 16px; }
+.back { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); background: none; border: none; cursor: pointer; transition: color 0.15s; white-space: nowrap; }
 .back:hover { color: var(--accent); }
 
 .content {
