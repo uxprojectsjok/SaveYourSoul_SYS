@@ -224,3 +224,11 @@ No pull-request workflow for code, as no executable code lives in this repo. Pro
 ## License
 
 Apache License 2.0 · Copyright 2026 Jan-Oliver Karo — UX-Projects, Marburg, Germany
+
+---
+
+## Sponsors
+
+Thank you to our sponsors who keep SYS open and independent 🙏
+
+*Be the first to support SYS — [become a sponsor](https://github.com/sponsors/uxprojectsjok)*
