@@ -56,6 +56,16 @@ Der wirtschaftliche Layer des Protokolls. Nodes registrieren sich im dezentralen
 
 ---
 
+## Smart Contract
+
+Der einzige offizielle Smart Contract des SYS-Ökosystems liegt in diesem Repository:
+
+📄 [`contracts/SoulRegistry.sol`](contracts/SoulRegistry.sol) · [`contracts/SOUL_REGISTRY.md`](contracts/SOUL_REGISTRY.md)
+
+`SoulRegistry` verankert Souls kryptographisch auf Polygon Mainnet — ausschließlich Hashes, kein Klartext, kein Inhalt. Es gibt keinen weiteren Contract für die Plattform.
+
+---
+
 ## Protokoll-Stack
 
 | Schicht | Technologie |
@@ -167,6 +177,16 @@ Nodes connect peer-to-peer. Peers exchange soul context, calendar entries and sh
 
 ### V · Agent Marketplace
 The economic layer of the protocol. Nodes register in the decentralised IPFS directory. External AI agents discover nodes, pay in POL (Polygon) and receive time-limited MCP access. Every access is settled on-chain. The node operator sets price, duration and scope.
+
+---
+
+## Smart Contract
+
+The sole official smart contract of the SYS ecosystem lives in this repository:
+
+📄 [`contracts/SoulRegistry.sol`](contracts/SoulRegistry.sol) · [`contracts/SOUL_REGISTRY.md`](contracts/SOUL_REGISTRY.md)
+
+`SoulRegistry` anchors souls cryptographically on Polygon Mainnet — hashes only, no plaintext, no content. There is no other contract for the platform.
 
 ---
 
